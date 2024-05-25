@@ -3,4 +3,6 @@
     <string name="usage">Before using this app, allow access to Accessiblity Service</string>
     <string name="open_accessibility_settings">Open Accessibility Service</string>
     <string name="accessibility_service_description">To use RefreshPaper, allow access to Accessibility Service</string>
+    <string name="pages_per_refresh">5</string>
+    <string name="submit">Submit</string>
 </resources>

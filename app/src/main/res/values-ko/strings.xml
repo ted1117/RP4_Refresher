@@ -4,4 +4,6 @@
     <string name="open_accessibility_settings">접근성 설정 열기</string>
     <string name="app_name">리페4 새로고침</string>
     <string name="accessibility_service_description">리프레시 페이퍼를 사용하려면 접근성 권한을 부여해야 합니다.</string>
+    <string name="pages_per_refresh">5</string>
+    <string name="submit">입력</string>
 </resources>

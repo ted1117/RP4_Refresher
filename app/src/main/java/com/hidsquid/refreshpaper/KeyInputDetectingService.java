@@ -2,6 +2,7 @@ package com.hidsquid.refreshpaper;
 
 
 import android.accessibilityservice.AccessibilityService;
+import android.content.Intent;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
@@ -12,10 +13,11 @@ import java.lang.reflect.Method;
 public class KeyInputDetectingService extends AccessibilityService {
     private static final String TAG = "MyAccessibilityService";
     private int pageUpDownCount = 0;
-    private static final int TRIGGER_COUNT = 5;
+    private int TRIGGER_COUNT = 5;
     private static final int LONG_PRESS_THRESHOLD = 300;
 
     private long keyDownTime;
+    public static final String EXTRA_NUMBER = "EXTRA_NUMBER";
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
@@ -24,6 +26,14 @@ public class KeyInputDetectingService extends AccessibilityService {
 
     @Override
     public void onInterrupt() {
+    }
+
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent != null && intent.hasExtra(EXTRA_NUMBER)) {
+            TRIGGER_COUNT = intent.getIntExtra(EXTRA_NUMBER, -1); // 전역 변수에 값 설정
+            Log.d(TAG, "Received number: " + TRIGGER_COUNT);
+        }
+        return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
