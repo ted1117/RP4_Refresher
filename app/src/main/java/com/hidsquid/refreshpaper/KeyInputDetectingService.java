@@ -6,6 +6,7 @@ import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
@@ -25,6 +26,8 @@ public class KeyInputDetectingService extends AccessibilityService {
 
     private long keyDownTime;
     public static final String EXTRA_NUMBER = "EXTRA_NUMBER";
+    private static final String PREFS_NAME = "MyPrefs";
+    private static final String PREF_KEY_PAGES_PER_REFRESH = "numberInput";
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
@@ -35,10 +38,28 @@ public class KeyInputDetectingService extends AccessibilityService {
     public void onInterrupt() {
     }
 
+    @Override
+    protected void onServiceConnected() {
+        super.onServiceConnected();
+
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        TRIGGER_COUNT = sharedPreferences.getInt(PREF_KEY_PAGES_PER_REFRESH, 5);
+        Log.d(TAG, "onServiceConnected - TRIGGER_COUNT: " + TRIGGER_COUNT);
+    }
+
     public int onStartCommand(Intent intent, int flags, int startId) {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         if (intent != null && intent.hasExtra(EXTRA_NUMBER)) {
-            TRIGGER_COUNT = intent.getIntExtra(EXTRA_NUMBER, -1); // 전역 변수에 값 설정
+            TRIGGER_COUNT = intent.getIntExtra(EXTRA_NUMBER, 5);
             Log.d(TAG, "Received number: " + TRIGGER_COUNT);
+
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt(PREF_KEY_PAGES_PER_REFRESH, TRIGGER_COUNT);
+            editor.apply();
+        }
+        else {
+            TRIGGER_COUNT = sharedPreferences.getInt(PREF_KEY_PAGES_PER_REFRESH, 5);
+            Log.d(TAG, "SharedPreference: " + TRIGGER_COUNT);
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -47,7 +68,7 @@ public class KeyInputDetectingService extends AccessibilityService {
     protected boolean onKeyEvent(KeyEvent event) {
         if (isBlockedAppInForeground()) {
             Log.d(TAG, "Blocked app is in foreground, ignoring key event.");
-            return false; // 특정 앱이 포그라운드에 있을 때 키 이벤트 무시
+            return false;
         }
 
         int keyCode = event.getKeyCode();

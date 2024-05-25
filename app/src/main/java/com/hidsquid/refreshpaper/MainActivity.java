@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.view.accessibility.AccessibilityManager;
 import android.view.inputmethod.InputMethodManager;
@@ -22,6 +23,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
+    private static final String PREFS_NAME = "MyPrefs";
+    private static final String PREF_KEY_PAGES_PER_REFRESH = "numberInput";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,9 +32,10 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-        String savedInput = sharedPreferences.getString("numberInput", "");
-        binding.numberInput.setText(savedInput);
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        int savedInput = sharedPreferences.getInt(PREF_KEY_PAGES_PER_REFRESH, 5);
+        Log.d("MainActivity", "PREF_KEY_PAGES_PER_REFRESH" + PREF_KEY_PAGES_PER_REFRESH);
+        binding.numberInput.setText(String.valueOf(savedInput));
 
         binding.submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -40,9 +44,8 @@ public class MainActivity extends AppCompatActivity {
                 if (!inputText.isEmpty()) {
                     int number = Integer.parseInt(inputText);
 
-                    SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("numberInput", inputText);
+                    editor.putInt(PREF_KEY_PAGES_PER_REFRESH, number);
                     editor.apply();
 
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
