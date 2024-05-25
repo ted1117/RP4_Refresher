@@ -9,4 +9,5 @@
     android:canRequestFilterKeyEvents="true"
     android:canPerformGestures="true"
     android:description="@string/accessibility_service_description"
+    android:packageNames=""
     tools:ignore="UnusedAttribute"/>

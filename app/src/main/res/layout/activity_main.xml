@@ -14,6 +14,7 @@
         android:layout_marginTop="36dp"
         android:text="@string/usage"
         android:gravity="center_horizontal"
+        android:visibility="visible"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/accessibilityButton"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,19 +27,46 @@
         android:layout_marginTop="8dp"
         android:onClick="onClick"
         android:text="@string/open_accessibility_settings"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/usageTextView" />
 
+    <Button
+        android:id="@+id/usageStatsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:onClick="setUsageStatsEnabled"
+        android:text="@string/open_package_usage_stats_settings"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/accessibilityButton" />
+
+    <TextView
+        android:id="@+id/refreshPagesTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="@string/pages_per_refresh_description"
+        android:gravity="center_horizontal"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <EditText
         android:id="@+id/numberInput"
-        android:layout_width="wrap_content"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:hint="@string/pages_per_refresh"
         android:gravity="center_horizontal"
         android:inputType="number"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="100dp"
+        android:visibility="gone"
+        android:importantForAutofill="no"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/accessibilityButton"/>
@@ -48,6 +76,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/submit"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/numberInput"/>

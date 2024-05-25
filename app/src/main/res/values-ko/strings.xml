@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="usage">앱을 사용하려면 접근성 권한을 허가하세요.</string>
+    <string name="usage">앱을 사용하려면 접근성 권한과 사용 기록 액세스를 허가하세요.</string>
     <string name="open_accessibility_settings">접근성 설정 열기</string>
     <string name="app_name">리페4 새로고침</string>
-    <string name="accessibility_service_description">리프레시 페이퍼를 사용하려면 접근성 권한을 부여해야 합니다.</string>
+    <string name="accessibility_service_description">리페4 새로고침을 사용하려면 접근성 권한을 부여해야 합니다.</string>
+    <string name="open_package_usage_stats_settings">사용 기록 액세스 설정 열기</string>
+    <string name="pages_per_refresh_description">새로고침할 페이지 수를 입력하세요\n기본값은 5입니다</string>
     <string name="pages_per_refresh">5</string>
     <string name="submit">입력</string>
 </resources>

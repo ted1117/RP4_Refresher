@@ -2,7 +2,9 @@
     <string name="app_name">RP4 Refresh</string>
     <string name="usage">Before using this app, allow access to Accessiblity Service</string>
     <string name="open_accessibility_settings">Open Accessibility Service</string>
-    <string name="accessibility_service_description">To use RefreshPaper, allow access to Accessibility Service</string>
+    <string name="accessibility_service_description">To use RefreshPaper, allow access to Accessibility Service and Usage Stats</string>
+    <string name="open_package_usage_stats_settings">Open Usage Stats Setting</string>
+    <string name="pages_per_refresh_description">Set the number of pages to refresh\nDefault value is 5</string>
     <string name="pages_per_refresh">5</string>
     <string name="submit">Submit</string>
 </resources>
