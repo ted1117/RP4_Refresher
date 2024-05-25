@@ -1,47 +1,52 @@
 package com.hidsquid.refreshpaper;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
+import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Binder;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.View;
 import android.view.accessibility.AccessibilityManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.hidsquid.refreshpaper.databinding.ActivityMainBinding;
 
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView usageTextView;
-    private Button accessibilityButton;
-    private EditText numberInput;
-    private Button submitButton;
+    private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        usageTextView = findViewById(R.id.usageTextView);
-        accessibilityButton = findViewById(R.id.accessibilityButton);
-        numberInput = findViewById(R.id.numberInput);
-        submitButton = findViewById(R.id.submitButton);
+        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        String savedInput = sharedPreferences.getString("numberInput", "");
+        binding.numberInput.setText(savedInput);
 
-        submitButton.setOnClickListener(new View.OnClickListener() {
+        binding.submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String inputText = numberInput.getText().toString();
+                String inputText = binding.numberInput.getText().toString();
                 if (!inputText.isEmpty()) {
                     int number = Integer.parseInt(inputText);
 
+                    SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("numberInput", inputText);
+                    editor.apply();
+
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(numberInput.getWindowToken(), 0);
+                    imm.hideSoftInputFromWindow(binding.numberInput.getWindowToken(), 0);
 
                     Intent intent = new Intent(MainActivity.this, KeyInputDetectingService.class);
                     intent.putExtra(KeyInputDetectingService.EXTRA_NUMBER, number);
@@ -57,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        updateUIBasedOnAccessibilityService();
+        updateUI();
     }
 
     public void onClick(View v) {
@@ -65,17 +70,19 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void updateUIBasedOnAccessibilityService() {
-        if (isAccessibilityServiceEnabled(this)) {
-            usageTextView.setVisibility(View.GONE);
-            accessibilityButton.setVisibility(View.GONE);
-            numberInput.setVisibility(View.VISIBLE);
-            submitButton.setVisibility(View.VISIBLE);
-        } else {
-            usageTextView.setVisibility(View.VISIBLE);
-            accessibilityButton.setVisibility(View.VISIBLE);
-            numberInput.setVisibility(View.GONE);
-            submitButton.setVisibility(View.GONE);
+    public void setUsageStatsEnabled(View v) {
+        Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+        startActivity(intent);
+    }
+
+    private void updateUI() {
+        if (isAccessibilityServiceEnabled(this) && isPackageUsageStatsEnabled(this)) {
+            binding.usageTextView.setVisibility(View.GONE);
+            binding.accessibilityButton.setVisibility(View.GONE);
+            binding.usageStatsButton.setVisibility(View.GONE);
+            binding.refreshPagesTextView.setVisibility(View.VISIBLE);
+            binding.numberInput.setVisibility(View.VISIBLE);
+            binding.submitButton.setVisibility(View.VISIBLE);
         }
     }
 
@@ -89,5 +96,12 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return false;
+    }
+
+    private boolean isPackageUsageStatsEnabled(Context context) {
+        AppOpsManager appOpsManager = (AppOpsManager) context.getSystemService(APP_OPS_SERVICE);
+        int mode = AppOpsManager.MODE_DEFAULT;
+        mode = appOpsManager.unsafeCheckOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Binder.getCallingUid(), context.getPackageName());
+        return (mode == AppOpsManager.MODE_ALLOWED);
     }
 }
