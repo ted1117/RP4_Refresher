@@ -37,27 +37,24 @@ public class MainActivity extends AppCompatActivity {
         Log.d("MainActivity", "PREF_KEY_PAGES_PER_REFRESH" + PREF_KEY_PAGES_PER_REFRESH);
         binding.numberInput.setText(String.valueOf(savedInput));
 
-        binding.submitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String inputText = binding.numberInput.getText().toString();
-                if (!inputText.isEmpty()) {
-                    int number = Integer.parseInt(inputText);
+        binding.submitButton.setOnClickListener(v -> {
+            String inputText = binding.numberInput.getText().toString();
+            if (!inputText.isEmpty()) {
+                int number = Integer.parseInt(inputText);
 
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putInt(PREF_KEY_PAGES_PER_REFRESH, number);
-                    editor.apply();
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt(PREF_KEY_PAGES_PER_REFRESH, number);
+                editor.apply();
 
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(binding.numberInput.getWindowToken(), 0);
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(binding.numberInput.getWindowToken(), 0);
 
-                    Intent intent = new Intent(MainActivity.this, KeyInputDetectingService.class);
-                    intent.putExtra(KeyInputDetectingService.EXTRA_NUMBER, number);
-                    startService(intent);
-                    Toast.makeText(MainActivity.this, "입력된 숫자: " + number, Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(MainActivity.this, "숫자를 입력하세요", Toast.LENGTH_SHORT).show();
-                }
+                Intent intent = new Intent(MainActivity.this, KeyInputDetectingService.class);
+                intent.putExtra(KeyInputDetectingService.EXTRA_NUMBER, number);
+                startService(intent);
+                Toast.makeText(MainActivity.this, "입력된 숫자: " + number, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(MainActivity.this, "숫자를 입력하세요", Toast.LENGTH_SHORT).show();
             }
         });
     }
