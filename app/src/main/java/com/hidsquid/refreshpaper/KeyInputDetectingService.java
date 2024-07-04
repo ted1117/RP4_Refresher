@@ -28,6 +28,7 @@ public class KeyInputDetectingService extends AccessibilityService {
     public static final String EXTRA_NUMBER = "EXTRA_NUMBER";
     private static final String PREFS_NAME = "MyPrefs";
     private static final String PREF_KEY_PAGES_PER_REFRESH = "numberInput";
+    private MainUtils mainUtils;
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
@@ -41,6 +42,8 @@ public class KeyInputDetectingService extends AccessibilityService {
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
+
+        mainUtils = new MainUtils();
 
         SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         TRIGGER_COUNT = sharedPreferences.getInt(PREF_KEY_PAGES_PER_REFRESH, 5);
@@ -93,8 +96,8 @@ public class KeyInputDetectingService extends AccessibilityService {
                 Log.d(TAG, "PageUp/PageDown pressed. Count: " + pageUpDownCount);
 
                 if (pageUpDownCount >= TRIGGER_COUNT) {
-                    refreshScreen(1);
-                    pageUpDownCount = 0; // reset count after triggering
+                    mainUtils.refreshScreen(1);
+                    pageUpDownCount = 0;
                 }
 //                else {
 //                    Toast.makeText(this, String.valueOf(pageUpDownCount), Toast.LENGTH_SHORT).show();
@@ -118,7 +121,7 @@ public class KeyInputDetectingService extends AccessibilityService {
             setEPDFullRefresh.setAccessible(true);
 
             setEPDMode.invoke(null, 2);
-            setEPDFullRefresh.invoke(null, 12345);
+            setEPDFullRefresh.invoke(null, uniqueDrawingId);
             setEPDMode.invoke(null, -1);
 
         } catch (Exception e) {
