@@ -24,10 +24,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".PageCountSettingsActivity"
+            android:exported="true"/>
         <activity android:name=".RefreshScreen"
             android:exported="true"
             android:launchMode="singleInstance">
-
         </activity>
         <service
             android:name=".KeyInputDetectingService"

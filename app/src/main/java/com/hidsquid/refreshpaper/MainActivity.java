@@ -4,14 +4,13 @@ import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.View;
 import android.view.accessibility.AccessibilityManager;
-import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,8 +22,6 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
-    private static final String PREFS_NAME = "MyPrefs";
-    private static final String PREF_KEY_PAGES_PER_REFRESH = "numberInput";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,37 +29,21 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        int savedInput = sharedPreferences.getInt(PREF_KEY_PAGES_PER_REFRESH, 5);
-        Log.d("MainActivity", "PREF_KEY_PAGES_PER_REFRESH" + PREF_KEY_PAGES_PER_REFRESH);
-        binding.numberInput.setText(String.valueOf(savedInput));
-
-        binding.submitButton.setOnClickListener(v -> {
-            String inputText = binding.numberInput.getText().toString();
-            if (!inputText.isEmpty()) {
-                int number = Integer.parseInt(inputText);
-
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putInt(PREF_KEY_PAGES_PER_REFRESH, number);
-                editor.apply();
-
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(binding.numberInput.getWindowToken(), 0);
-
-                Intent intent = new Intent(MainActivity.this, KeyInputDetectingService.class);
-                intent.putExtra(KeyInputDetectingService.EXTRA_NUMBER, number);
-                startService(intent);
-                Toast.makeText(MainActivity.this, "입력된 숫자: " + number, Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(MainActivity.this, "숫자를 입력하세요", Toast.LENGTH_SHORT).show();
-            }
-        });
+        if (isAccessibilityServiceEnabled(this) && isPackageUsageStatsEnabled(this)) {
+            showListView();
+        } else {
+            updateUI();
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        updateUI();
+        if (isAccessibilityServiceEnabled(this) && isPackageUsageStatsEnabled(this)) {
+            showListView();
+        } else {
+            updateUI();
+        }
     }
 
     public void onClick(View v) {
@@ -77,13 +58,31 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateUI() {
         if (isAccessibilityServiceEnabled(this) && isPackageUsageStatsEnabled(this)) {
-            binding.usageTextView.setVisibility(View.GONE);
-            binding.accessibilityButton.setVisibility(View.GONE);
-            binding.usageStatsButton.setVisibility(View.GONE);
-            binding.refreshPagesTextView.setVisibility(View.VISIBLE);
-            binding.numberInput.setVisibility(View.VISIBLE);
-            binding.submitButton.setVisibility(View.VISIBLE);
+            showListView();
+        } else {
+            binding.usageTextView.setVisibility(View.VISIBLE);
+            binding.accessibilityButton.setVisibility(View.VISIBLE);
+            binding.usageStatsButton.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void showListView() {
+        binding.usageTextView.setVisibility(View.GONE);
+        binding.accessibilityButton.setVisibility(View.GONE);
+        binding.usageStatsButton.setVisibility(View.GONE);
+
+        String[] listItems = {"리프레시할 페이지 숫자 설정"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listItems);
+        ListView listView = new ListView(this);
+        listView.setAdapter(adapter);
+        setContentView(listView);
+
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            if (position == 0) {
+                Intent intent = new Intent(MainActivity.this, PageCountSettingsActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private boolean isAccessibilityServiceEnabled(Context context) {
@@ -99,9 +98,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean isPackageUsageStatsEnabled(Context context) {
-        AppOpsManager appOpsManager = (AppOpsManager) context.getSystemService(APP_OPS_SERVICE);
-        int mode = AppOpsManager.MODE_DEFAULT;
-        mode = appOpsManager.unsafeCheckOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Binder.getCallingUid(), context.getPackageName());
+        AppOpsManager appOpsManager = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
+        int mode = appOpsManager.unsafeCheckOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Binder.getCallingUid(), context.getPackageName());
         return (mode == AppOpsManager.MODE_ALLOWED);
     }
 }
