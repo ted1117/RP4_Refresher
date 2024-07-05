@@ -1,19 +1,20 @@
 package com.hidsquid.refreshpaper;
 
-
 import android.accessibilityservice.AccessibilityService;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
-import android.widget.Toast;
 
 import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -22,13 +23,28 @@ public class KeyInputDetectingService extends AccessibilityService {
     private static final String BLOCKED_APP_PACKAGE_NAME = "com.ridi.paper";
     private int pageUpDownCount = 0;
     private int TRIGGER_COUNT = 5;
-    private static final int LONG_PRESS_THRESHOLD = 300;
+    private static final int LONG_PRESS_THRESHOLD = 3000;
 
     private long keyDownTime;
     public static final String EXTRA_NUMBER = "EXTRA_NUMBER";
     private static final String PREFS_NAME = "MyPrefs";
     private static final String PREF_KEY_PAGES_PER_REFRESH = "numberInput";
     private MainUtils mainUtils;
+
+    private final Set<Integer> keyCodes = new HashSet<>();
+    private final Handler handler = new Handler();
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        // Initialize the set of key codes to track
+        keyCodes.add(KeyEvent.KEYCODE_PAGE_UP);
+        keyCodes.add(KeyEvent.KEYCODE_PAGE_DOWN);
+        keyCodes.add(KeyEvent.KEYCODE_DPAD_LEFT);
+        keyCodes.add(KeyEvent.KEYCODE_DPAD_RIGHT);
+        keyCodes.add(KeyEvent.KEYCODE_VOLUME_UP);
+        keyCodes.add(KeyEvent.KEYCODE_VOLUME_DOWN);
+    }
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
@@ -59,8 +75,7 @@ public class KeyInputDetectingService extends AccessibilityService {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putInt(PREF_KEY_PAGES_PER_REFRESH, TRIGGER_COUNT);
             editor.apply();
-        }
-        else {
+        } else {
             TRIGGER_COUNT = sharedPreferences.getInt(PREF_KEY_PAGES_PER_REFRESH, 5);
             Log.d(TAG, "SharedPreference: " + TRIGGER_COUNT);
         }
@@ -77,26 +92,27 @@ public class KeyInputDetectingService extends AccessibilityService {
         int keyCode = event.getKeyCode();
         int action = event.getAction();
 
-        if (action == KeyEvent.ACTION_DOWN) {
-            if (keyCode == KeyEvent.KEYCODE_PAGE_UP || keyCode == KeyEvent.KEYCODE_PAGE_DOWN) {
-                keyDownTime = System.currentTimeMillis();
-            }
-        }
+//        if (action == KeyEvent.ACTION_DOWN) {
+//            if (keyCodes.contains(keyCode)) {
+//                keyDownTime = System.currentTimeMillis();
+//            }
+//        }
 
         if (action == KeyEvent.ACTION_UP) {
-            long keyPressDuration = System.currentTimeMillis() - keyDownTime;
+//            long keyPressDuration = System.currentTimeMillis() - keyDownTime;
+//
+//            if (keyPressDuration >= LONG_PRESS_THRESHOLD) {
+//                return true;
+//            }
 
-            if (keyPressDuration >= LONG_PRESS_THRESHOLD) {
-                return true;
-            }
-
-            if (keyCode == KeyEvent.KEYCODE_PAGE_UP || keyCode == KeyEvent.KEYCODE_PAGE_DOWN) {
+            if (keyCodes.contains(keyCode)) {
                 pageUpDownCount++;
 
                 Log.d(TAG, "PageUp/PageDown pressed. Count: " + pageUpDownCount);
 
                 if (pageUpDownCount >= TRIGGER_COUNT) {
-                    mainUtils.refreshScreen(1);
+//                    mainUtils.refreshScreen(1);
+                    handler.postDelayed(() -> mainUtils.refreshScreen(1), 500);
                     pageUpDownCount = 0;
                 }
 //                else {
@@ -106,27 +122,6 @@ public class KeyInputDetectingService extends AccessibilityService {
 
         }
         return super.onKeyEvent(event);
-    }
-
-    private void refreshScreen(int uniqueDrawingId) {
-        try {
-            Log.d(TAG, "refreshScreen Starts!");
-            // SurfaceControl 클래스 로드
-            Class<?> surfaceControlClass = Class.forName("android.view.SurfaceControl");
-
-            Method setEPDMode = surfaceControlClass.getMethod("setEPDMode", int.class);
-            Method setEPDFullRefresh = surfaceControlClass.getMethod("setEPDFullRefresh", int.class);
-
-            setEPDMode.setAccessible(true);
-            setEPDFullRefresh.setAccessible(true);
-
-            setEPDMode.invoke(null, 2);
-            setEPDFullRefresh.invoke(null, uniqueDrawingId);
-            setEPDMode.invoke(null, -1);
-
-        } catch (Exception e) {
-            Log.e(TAG, "Reflection error: ", e);
-        }
     }
 
     private boolean isBlockedAppInForeground() {
