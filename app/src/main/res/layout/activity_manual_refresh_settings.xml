@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ManualRefreshSettingsActivity">
+
+    <TextView
+        android:id="@+id/manualRefreshTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="수동 리프레시 설정"
+        android:textSize="18sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"/>
+
+    <!-- 추가 설정 UI 요소들을 여기에 배치하세요 -->
+
+</androidx.constraintlayout.widget.ConstraintLayout>
