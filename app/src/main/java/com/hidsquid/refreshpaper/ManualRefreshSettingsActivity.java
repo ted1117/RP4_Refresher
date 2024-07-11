@@ -1,13 +1,11 @@
 package com.hidsquid.refreshpaper;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.hidsquid.refreshpaper.databinding.ActivityManualRefreshSettingsBinding;
-import com.hidsquid.refreshpaper.databinding.ActivityPageCountSettingsBinding;
 
 public class ManualRefreshSettingsActivity extends AppCompatActivity {
     private static final String TAG = "ManualRefreshSettings";
