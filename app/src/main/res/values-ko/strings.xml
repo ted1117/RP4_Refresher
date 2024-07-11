@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="usage">앱을 사용하려면 접근성 권한과 사용 기록 액세스를 허가하세요.</string>
-    <string name="open_accessibility_settings">접근성 설정 열기</string>
+    <string name="open_accessibility_settings">접근성</string>
     <string name="app_name">리페4 새로고침</string>
-    <string name="accessibility_service_description">리페4 새로고침을 사용하려면 접근성 권한을 부여해야 합니다.</string>
-    <string name="open_package_usage_stats_settings">사용 기록 액세스 설정 열기</string>
+    <string name="accessibility_service_description">리페4 새로고침을 사용하려면 접근성 권한을 부여해야 합니다</string>
+    <string name="open_package_usage_stats_settings">사용 기록 액세스</string>
     <string name="pages_per_refresh_description">새로고침할 페이지 수를 입력하세요\n기본값은 5입니다</string>
-    <string name="pages_per_refresh">5</string>
+    <string name="pages_per_refresh">페이지 수</string>
     <string name="submit">입력</string>
+    <string name="auto_refresh_cardview_headline">자동 새로고침 설정</string>
+    <string name="manual_refresh_cardview_headline">수동 새로고침 설정</string>
+    <string name="auto_refresh_cardview_text">새로고침 페이지 단위 설정</string>
+<!--    <string name="manual_refresh_cardview_text">버튼을 눌러 즉시 새로고침 수행</string>-->
+    <string name="manual_refresh_cardview_text">미테르 리모컨 새로고침 버튼 활성화</string>
+    <string name="manual_refresh_description">미테르 리모컨의 새로고침 버튼을 활성화합니다</string>
 </resources>

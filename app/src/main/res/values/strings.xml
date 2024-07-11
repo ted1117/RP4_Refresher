@@ -5,6 +5,11 @@
     <string name="accessibility_service_description">To use RefreshPaper, allow access to Accessibility Service and Usage Stats</string>
     <string name="open_package_usage_stats_settings">Open Usage Stats Setting</string>
     <string name="pages_per_refresh_description">Set the number of pages to refresh\nDefault value is 5</string>
-    <string name="pages_per_refresh">5</string>
+    <string name="pages_per_refresh">페이지 수...</string>
     <string name="submit">Submit</string>
+    <string name="auto_refresh_cardview_headline">Auto refresh setting</string>
+    <string name="manual_refresh_cardview_headline">Manual refresh setting</string>
+    <string name="auto_refresh_cardview_text">Set auto refresh paper count</string>
+    <string name="manual_refresh_cardview_text">Toggle the manual refresh feature</string>
+    <string name="manual_refresh_description">수동 리프레시 설정</string>
 </resources>
