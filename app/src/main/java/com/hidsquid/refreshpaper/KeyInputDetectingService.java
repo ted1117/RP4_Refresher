@@ -107,11 +107,6 @@ public class KeyInputDetectingService extends AccessibilityService {
 
     @Override
     protected boolean onKeyEvent(KeyEvent event) {
-        if (isBlockedAppInForeground(this)) {
-            Log.d(TAG, "Blocked app is in foreground, ignoring key event.");
-            return false;
-        }
-
         int action = event.getAction();
 
         if (action == KeyEvent.ACTION_DOWN) {
@@ -135,7 +130,7 @@ public class KeyInputDetectingService extends AccessibilityService {
         boolean isAutoRefreshEnabled = sharedPreferences.getBoolean(PREF_KEY_AUTO_REFRESH_ENABLED, false);
         boolean isManualRefreshEnabled = sharedPreferences.getBoolean(PREF_KEY_MANUAL_REFRESH_ENABLED, false);
 
-        if (isAutoRefreshEnabled) {
+        if (!isBlockedAppInForeground(this) && isAutoRefreshEnabled) {
             switch (keyCode) {
                 case KeyEvent.KEYCODE_VOLUME_UP:
                 case KeyEvent.KEYCODE_VOLUME_DOWN:
@@ -153,12 +148,10 @@ public class KeyInputDetectingService extends AccessibilityService {
         }
 
         if (isManualRefreshEnabled) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_F1:
-                case KeyEvent.KEYCODE_F4:
-                    refreshScreen(uniqueDrawingId);
-                    showOverlay();
-                    return true;
+            if (keyCode == KeyEvent.KEYCODE_F4) {
+                refreshScreen(uniqueDrawingId);
+                showOverlay();
+                return true;
             }
         }
         return super.onKeyEvent(event);
