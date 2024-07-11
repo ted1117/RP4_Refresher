@@ -5,6 +5,10 @@
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
         <item name="android:background">@color/white</item>
     </style>
-
+    <!-- ActionBar style -->
+    <style name="AppTheme.ActionBar" parent="Widget.AppCompat.ActionBar">
+        <item name="background">@color/white</item>
+        <item name="titleTextColor">@android:color/black</item>
+    </style>
     <style name="Theme.RefreshPaper" parent="Base.Theme.RefreshPaper" />
 </resources>
