@@ -8,10 +8,10 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.hidsquid.refreshpaper.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
@@ -24,8 +24,12 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        // TopAppBar 설정
+        MaterialToolbar topAppBar = binding.topAppBar;
+        setSupportActionBar(topAppBar);
+
         if (isAccessibilityServiceEnabled(this) && isPackageUsageStatsEnabled(this)) {
-            showListView();
+            showCards();
         } else {
             updateUI();
         }
@@ -35,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if (isAccessibilityServiceEnabled(this) && isPackageUsageStatsEnabled(this)) {
-            showListView();
+            showCards();
         } else {
             updateUI();
         }
@@ -53,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateUI() {
         if (isAccessibilityServiceEnabled(this) && isPackageUsageStatsEnabled(this)) {
-            showListView();
+            showCards();
         } else {
             binding.usageTextView.setVisibility(View.VISIBLE);
             binding.accessibilityButton.setVisibility(View.VISIBLE);
@@ -61,6 +65,25 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void showCards() {
+        binding.usageTextView.setVisibility(View.GONE);
+        binding.accessibilityButton.setVisibility(View.GONE);
+        binding.usageStatsButton.setVisibility(View.GONE);
+        binding.autoRefreshCard.setVisibility(View.VISIBLE);
+        binding.manualRefreshCard.setVisibility(View.VISIBLE);
+    }
+
+    public void openAutoRefreshSettings(View v) {
+        Intent intent = new Intent(MainActivity.this, PageCountSettingsActivity.class);
+        startActivity(intent);
+    }
+
+    public void openManualRefreshSettings(View v) {
+        Intent intent = new Intent(MainActivity.this, ManualRefreshSettingsActivity.class);
+        startActivity(intent);
+    }
+
+    @Deprecated
     private void showListView() {
         binding.usageTextView.setVisibility(View.GONE);
         binding.accessibilityButton.setVisibility(View.GONE);
@@ -68,11 +91,11 @@ public class MainActivity extends AppCompatActivity {
 
         String[] listItems = {"자동 새로고침 설정", "수동 새로고침 설정"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listItems);
-        ListView listView = new ListView(this);
-        listView.setAdapter(adapter);
-        setContentView(listView);
 
-        listView.setOnItemClickListener((parent, view, position, id) -> {
+        binding.listView.setAdapter(adapter);
+        binding.listView.setVisibility(View.VISIBLE);
+
+        binding.listView.setOnItemClickListener((parent, view, position, id) -> {
             if (position == 0) {
                 Intent intent = new Intent(MainActivity.this, PageCountSettingsActivity.class);
                 startActivity(intent);

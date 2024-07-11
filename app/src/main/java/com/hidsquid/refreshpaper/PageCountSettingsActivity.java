@@ -1,20 +1,18 @@
 package com.hidsquid.refreshpaper;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Switch;
-import android.widget.TextView;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.materialswitch.MaterialSwitch;
 import com.hidsquid.refreshpaper.databinding.ActivityPageCountSettingsBinding;
 
 public class PageCountSettingsActivity extends AppCompatActivity {
@@ -30,18 +28,21 @@ public class PageCountSettingsActivity extends AppCompatActivity {
         binding = ActivityPageCountSettingsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Enable the back button in the action bar
+        // TopAppBar 설정
+        MaterialToolbar topAppBar = binding.topAppBar;
+        setSupportActionBar(topAppBar);
+
+        // TopAppBar에서 취소버튼 활성화
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-        // Initialize SharedPreferences
+        // SharedPreferences 초기화
         SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         int savedInput = sharedPreferences.getInt(PREF_KEY_PAGES_PER_REFRESH, 5);
         binding.numberInput.setText(String.valueOf(savedInput));
 
-        // Submit button click listener
         binding.submitButton.setOnClickListener(v -> {
             String inputText = binding.numberInput.getText().toString();
             if (!inputText.isEmpty()) {
@@ -60,7 +61,6 @@ public class PageCountSettingsActivity extends AppCompatActivity {
             }
         });
 
-        // Disable UI components if the feature is off
         boolean isFeatureEnabled = sharedPreferences.getBoolean(PREF_KEY_AUTO_REFRESH_ENABLED, false);
         setUIComponentsEnabled(isFeatureEnabled);
     }
@@ -69,7 +69,8 @@ public class PageCountSettingsActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_page_count_settings, menu);
         MenuItem toggleItem = menu.findItem(R.id.action_toggle);
-        @SuppressLint("UseSwitchCompatOrMaterialCode") Switch toggleSwitch = (Switch) toggleItem.getActionView();
+        View actionView = toggleItem.getActionView();
+        MaterialSwitch toggleSwitch = actionView.findViewById(R.id.switch_material);
 
         SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         boolean isFeatureEnabled = sharedPreferences.getBoolean(PREF_KEY_AUTO_REFRESH_ENABLED, false);
@@ -81,13 +82,11 @@ public class PageCountSettingsActivity extends AppCompatActivity {
             editor.putBoolean(PREF_KEY_AUTO_REFRESH_ENABLED, isChecked);
             editor.apply();
             setUIComponentsEnabled(isChecked);
-//            if (isChecked) {
-//                showToast("기능이 켜졌습니다");
-//                startService(new Intent(this, KeyInputDetectingService.class));
-//            } else {
-//                showToast("기능이 꺼졌습니다");
-//                stopService(new Intent(this, KeyInputDetectingService.class));
-//            }
+            if (isChecked) {
+                Toast.makeText(PageCountSettingsActivity.this, "자동 새로고침이 켜졌습니다", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(PageCountSettingsActivity.this, "자동 새로고침이 꺼졌습니다", Toast.LENGTH_SHORT).show();
+            }
         });
         return true;
     }
@@ -104,15 +103,5 @@ public class PageCountSettingsActivity extends AppCompatActivity {
     private void setUIComponentsEnabled(boolean isEnabled) {
         binding.numberInput.setEnabled(isEnabled);
         binding.submitButton.setEnabled(isEnabled);
-    }
-
-    private void showToast(String message) {
-        Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
-        // Change background color of the toast
-        toast.getView().setBackground(new ColorDrawable(Color.GRAY));
-        // Change text color of the toast
-        TextView text = toast.getView().findViewById(android.R.id.message);
-        text.setTextColor(Color.WHITE);
-        toast.show();
     }
 }
