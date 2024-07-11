@@ -4,6 +4,7 @@
 
     <uses-permission-sdk-23 android:name="android.permission.PACKAGE_USAGE_STATS" />
 
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
         android:allowBackup="true"
@@ -26,11 +27,15 @@
         </activity>
         <activity
             android:name=".PageCountSettingsActivity"
-            android:exported="true"/>
-        <activity android:name=".RefreshScreen"
+            android:exported="true" />
+        <activity
+            android:name=".ManualRefreshSettingsActivity"
+            android:exported="true" />
+        <activity
+            android:name=".RefreshScreen"
             android:exported="true"
-            android:launchMode="singleInstance">
-        </activity>
+            android:launchMode="singleInstance" />
+
         <service
             android:name=".KeyInputDetectingService"
             android:exported="true"
@@ -38,6 +43,7 @@
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
+
             <meta-data
                 android:name="android.accessibilityservice"
                 android:resource="@xml/keyinputdetectingservice" />
