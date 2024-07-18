@@ -4,8 +4,10 @@ import static com.hidsquid.refreshpaper.MainUtils.isBlockedAppInForeground;
 import static com.hidsquid.refreshpaper.MainUtils.refreshScreen;
 
 import android.accessibilityservice.AccessibilityService;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
 import android.os.Handler;
@@ -25,20 +27,27 @@ public class KeyInputDetectingService extends AccessibilityService {
     private static final String TAG = "MyAccessibilityService";
     private int pageUpDownCount = 0;
     private int TRIGGER_COUNT = 5;
+    private final int uniqueDrawingId = 1;
     private static final int LONG_PRESS_THRESHOLD = 300;
     public static final String EXTRA_NUMBER = "EXTRA_NUMBER";
     private static final String PREFS_NAME = "MyPrefs";
     private static final String PREF_KEY_PAGES_PER_REFRESH = "numberInput";
     private static final String PREF_KEY_AUTO_REFRESH_ENABLED = "auto_refresh_enabled";
     private static final String PREF_KEY_MANUAL_REFRESH_ENABLED = "manual_refresh_enabled";
+    public static final String ACTION_REFRESH_SCREEN = "com.hidsquid.refreshpaper.ACTION_REFRESH_SCREEN";
 
     private WindowManager windowManager;
     private View overlayView;
     private Handler handler;
+    private ScreenRefreshBroadcastReceiver screenRefreshBroadcastReceiver;
+
 
     @Override
     public void onCreate() {
         super.onCreate();
+        screenRefreshBroadcastReceiver = new ScreenRefreshBroadcastReceiver();
+        IntentFilter filter = new IntentFilter(ACTION_REFRESH_SCREEN);
+        registerReceiver(screenRefreshBroadcastReceiver, filter);
     }
 
     @Override
@@ -124,7 +133,6 @@ public class KeyInputDetectingService extends AccessibilityService {
      */
     private boolean handleKeyDown(KeyEvent event) {
         int keyCode = event.getKeyCode();
-        int uniqueDrawingId = 1;
 
         SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         boolean isAutoRefreshEnabled = sharedPreferences.getBoolean(PREF_KEY_AUTO_REFRESH_ENABLED, false);
@@ -163,6 +171,20 @@ public class KeyInputDetectingService extends AccessibilityService {
     public void showOverlay() {
         overlayView.setVisibility(View.VISIBLE);
         handler.postDelayed(() -> overlayView.setVisibility(View.GONE), 100);
+    }
+
+    /**
+     * 수동 새로고침 인텐트를 수신합니다.
+     */
+    public class ScreenRefreshBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null && ACTION_REFRESH_SCREEN.equals(intent.getAction())) {
+                Log.d(TAG, "Screen refresh broadcast received");
+                refreshScreen(uniqueDrawingId);
+                showOverlay();
+            }
+        }
     }
 
 
