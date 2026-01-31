@@ -31,7 +31,6 @@ class MainUtils {
         private const val TAG = "MainUtils"
         private const val BLOCKED_APP_PACKAGE_NAME = "com.ridi.paper"
 
-        // [수정 1] val -> var로 변경 (값을 나중에 넣어야 하니까요)
         private var setEPDModeMethod: Method? = null
         private var setEPDFullRefreshMethod: Method? = null
         private var setEPDDefaultModeMethod: Method? = null
@@ -41,7 +40,6 @@ class MainUtils {
             try {
                 val surfaceControlClass = Class.forName("android.view.SurfaceControl")
 
-                // 이제 빨간 줄이 사라질 겁니다 (var니까 재할당 가능)
                 setEPDModeMethod =
                     surfaceControlClass.getMethod("setEPDMode", Int::class.javaPrimitiveType)
                 setEPDFullRefreshMethod =
@@ -62,9 +60,6 @@ class MainUtils {
             }
         }
 
-        /**
-         * [수정 2] 파라미터 타입을 Method? (Nullable)로 변경하고 안전하게 처리
-         */
         private fun setAccessible(vararg methods: Method?) {
             for (method in methods) {
                 // method가 null이 아닐 때만 실행 (?.)
@@ -103,23 +98,6 @@ class MainUtils {
                 }
             }
             return false
-        }
-
-        @JvmStatic
-        fun isPackageUsageStatsEnabled(context: Context): Boolean {
-            val appOpsManager = context.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
-            val mode = appOpsManager.unsafeCheckOpNoThrow(
-                AppOpsManager.OPSTR_GET_USAGE_STATS,
-                Binder.getCallingUid(),
-                context.packageName
-            )
-            return (mode == AppOpsManager.MODE_ALLOWED)
-        }
-
-        @JvmStatic
-        fun isBlockedAppInForeground(context: Context): Boolean {
-            val foregroundApp: String? = getForegroundApp(context)
-            return BLOCKED_APP_PACKAGE_NAME == foregroundApp
         }
 
         fun getForegroundApp(context: Context): String? {

@@ -1,12 +1,12 @@
 package com.hidsquid.refreshpaper
 
 import android.accessibilityservice.AccessibilityService
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.PixelFormat
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -18,17 +18,12 @@ import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import com.hidsquid.refreshpaper.MainUtils.Companion.refreshScreen
 
-/**
- * 키 입력을 감지하고 화면을 새로고침하는 서비스
- * [최적화 적용됨]: UsageStats 대신 AccessibilityEvent로 현재 앱을 감지함 (권한 불필요, 속도 빠름)
- */
 class KeyInputDetectingService : AccessibilityService() {
 
     private var pageUpDownCount = 0
     private var triggerCount = 5
     private val uniqueDrawingId = 1
 
-    // [최적화] 현재 화면에 떠 있는 앱 패키지명을 저장하는 변수
     private var currentPackageName: String = ""
 
     private var windowManager: WindowManager? = null
@@ -36,32 +31,24 @@ class KeyInputDetectingService : AccessibilityService() {
     private var handler: Handler? = null
     private var screenRefreshBroadcastReceiver: ScreenRefreshBroadcastReceiver? = null
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onCreate() {
         super.onCreate()
         screenRefreshBroadcastReceiver = ScreenRefreshBroadcastReceiver()
-        // [수정] 안드로이드 12 이상 호환성을 위해 flag 추가 (단, minSdk 29라 없어도 되지만 안전하게)
         val filter = IntentFilter(ACTION_REFRESH_SCREEN)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(screenRefreshBroadcastReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
-        } else {
-            registerReceiver(screenRefreshBroadcastReceiver, filter)
-        }
+
+        registerReceiver(screenRefreshBroadcastReceiver, filter)
     }
 
-    /**
-     * [핵심 최적화 로직]
-     * 화면(앱)이 바뀔 때마다 시스템이 알려줍니다.
-     * 무거운 DB 조회(UsageStats) 대신 이 변수만 업데이트하면 끝입니다.
-     */
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+        // 화면(앱) 변경 감지
         if (event?.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-            // 앱 이름표(패키지명)를 갱신합니다.
             currentPackageName = event.packageName?.toString() ?: ""
         }
     }
 
     override fun onInterrupt() {
-        // 서비스 중단 시 필요한 로직이 있다면 작성
+        // 서비스 중단 시 처리 (필요 없음)
     }
 
     override fun onServiceConnected() {
@@ -70,7 +57,6 @@ class KeyInputDetectingService : AccessibilityService() {
         triggerCount = sharedPreferences.getInt(PREF_KEY_PAGES_PER_REFRESH, 5)
         Log.d(TAG, "onServiceConnected - triggerCount: $triggerCount")
 
-        // 오버레이 뷰 초기화
         setupOverlayView()
 
         handler = Handler(Looper.getMainLooper())
@@ -132,7 +118,6 @@ class KeyInputDetectingService : AccessibilityService() {
         val isAutoRefreshEnabled = sharedPreferences.getBoolean(PREF_KEY_AUTO_REFRESH_ENABLED, false)
         val isManualRefreshEnabled = sharedPreferences.getBoolean(PREF_KEY_MANUAL_REFRESH_ENABLED, false)
 
-        // [최적화 적용] MainUtils 호출 없이 변수 비교만 수행 (속도 매우 빠름)
         val isBlockedApp = currentPackageName == BLOCKED_APP_PACKAGE_NAME
 
         if (!isBlockedApp && isAutoRefreshEnabled) {
@@ -148,7 +133,6 @@ class KeyInputDetectingService : AccessibilityService() {
                         refreshScreen(uniqueDrawingId)
                         pageUpDownCount = 0
                     }
-                    // 리디 페이퍼나 다른 앱이 이 키 이벤트를 처리해야 하므로 false 반환 (가로채지 않음)
                     return false
                 }
             }
@@ -158,7 +142,6 @@ class KeyInputDetectingService : AccessibilityService() {
             if (keyCode == KeyEvent.KEYCODE_F4) {
                 refreshScreen(uniqueDrawingId)
                 showOverlay()
-                // 우리가 처리했으니 true 반환 (다른 앱에 전달 안 함)
                 return true
             }
         }
@@ -167,7 +150,6 @@ class KeyInputDetectingService : AccessibilityService() {
 
     private fun showOverlay() {
         overlayView?.visibility = View.VISIBLE
-        // 0.1초 뒤에 다시 숨김 (깜빡임 효과)
         handler?.postDelayed({ overlayView?.visibility = View.GONE }, 100)
     }
 
@@ -189,8 +171,6 @@ class KeyInputDetectingService : AccessibilityService() {
         private const val PREF_KEY_AUTO_REFRESH_ENABLED = "auto_refresh_enabled"
         private const val PREF_KEY_MANUAL_REFRESH_ENABLED = "manual_refresh_enabled"
         const val ACTION_REFRESH_SCREEN: String = "com.hidsquid.refreshpaper.ACTION_REFRESH_SCREEN"
-
-        // 차단할 앱 (리디북스)
         private const val BLOCKED_APP_PACKAGE_NAME = "com.ridi.paper"
     }
 }
