@@ -10,7 +10,6 @@ import com.hidsquid.refreshpaper.databinding.ActivityManualRefreshSettingsBindin
 
 class ManualRefreshSettingsActivity : AppCompatActivity() {
 
-    // [최적화] 안전한 접근을 위한 lateinit 사용
     private lateinit var binding: ActivityManualRefreshSettingsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,8 +19,6 @@ class ManualRefreshSettingsActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.topAppBar)
 
-        // [최적화] getSupportActionBar() 대신 supportActionBar 프로퍼티 사용
-        // ?. (안전 호출)로 null일 경우 앱이 죽는 것을 방지
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
@@ -29,7 +26,6 @@ class ManualRefreshSettingsActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.menu_manual_refresh_settings, menu)
 
         val toggleItem = menu.findItem(R.id.action_toggle)
-        // [최적화] actionView가 null일 수 있으므로 안전 호출(?.) 사용
         val toggleSwitch = toggleItem.actionView?.findViewById<MaterialSwitch>(R.id.switch_material)
 
         val sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
