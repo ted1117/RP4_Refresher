@@ -1,108 +1,83 @@
-package com.hidsquid.refreshpaper;
+package com.hidsquid.refreshpaper
 
-import static com.hidsquid.refreshpaper.MainUtils.isAccessibilityServiceEnabled;
-import static com.hidsquid.refreshpaper.MainUtils.isPackageUsageStatsEnabled;
+import android.content.Intent
+import android.os.Bundle
+import android.provider.Settings
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import com.hidsquid.refreshpaper.MainUtils.Companion.isAccessibilityServiceEnabled
+import com.hidsquid.refreshpaper.databinding.ActivityMainBinding
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.provider.Settings;
-import android.view.View;
-import android.widget.ArrayAdapter;
+class MainActivity : AppCompatActivity() {
+    // !! 없이 안전하게 쓰기 위해 lateinit 사용
+    private lateinit var binding: ActivityMainBinding
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.android.material.appbar.MaterialToolbar;
-import com.hidsquid.refreshpaper.databinding.ActivityMainBinding;
-
-public class MainActivity extends AppCompatActivity {
-
-    private ActivityMainBinding binding;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         // TopAppBar 설정
-        MaterialToolbar topAppBar = binding.topAppBar;
-        setSupportActionBar(topAppBar);
+        setSupportActionBar(binding.topAppBar)
 
-        if (isAccessibilityServiceEnabled(this) && isPackageUsageStatsEnabled(this)) {
-            showCards();
+        checkPermissionAndShowUI()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        checkPermissionAndShowUI()
+    }
+
+    /**
+     * 이제 '접근성 권한' 하나만 확인하면 됩니다.
+     * UsageStats(앱 사용 기록) 권한 체크 로직은 삭제했습니다.
+     */
+    private fun checkPermissionAndShowUI() {
+        if (isAccessibilityServiceEnabled(this)) {
+            showCards()
         } else {
-            updateUI();
+            showPermissionRequestUI()
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (isAccessibilityServiceEnabled(this) && isPackageUsageStatsEnabled(this)) {
-            showCards();
-        } else {
-            updateUI();
-        }
+    // 접근성 설정 화면으로 이동
+    fun onClick(v: View?) {
+        val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+        startActivity(intent)
     }
 
-    public void onClick(View v) {
-        Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
-        startActivity(intent);
+    // UsageStats 버튼 클릭 메서드는 이제 필요 없어서 삭제했습니다.
+
+    private fun showPermissionRequestUI() {
+        // 권한이 없을 때: 안내 멘트와 버튼 보이기
+        binding.usageTextView.visibility = View.VISIBLE
+        binding.accessibilityButton.visibility = View.VISIBLE
+
+        // [삭제 예정] UsageStats 버튼은 이제 필요 없으므로 숨김 처리
+        binding.usageStatsButton.visibility = View.GONE
+
+        // 설정 카드들은 숨김
+        binding.autoRefreshCard.visibility = View.GONE
+        binding.manualRefreshCard.visibility = View.GONE
     }
 
-    public void setUsageStatsEnabled(View v) {
-        Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
-        startActivity(intent);
+    private fun showCards() {
+        // 권한이 있을 때: 설정 카드들 보이기
+        binding.usageTextView.visibility = View.GONE
+        binding.accessibilityButton.visibility = View.GONE
+        binding.usageStatsButton.visibility = View.GONE
+
+        binding.autoRefreshCard.visibility = View.VISIBLE
+        binding.manualRefreshCard.visibility = View.VISIBLE
     }
 
-    private void updateUI() {
-        if (isAccessibilityServiceEnabled(this) && isPackageUsageStatsEnabled(this)) {
-            showCards();
-        } else {
-            binding.usageTextView.setVisibility(View.VISIBLE);
-            binding.accessibilityButton.setVisibility(View.VISIBLE);
-            binding.usageStatsButton.setVisibility(View.VISIBLE);
-        }
+    fun openAutoRefreshSettings(v: View?) {
+        val intent = Intent(this@MainActivity, PageCountSettingsActivity::class.java)
+        startActivity(intent)
     }
 
-    private void showCards() {
-        binding.usageTextView.setVisibility(View.GONE);
-        binding.accessibilityButton.setVisibility(View.GONE);
-        binding.usageStatsButton.setVisibility(View.GONE);
-        binding.autoRefreshCard.setVisibility(View.VISIBLE);
-        binding.manualRefreshCard.setVisibility(View.VISIBLE);
-    }
-
-    public void openAutoRefreshSettings(View v) {
-        Intent intent = new Intent(MainActivity.this, PageCountSettingsActivity.class);
-        startActivity(intent);
-    }
-
-    public void openManualRefreshSettings(View v) {
-        Intent intent = new Intent(MainActivity.this, ManualRefreshSettingsActivity.class);
-        startActivity(intent);
-    }
-
-    @Deprecated
-    private void showListView() {
-        binding.usageTextView.setVisibility(View.GONE);
-        binding.accessibilityButton.setVisibility(View.GONE);
-        binding.usageStatsButton.setVisibility(View.GONE);
-
-        String[] listItems = {"자동 새로고침 설정", "수동 새로고침 설정"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listItems);
-
-        binding.listView.setAdapter(adapter);
-        binding.listView.setVisibility(View.VISIBLE);
-
-        binding.listView.setOnItemClickListener((parent, view, position, id) -> {
-            if (position == 0) {
-                Intent intent = new Intent(MainActivity.this, PageCountSettingsActivity.class);
-                startActivity(intent);
-            } else if (position == 1) {
-                Intent intent = new Intent(MainActivity.this, ManualRefreshSettingsActivity.class);
-                startActivity(intent);
-            }
-        });
+    fun openManualRefreshSettings(v: View?) {
+        val intent = Intent(this@MainActivity, ManualRefreshSettingsActivity::class.java)
+        startActivity(intent)
     }
 }

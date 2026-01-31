@@ -1,107 +1,110 @@
-package com.hidsquid.refreshpaper;
+package com.hidsquid.refreshpaper
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Toast;
+import android.content.Intent
+import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
+import com.google.android.material.materialswitch.MaterialSwitch
+import com.hidsquid.refreshpaper.databinding.ActivityPageCountSettingsBinding
 
-import androidx.appcompat.app.AppCompatActivity;
+class PageCountSettingsActivity : AppCompatActivity() {
 
-import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.materialswitch.MaterialSwitch;
-import com.hidsquid.refreshpaper.databinding.ActivityPageCountSettingsBinding;
+    // [최적화] !! 없이 안전하게 사용하기 위해 lateinit 사용
+    private lateinit var binding: ActivityPageCountSettingsBinding
 
-public class PageCountSettingsActivity extends AppCompatActivity {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityPageCountSettingsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-    private ActivityPageCountSettingsBinding binding;
-    private static final String PREFS_NAME = "MyPrefs";
-    private static final String PREF_KEY_PAGES_PER_REFRESH = "numberInput";
-    private static final String PREF_KEY_AUTO_REFRESH_ENABLED = "auto_refresh_enabled";
+        setSupportActionBar(binding.topAppBar)
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivityPageCountSettingsBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        // TopAppBar 설정
-        MaterialToolbar topAppBar = binding.topAppBar;
-        setSupportActionBar(topAppBar);
-
-        // TopAppBar에서 취소버튼 활성화
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        // [최적화] apply 스코프 함수로 코드를 묶어서 처리
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setDisplayShowHomeEnabled(true)
         }
 
-        // SharedPreferences 초기화
-        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        int savedInput = sharedPreferences.getInt(PREF_KEY_PAGES_PER_REFRESH, 5);
-        binding.numberInput.setText(String.valueOf(savedInput));
+        val sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        val savedInput = sharedPreferences.getInt(PREF_KEY_PAGES_PER_REFRESH, 5)
+        binding.numberInput.setText(savedInput.toString())
 
-        binding.submitButton.setOnClickListener(v -> {
-            String inputText = binding.numberInput.getText().toString();
-            if (!inputText.isEmpty()) {
-                int number = Integer.parseInt(inputText);
+        // [최적화] 람다식으로 간결하게 변경
+        binding.submitButton.setOnClickListener {
+            val inputText = binding.numberInput.text.toString()
 
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putInt(PREF_KEY_PAGES_PER_REFRESH, number);
-                editor.apply();
+            if (inputText.isNotEmpty()) {
+                val number = inputText.toInt()
 
-                Intent intent = new Intent(PageCountSettingsActivity.this, KeyInputDetectingService.class);
-                intent.putExtra(KeyInputDetectingService.EXTRA_NUMBER, number);
-                startService(intent);
-                Toast.makeText(PageCountSettingsActivity.this, "입력된 숫자: " + number, Toast.LENGTH_SHORT).show();
+                // [최적화] sharedPreferences.edit { ... } (KTX 확장 함수 사용 가능 시)
+                // 혹은 기존 방식 유지하되 체이닝으로 깔끔하게
+                sharedPreferences.edit()
+                    .putInt(PREF_KEY_PAGES_PER_REFRESH, number)
+                    .apply()
+
+                val intent = Intent(this, KeyInputDetectingService::class.java).apply {
+                    putExtra(KeyInputDetectingService.EXTRA_NUMBER, number)
+                }
+                startService(intent)
+
+                // [최적화] 문자열 템플릿($) 사용
+                Toast.makeText(this, "입력된 숫자: $number", Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(PageCountSettingsActivity.this, "숫자를 입력하세요", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "숫자를 입력하세요", Toast.LENGTH_SHORT).show()
             }
-        });
-
-        boolean isFeatureEnabled = sharedPreferences.getBoolean(PREF_KEY_AUTO_REFRESH_ENABLED, false);
-        setUIComponentsEnabled(isFeatureEnabled);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_page_count_settings, menu);
-        MenuItem toggleItem = menu.findItem(R.id.action_toggle);
-        View actionView = toggleItem.getActionView();
-        MaterialSwitch toggleSwitch = actionView.findViewById(R.id.switch_material);
-
-        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        boolean isFeatureEnabled = sharedPreferences.getBoolean(PREF_KEY_AUTO_REFRESH_ENABLED, false);
-        assert toggleSwitch != null;
-        toggleSwitch.setChecked(isFeatureEnabled);
-
-        toggleSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean(PREF_KEY_AUTO_REFRESH_ENABLED, isChecked);
-            editor.apply();
-            setUIComponentsEnabled(isChecked);
-            if (isChecked) {
-                Toast.makeText(PageCountSettingsActivity.this, "자동 새로고침이 켜졌습니다", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(PageCountSettingsActivity.this, "자동 새로고침이 꺼졌습니다", Toast.LENGTH_SHORT).show();
-            }
-        });
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish(); // Close the current activity and return to the previous one
-            return true;
         }
-        return super.onOptionsItemSelected(item);
+
+        val isFeatureEnabled = sharedPreferences.getBoolean(PREF_KEY_AUTO_REFRESH_ENABLED, false)
+        setUIComponentsEnabled(isFeatureEnabled)
     }
 
-    private void setUIComponentsEnabled(boolean isEnabled) {
-        binding.numberInput.setEnabled(isEnabled);
-        binding.submitButton.setEnabled(isEnabled);
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_page_count_settings, menu)
+
+        val toggleItem = menu.findItem(R.id.action_toggle)
+        // actionView가 null이 아닐 때만 실행
+        val toggleSwitch = toggleItem.actionView?.findViewById<MaterialSwitch>(R.id.switch_material)
+
+        val sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        val isFeatureEnabled = sharedPreferences.getBoolean(PREF_KEY_AUTO_REFRESH_ENABLED, false)
+
+        // [최적화] 안전한 호출 (?.) 및 스코프 함수 사용
+        toggleSwitch?.apply {
+            isChecked = isFeatureEnabled
+            setOnCheckedChangeListener { _, checked ->
+                sharedPreferences.edit()
+                    .putBoolean(PREF_KEY_AUTO_REFRESH_ENABLED, checked)
+                    .apply()
+
+                setUIComponentsEnabled(checked)
+
+                val message = if (checked) "자동 새로고침이 켜졌습니다" else "자동 새로고침이 꺼졌습니다"
+                Toast.makeText(this@PageCountSettingsActivity, message, Toast.LENGTH_SHORT).show()
+            }
+        }
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            finish()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun setUIComponentsEnabled(isEnabled: Boolean) {
+        // [최적화] setEnabled() -> isEnabled 프로퍼티 접근
+        binding.numberInput.isEnabled = isEnabled
+        binding.submitButton.isEnabled = isEnabled
+    }
+
+    companion object {
+        private const val PREFS_NAME = "MyPrefs"
+        private const val PREF_KEY_PAGES_PER_REFRESH = "numberInput"
+        private const val PREF_KEY_AUTO_REFRESH_ENABLED = "auto_refresh_enabled"
     }
 }
