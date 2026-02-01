@@ -13,4 +13,23 @@
     <string name="manual_refresh_cardview_text">Toggle the manual refresh feature</string>
     <string name="manual_refresh_description">수동 리프레시 설정</string>
     <string name="dialog_title">Page Refresh</string>
+
+    <!-- EPD Display Mode -->
+    <string name="epd_mode_dialog_title">잔상 최소화 설정</string>
+    <string name="epd_mode_minimize_afterimage">잔상 최소화</string>
+    <string name="epd_mode_minimize_afterimage_description">화면 리프레시를 적극적으로 사용하여\n잔상을 최소화합니다.</string>
+    <string name="epd_mode_normal">일반</string>
+    <string name="epd_mode_normal_description">전자 잉크 디스플레이의 일반적인 잔상을\n허용합니다.</string>
+
+    <!-- Settings Screen -->
+    <string name="setting_title_display_mode">디스플레이 모드</string>
+    <string name="setting_value_display_mode_normal">일반</string>
+    <string name="setting_value_display_mode_minimize_afterimage">잔상 최소화</string>
+    <string name="setting_summary_auto_refresh_on">%d 페이지 마다</string>
+    <string name="setting_summary_auto_refresh_off">사용 안 함</string>
+
+    <!-- Page Count Dialog -->
+    <string name="dialog_page_count_item_format">%d 페이지 마다</string>
+    <string name="dialog_page_count_item_off">안 함</string>
+
 </resources>
