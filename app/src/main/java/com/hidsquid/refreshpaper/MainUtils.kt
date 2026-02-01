@@ -79,6 +79,19 @@ class MainUtils {
             }
         }
 
+        @JvmStatic
+        fun setEPDDisplayMode(displayMode: Int) {
+            try {
+                Log.d(TAG, "setEPDDisplayMode 시작!")
+                invokeMethod(setEPDDefaultModeMethod, 3)
+                invokeMethod(setEPDModeMethod, -1)
+                invokeMethod(setEPDDisplayModeMethod, displayMode)
+            } catch (e: Exception) {
+                Log.e(TAG, "리플렉션 오류: ", e)
+
+            }
+        }
+
         @Throws(Exception::class)
         private fun invokeMethod(method: Method?, param: Int) {
             // method가 null이 아니면 invoke 실행 (?.)
