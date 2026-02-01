@@ -1,89 +1,137 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingStart="@dimen/screen_padding_horizontal"
+    android:paddingEnd="@dimen/screen_padding_horizontal"
+    android:paddingTop="@dimen/screen_padding_top">
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/autoRefreshCard"
+    <LinearLayout
+        android:id="@+id/groupContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="36dp"
-        android:layout_marginEnd="16dp"
-        android:onClick="openAutoRefreshSettings"
-        app:cardBackgroundColor="@android:color/background_light"
-        app:cardCornerRadius="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="@dimen/group_margin_top"
+        android:orientation="vertical"
+        android:background="@drawable/bg_group_rounded"
+        android:paddingTop="@dimen/group_padding_vertical"
+        android:paddingBottom="@dimen/group_padding_vertical"
         app:layout_constraintTop_toTopOf="parent"
-        app:strokeColor="?attr/colorOnSurface"
-        app:strokeWidth="3dp">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <LinearLayout
+        <!-- Row 1: 자동 새로고침 -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/autoRefreshCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:minHeight="@dimen/row_min_height"
+            android:paddingStart="@dimen/row_padding_horizontal"
+            android:paddingEnd="@dimen/row_padding_horizontal"
+            android:paddingTop="@dimen/row_padding_vertical"
+            android:paddingBottom="@dimen/row_padding_vertical"
+            android:clickable="true"
+            android:focusable="true">
 
             <TextView
                 android:id="@+id/autoRefreshTitle"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@string/auto_refresh_cardview_headline"
-                android:textAppearance="?attr/textAppearanceHeadline6"
-                android:textColor="?attr/colorOnSurface"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="@color/text_primary"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/autoRefreshSwitch"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/autoRefreshSupportingText"
+                android:id="@+id/tvCurrentSetting"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/row_body_margin_top"
+                android:text="@string/auto_refresh_cardview_text"
+                android:textColor="@color/text_secondary"
+                android:textSize="15sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/autoRefreshSwitch"
+                app:layout_constraintTop_toBottomOf="@id/autoRefreshTitle"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/autoRefreshSwitch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/auto_refresh_cardview_text"
-                android:textAppearance="?attr/textAppearanceBody2"
-                android:textColor="?attr/colorOnSurface" />
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+                android:background="@null"
+                android:thumb="@drawable/shape_switch_thumb"
+                app:thumbTint="@null"
+                app:track="@drawable/selector_switch_track"
+                app:trackTint="@null"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/manualRefreshCard"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:onClick="openManualRefreshSettings"
-        app:cardBackgroundColor="@android:color/background_light"
-        app:cardCornerRadius="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/autoRefreshCard"
-        app:strokeColor="?attr/colorOnSurface"
-        app:strokeWidth="3dp">
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <LinearLayout
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/divider_height"
+            android:background="@color/divider_color" />
+
+        <!-- Row 2: 수동 새로고침 -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/manualRefreshCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:minHeight="@dimen/row_min_height"
+            android:paddingStart="@dimen/row_padding_horizontal"
+            android:paddingEnd="@dimen/row_padding_horizontal"
+            android:paddingTop="@dimen/row_padding_vertical"
+            android:paddingBottom="@dimen/row_padding_vertical"
+            android:clickable="true"
+            android:focusable="true">
 
             <TextView
                 android:id="@+id/manualRefreshTitle"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@string/manual_refresh_cardview_headline"
-                android:textAppearance="?attr/textAppearanceHeadline6"
-                android:textColor="?attr/colorOnSurface"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="@color/text_primary"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/manualRefreshSwitch"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/manualRefreshSupportingText"
+                android:id="@+id/tvManualDesc"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/row_body_margin_top"
+                android:text="@string/manual_refresh_cardview_text"
+                android:textColor="@color/text_secondary"
+                android:textSize="15sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/manualRefreshSwitch"
+                app:layout_constraintTop_toBottomOf="@id/manualRefreshTitle"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/manualRefreshSwitch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/manual_refresh_cardview_text"
-                android:textAppearance="?attr/textAppearanceBody2"
-                android:textColor="?attr/colorOnSurface" />
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+                android:background="@null"
+                android:thumb="@drawable/shape_switch_thumb"
+                app:thumbTint="@null"
+                app:track="@drawable/selector_switch_track"
+                app:trackTint="@null"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

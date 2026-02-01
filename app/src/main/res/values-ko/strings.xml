@@ -10,8 +10,9 @@
     <string name="submit">입력</string>
     <string name="auto_refresh_cardview_headline">자동 새로고침</string>
     <string name="manual_refresh_cardview_headline">수동 새로고침</string>
-    <string name="auto_refresh_cardview_text">새로고침할 단위 페이지 수 지정</string>
-<!--    <string name="manual_refresh_cardview_text">버튼을 눌러 즉시 새로고침 수행</string>-->
+    <string name="auto_refresh_cardview_text">5 페이지 마다</string>
     <string name="manual_refresh_cardview_text">미테르 리모컨 새로고침 버튼 활성화</string>
     <string name="manual_refresh_description">미테르 리모컨의 새로고침 버튼을 활성화합니다</string>
+
+    <string name="dialog_title">페이지 새로고침</string>
 </resources>
