@@ -5,13 +5,16 @@
 
     <color name="text_primary">#212121</color>
     <color name="text_secondary">#757575</color>
+    <color name="text_dialog_description">#757575</color>
 
     <color name="divider_color">#E0E0E0</color>
+    <color name="dialog_divider_color">#EEEEEE</color>
     <color name="group_stroke_color">#E0E0E0</color>
     <color name="group_background_color">#FFFFFFFF</color>
 
     <color name="switch_thumb_solid">#FFFFFF</color>
+    <color name="switch_track_stroke">#000000</color>
 
-    <color name="switch_track_on">#4A4A4A</color>
-    <color name="switch_track_off">#CACACA</color>
+    <color name="switch_track_on">#000000</color>
+    <color name="switch_track_off_solid">#dddddd</color>
 </resources>
