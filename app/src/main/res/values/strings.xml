@@ -12,4 +12,5 @@
     <string name="auto_refresh_cardview_text">Set auto refresh paper count</string>
     <string name="manual_refresh_cardview_text">Toggle the manual refresh feature</string>
     <string name="manual_refresh_description">수동 리프레시 설정</string>
+    <string name="dialog_title">Page Refresh</string>
 </resources>
