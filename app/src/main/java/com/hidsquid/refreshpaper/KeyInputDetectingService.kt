@@ -31,9 +31,13 @@ class KeyInputDetectingService : AccessibilityService() {
     private var handler: Handler? = null
     private var screenRefreshBroadcastReceiver: ScreenRefreshBroadcastReceiver? = null
 
+    private lateinit var settingsRepository: SettingsRepository
+
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onCreate() {
         super.onCreate()
+        settingsRepository = SettingsRepository(applicationContext)
+
         screenRefreshBroadcastReceiver = ScreenRefreshBroadcastReceiver()
         val filter = IntentFilter(ACTION_REFRESH_SCREEN)
 
@@ -53,8 +57,7 @@ class KeyInputDetectingService : AccessibilityService() {
 
     override fun onServiceConnected() {
         super.onServiceConnected()
-        val sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-        triggerCount = sharedPreferences.getInt(PREF_KEY_PAGES_PER_REFRESH, 5)
+        triggerCount = settingsRepository.getPagesPerRefresh()
         Log.d(TAG, "onServiceConnected - triggerCount: $triggerCount")
 
         setupOverlayView()
@@ -82,14 +85,13 @@ class KeyInputDetectingService : AccessibilityService() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
         if (intent != null && intent.hasExtra(EXTRA_NUMBER)) {
             triggerCount = intent.getIntExtra(EXTRA_NUMBER, 5)
             Log.d(TAG, "Received number: $triggerCount")
 
-            sharedPreferences.edit().putInt(PREF_KEY_PAGES_PER_REFRESH, triggerCount).apply()
+            settingsRepository.setPagesPerRefresh(triggerCount)
         } else {
-            triggerCount = sharedPreferences.getInt(PREF_KEY_PAGES_PER_REFRESH, 5)
+            triggerCount = settingsRepository.getPagesPerRefresh()
         }
         return super.onStartCommand(intent, flags, startId)
     }
@@ -114,9 +116,8 @@ class KeyInputDetectingService : AccessibilityService() {
 
     private fun handleKeyDown(event: KeyEvent): Boolean {
         val keyCode = event.keyCode
-        val sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-        val isAutoRefreshEnabled = sharedPreferences.getBoolean(PREF_KEY_AUTO_REFRESH_ENABLED, false)
-        val isManualRefreshEnabled = sharedPreferences.getBoolean(PREF_KEY_MANUAL_REFRESH_ENABLED, false)
+        val isAutoRefreshEnabled = settingsRepository.isAutoRefreshEnabled()
+        val isManualRefreshEnabled = settingsRepository.isManualRefreshEnabled()
 
         val isBlockedApp = currentPackageName == BLOCKED_APP_PACKAGE_NAME
 
@@ -166,10 +167,6 @@ class KeyInputDetectingService : AccessibilityService() {
     companion object {
         private const val TAG = "KeyInputService"
         const val EXTRA_NUMBER: String = "EXTRA_NUMBER"
-        private const val PREFS_NAME = "MyPrefs"
-        private const val PREF_KEY_PAGES_PER_REFRESH = "numberInput"
-        private const val PREF_KEY_AUTO_REFRESH_ENABLED = "auto_refresh_enabled"
-        private const val PREF_KEY_MANUAL_REFRESH_ENABLED = "manual_refresh_enabled"
         const val ACTION_REFRESH_SCREEN: String = "com.hidsquid.refreshpaper.ACTION_REFRESH_SCREEN"
         private const val BLOCKED_APP_PACKAGE_NAME = "com.ridi.paper"
     }
