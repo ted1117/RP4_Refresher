@@ -6,14 +6,14 @@ plugins {
 
 android {
     namespace 'com.hidsquid.refreshpaper'
-    compileSdk 34
+    compileSdk 36
 
     defaultConfig {
         applicationId "com.hidsquid.refreshpaper"
         minSdk 29
         targetSdk 34
         versionCode 1
-        versionName "2.0"
+        versionName "2.0.0-beta1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
