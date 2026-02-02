@@ -1,10 +1,8 @@
 package com.hidsquid.refreshpaper
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
@@ -12,30 +10,21 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.RelativeLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.hidsquid.refreshpaper.MainUtils.Companion.isAccessibilityServiceEnabled
 import com.hidsquid.refreshpaper.databinding.ActivityMainBinding
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import androidx.core.graphics.drawable.toDrawable
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    companion object {
-        private const val PREFS_NAME = "MyPrefs"
-        private const val PREF_KEY_AUTO_REFRESH = "auto_refresh_enabled"
-        private const val PREF_KEY_MANUAL_REFRESH = "manual_refresh_enabled"
-        private const val PREF_KEY_PAGES = "numberInput"
-
-        private const val EPD_MINIMIZE_AFTERIMAGE = 0
-        private const val EPD_NORMAL = 1
-    }
+    private lateinit var settingsRepository: SettingsRepository
+    private lateinit var epdController: EpdDisplayModeController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +32,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setSupportActionBar(binding.topAppBar)
+
+        settingsRepository = SettingsRepository(this)
+        epdController = EpdDisplayModeController(this)
 
         checkPermissionAndShowUI()
         loadSettings()
@@ -52,7 +44,6 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         checkPermissionAndShowUI()
-        // ✅ 시스템값이 단일 진실: 복귀할 때마다(리디에서 바꿨을 수도 있으니) 갱신
         updateEpdModeSummary()
     }
 
@@ -71,11 +62,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadSettings() {
-        val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val layout = binding.layoutSettings
 
-        layout.autoRefreshSwitch.isChecked = prefs.getBoolean(PREF_KEY_AUTO_REFRESH, false)
-        layout.manualRefreshSwitch.isChecked = prefs.getBoolean(PREF_KEY_MANUAL_REFRESH, false)
+        layout.autoRefreshSwitch.isChecked = settingsRepository.isAutoRefreshEnabled()
+        layout.manualRefreshSwitch.isChecked = settingsRepository.isManualRefreshEnabled()
 
         updateSummaryText()
         updateEpdModeSummary()
@@ -83,7 +73,6 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun setupListeners() {
-        val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val layout = binding.layoutSettings
 
         val showDialogAction = View.OnClickListener { showPageCountDialog() }
@@ -93,11 +82,12 @@ class MainActivity : AppCompatActivity() {
         layout.autoRefreshSwitch.setOnTouchListener { _, event ->
             if (event.action != MotionEvent.ACTION_UP) return@setOnTouchListener true
 
-            val enabled = prefs.getBoolean(PREF_KEY_AUTO_REFRESH, false)
+            val enabled = settingsRepository.isAutoRefreshEnabled()
             if (enabled) {
-                prefs.edit().putBoolean(PREF_KEY_AUTO_REFRESH, false).apply()
+                settingsRepository.setAutoRefreshEnabled(false)
                 updateSummaryText()
             } else {
+                // 기존 동작 유지: 토글을 바로 켜지 않고 다이얼로그로 설정 유도
                 layout.autoRefreshSwitch.setOnCheckedChangeListener(null)
                 layout.autoRefreshSwitch.isChecked = false
                 attachAutoOffListener()
@@ -109,7 +99,7 @@ class MainActivity : AppCompatActivity() {
         attachAutoOffListener()
 
         layout.manualRefreshSwitch.setOnCheckedChangeListener { _, isChecked ->
-            prefs.edit().putBoolean(PREF_KEY_MANUAL_REFRESH, isChecked).apply()
+            settingsRepository.setManualRefreshEnabled(isChecked)
         }
 
         layout.manualRefreshCard.setOnClickListener {
@@ -122,46 +112,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun attachAutoOffListener() {
-        val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val layout = binding.layoutSettings
 
         layout.autoRefreshSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (!isChecked) {
-                prefs.edit().putBoolean(PREF_KEY_AUTO_REFRESH, false).apply()
+                settingsRepository.setAutoRefreshEnabled(false)
                 updateSummaryText()
             }
         }
-    }
-
-    /* =========================
-       EPD DISPLAY MODE
-       - get: Framework API (non-root)
-       - put: root(su)
-       ========================= */
-
-    private fun execSu(cmd: String): Boolean {
-        return try {
-            val p = ProcessBuilder("su", "-c", cmd)
-                .redirectErrorStream(true)
-                .start()
-            p.waitFor() == 0
-        } catch (_: Throwable) {
-            false
-        }
-    }
-
-    private suspend fun getDisplayMode(): Int = withContext(Dispatchers.IO) {
-        // ✅ 단일 진실: 시스템에서 직접 읽기 (CLI 대신 Framework API)
-        try {
-            Settings.System.getInt(contentResolver, "display_mode")
-        } catch (_: Throwable) {
-            EPD_NORMAL
-        }
-    }
-
-    private suspend fun setDisplayMode(mode: Int): Boolean = withContext(Dispatchers.IO) {
-        // ✅ 쓰기만 su
-        execSu("settings put system display_mode $mode")
     }
 
     private fun showEpdDisplayModeDialog() {
@@ -173,7 +131,7 @@ class MainActivity : AppCompatActivity() {
             .setCancelable(true)
             .create()
 
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
 
         val itemMin = dialogView.findViewById<RelativeLayout>(R.id.item1)
         val itemNormal = dialogView.findViewById<RelativeLayout>(R.id.item3)
@@ -181,41 +139,45 @@ class MainActivity : AppCompatActivity() {
         val checkNormal = dialogView.findViewById<ImageView>(R.id.check3)
 
         fun setChecked(mode: Int) {
-            checkMin.visibility = if (mode == EPD_MINIMIZE_AFTERIMAGE) View.VISIBLE else View.GONE
-            checkNormal.visibility = if (mode == EPD_NORMAL) View.VISIBLE else View.GONE
+            checkMin.visibility = if (mode == EpdDisplayModeController.MODE_MINIMIZE_AFTERIMAGE) View.VISIBLE else View.GONE
+            checkNormal.visibility = if (mode == EpdDisplayModeController.MODE_NORMAL) View.VISIBLE else View.GONE
             checkMin.bringToFront()
             checkNormal.bringToFront()
         }
 
-        // 초기엔 둘 다 숨김(깜빡임 방지)
+        // 깜빡임 방지: 처음엔 숨김
         checkMin.visibility = View.GONE
         checkNormal.visibility = View.GONE
 
         dialog.setOnShowListener {
             lifecycleScope.launch {
-                // ✅ 다이얼로그 뜬 다음에 1회만 읽어서 반영
-                val mode = getDisplayMode()
-                setChecked(if (mode == EPD_MINIMIZE_AFTERIMAGE) EPD_MINIMIZE_AFTERIMAGE else EPD_NORMAL)
-            }
+                val raw = epdController.getDisplayMode()
+                val mode = epdController.normalize(raw)
+                setChecked(mode)            }
         }
 
         val onClick = View.OnClickListener { view ->
             val sysMode = when (view.id) {
-                R.id.item1 -> EPD_MINIMIZE_AFTERIMAGE
-                R.id.item3 -> EPD_NORMAL
-                else -> EPD_NORMAL
+                R.id.item1 -> EpdDisplayModeController.MODE_MINIMIZE_AFTERIMAGE
+                R.id.item3 -> EpdDisplayModeController.MODE_NORMAL
+                else -> EpdDisplayModeController.MODE_NORMAL
             }
 
             lifecycleScope.launch {
-                val ok = setDisplayMode(sysMode)
+                val ok = epdController.setDisplayMode(sysMode)
                 if (!ok) {
-                    Toast.makeText(this@MainActivity, "루트로 display_mode 설정 실패", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@MainActivity,
+                        "display_mode 설정 실패 (시스템 권한/allowlist 확인 필요)",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     return@launch
                 }
 
-                // ✅ 반영 후 재조회해서 UI 확정
-                val modeNow = getDisplayMode()
-                setChecked(if (modeNow == EPD_MINIMIZE_AFTERIMAGE) EPD_MINIMIZE_AFTERIMAGE else EPD_NORMAL)
+                // 반영 후 재조회해서 UI 확정 (기존 동작 유지)
+                val raw = epdController.getDisplayMode()
+                val modeNow = epdController.normalize(raw)
+                setChecked(modeNow)
                 updateEpdModeSummary()
                 dialog.dismiss()
             }
@@ -231,31 +193,28 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateEpdModeSummary() {
         lifecycleScope.launch {
-            val mode = getDisplayMode()
+            val raw = epdController.getDisplayMode()
+            val mode = epdController.normalize(raw)
             binding.layoutSettings.tvEpdModeSetting.text = getString(
-                if (mode == EPD_MINIMIZE_AFTERIMAGE) R.string.setting_value_display_mode_minimize_afterimage
-                else R.string.setting_value_display_mode_normal
+                if (mode == EpdDisplayModeController.MODE_MINIMIZE_AFTERIMAGE)
+                    R.string.setting_value_display_mode_minimize_afterimage
+                else
+                    R.string.setting_value_display_mode_normal
             )
         }
     }
 
-    /* ========================= */
-
     private fun showPageCountDialog() {
-        val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val isEnabled = settingsRepository.isAutoRefreshEnabled()
+        val currentCount = settingsRepository.getPagesPerRefresh()
 
-        val isEnabled = prefs.getBoolean(PREF_KEY_AUTO_REFRESH, false)
-        val currentCount = prefs.getInt(PREF_KEY_PAGES, 5)
-
-        val dialogView =
-            LayoutInflater.from(this).inflate(R.layout.dialog_page_count, null)
-
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_page_count, null)
         val dialog = AlertDialog.Builder(this)
             .setView(dialogView)
             .setCancelable(true)
             .create()
 
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
 
         val item1 = dialogView.findViewById<RelativeLayout>(R.id.item1)
         val item3 = dialogView.findViewById<RelativeLayout>(R.id.item3)
@@ -289,11 +248,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         val onClick = View.OnClickListener { view ->
-            val editor = prefs.edit()
             if (view.id == R.id.itemOff) {
-                editor.putBoolean(PREF_KEY_AUTO_REFRESH, false)
+                settingsRepository.setAutoRefreshEnabled(false)
             } else {
-                editor.putBoolean(PREF_KEY_AUTO_REFRESH, true)
+                settingsRepository.setAutoRefreshEnabled(true)
 
                 val selectedCount = when (view.id) {
                     R.id.item1 -> 1
@@ -303,13 +261,13 @@ class MainActivity : AppCompatActivity() {
                     R.id.item20 -> 20
                     else -> 5
                 }
-                editor.putInt(PREF_KEY_PAGES, selectedCount)
+                settingsRepository.setPagesPerRefresh(selectedCount)
 
                 val intent = Intent(this, KeyInputDetectingService::class.java)
                 intent.putExtra(KeyInputDetectingService.EXTRA_NUMBER, selectedCount)
                 startService(intent)
             }
-            editor.apply()
+
             updateSummaryText()
             dialog.dismiss()
         }
@@ -327,11 +285,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateSummaryText() {
-        val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val layout = binding.layoutSettings
 
-        val enabled = prefs.getBoolean(PREF_KEY_AUTO_REFRESH, false)
-        val count = prefs.getInt(PREF_KEY_PAGES, 5)
+        val enabled = settingsRepository.isAutoRefreshEnabled()
+        val count = settingsRepository.getPagesPerRefresh()
 
         layout.autoRefreshSwitch.setOnCheckedChangeListener(null)
         layout.autoRefreshSwitch.isChecked = enabled
