@@ -1,4 +1,4 @@
-package com.hidsquid.refreshpaper
+package com.hidsquid.refreshpaper.epd
 
 import android.content.Context
 import android.provider.Settings
@@ -10,7 +10,9 @@ class EpdDisplayModeController(
 ) {
     suspend fun getDisplayMode(): Int = withContext(Dispatchers.IO) {
         try {
-            Settings.System.getInt(context.contentResolver, KEY_DISPLAY_MODE, MODE_NORMAL)
+            Settings.System.getInt(context.contentResolver, KEY_DISPLAY_MODE,
+                MODE_NORMAL
+            )
         } catch (_: Throwable) {
             // TODO: Implement vendor-specific or root(su)-based fallback if needed.
             MODE_NORMAL
@@ -19,10 +21,11 @@ class EpdDisplayModeController(
 
     suspend fun setDisplayMode(mode: Int): Boolean = withContext(Dispatchers.IO) {
         try {
+            // Magisk로 설치 시
             Settings.System.putInt(context.contentResolver, KEY_DISPLAY_MODE, mode)
             true
         } catch (_: Throwable) {
-            // fallback: root(su)로 settings CLI 호출
+            // 일반 설치 시
             try {
                 val process = ProcessBuilder(
                     "su", "-c", "settings put system $KEY_DISPLAY_MODE $mode"
@@ -35,13 +38,15 @@ class EpdDisplayModeController(
         }
     }
 
-    fun normalize(mode: Int): Int =
-        if (mode == MODE_MINIMIZE_AFTERIMAGE) MODE_MINIMIZE_AFTERIMAGE else MODE_NORMAL
+    fun normalize(rawMode: Int): Int {
+        return if (rawMode == 0) MODE_MINIMIZE_AFTERIMAGE else MODE_NORMAL
+    }
 
     companion object {
         const val MODE_MINIMIZE_AFTERIMAGE = 0
+
         const val MODE_NORMAL = 1
 
-        private const val KEY_DISPLAY_MODE = "display_mode"
+        const val KEY_DISPLAY_MODE = "display_mode"
     }
 }
