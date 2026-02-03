@@ -14,8 +14,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.hidsquid.refreshpaper.MainUtils.Companion.isAccessibilityServiceEnabled
 import com.hidsquid.refreshpaper.databinding.ActivityMainBinding
+import com.hidsquid.refreshpaper.epd.EpdDisplayModeController
+import com.hidsquid.refreshpaper.service.KeyInputDetectingService
+import com.hidsquid.refreshpaper.utils.AccessibilityUtils
 import kotlinx.coroutines.launch
 import androidx.core.graphics.drawable.toDrawable
 
@@ -48,7 +50,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkPermissionAndShowUI() {
-        if (isAccessibilityServiceEnabled(this)) {
+        if (AccessibilityUtils.isAccessibilityServiceEnabled(this)) {
             binding.layoutPermission.root.visibility = View.GONE
             binding.layoutSettings.root.visibility = View.VISIBLE
         } else {
@@ -87,7 +89,6 @@ class MainActivity : AppCompatActivity() {
                 settingsRepository.setAutoRefreshEnabled(false)
                 updateSummaryText()
             } else {
-                // 기존 동작 유지: 토글을 바로 켜지 않고 다이얼로그로 설정 유도
                 layout.autoRefreshSwitch.setOnCheckedChangeListener(null)
                 layout.autoRefreshSwitch.isChecked = false
                 attachAutoOffListener()
@@ -145,15 +146,12 @@ class MainActivity : AppCompatActivity() {
             checkNormal.bringToFront()
         }
 
-        // 깜빡임 방지: 처음엔 숨김
-        checkMin.visibility = View.GONE
-        checkNormal.visibility = View.GONE
-
         dialog.setOnShowListener {
             lifecycleScope.launch {
                 val raw = epdController.getDisplayMode()
                 val mode = epdController.normalize(raw)
-                setChecked(mode)            }
+                setChecked(mode)
+            }
         }
 
         val onClick = View.OnClickListener { view ->
@@ -168,13 +166,12 @@ class MainActivity : AppCompatActivity() {
                 if (!ok) {
                     Toast.makeText(
                         this@MainActivity,
-                        "display_mode 설정 실패 (시스템 권한/allowlist 확인 필요)",
+                        "display_mode setting failed (system permission/allowlist check needed)",
                         Toast.LENGTH_SHORT
                     ).show()
                     return@launch
                 }
 
-                // 반영 후 재조회해서 UI 확정 (기존 동작 유지)
                 val raw = epdController.getDisplayMode()
                 val modeNow = epdController.normalize(raw)
                 setChecked(modeNow)
