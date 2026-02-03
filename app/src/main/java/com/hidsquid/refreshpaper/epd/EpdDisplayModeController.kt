@@ -39,7 +39,7 @@ class EpdDisplayModeController(
     }
 
     fun normalize(rawMode: Int): Int {
-        return if (rawMode == 1) MODE_MINIMIZE_AFTERIMAGE else MODE_NORMAL
+        return if (rawMode == 0) MODE_MINIMIZE_AFTERIMAGE else MODE_NORMAL
     }
 
     companion object {
