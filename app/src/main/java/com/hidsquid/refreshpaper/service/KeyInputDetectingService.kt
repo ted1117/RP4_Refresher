@@ -9,9 +9,8 @@ import android.content.IntentFilter
 import android.util.Log
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
-import com.hidsquid.refreshpaper.R
 import com.hidsquid.refreshpaper.SettingsRepository
-import com.hidsquid.refreshpaper.epd.EpdRefreshController
+import com.hidsquid.refreshpaper.epd.EPDRefreshController
 import com.hidsquid.refreshpaper.overlay.OverlayController
 
 @SuppressLint("AccessibilityPolicy")
@@ -59,7 +58,7 @@ class KeyInputDetectingService : AccessibilityService() {
             Log.w(TAG, "doFullRefresh: uniqueDrawingId is null")
             return false
         }
-        EpdRefreshController.refresh(id)
+        EPDRefreshController.refresh(id)
         return true
     }
 
