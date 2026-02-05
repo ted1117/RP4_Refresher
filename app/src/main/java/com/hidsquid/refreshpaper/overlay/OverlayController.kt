@@ -64,6 +64,12 @@ class OverlayController(private val context: Context) {
 
     fun getUniqueDrawingId(): Int? = uniqueDrawingId
 
+    fun getView(): View? = overlayView
+
+    @Deprecated(
+        message = "invalidate 기반 리프레시로 대체",
+        level = DeprecationLevel.WARNING
+    )
     fun poke() {
         val v = overlayView ?: return
         v.alpha = 0.01f

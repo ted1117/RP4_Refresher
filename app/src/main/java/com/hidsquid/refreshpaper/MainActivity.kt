@@ -16,7 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.hidsquid.refreshpaper.databinding.ActivityMainBinding
 import com.hidsquid.refreshpaper.device.DeviceSecurityController
-import com.hidsquid.refreshpaper.epd.EpdDisplayModeController
+import com.hidsquid.refreshpaper.epd.EPDDisplayModeController
 import com.hidsquid.refreshpaper.service.KeyInputDetectingService
 import com.hidsquid.refreshpaper.utils.AccessibilityUtils
 import kotlinx.coroutines.launch
@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     private lateinit var settingsRepository: SettingsRepository
-    private lateinit var epdController: EpdDisplayModeController
+    private lateinit var epdController: EPDDisplayModeController
     private lateinit var deviceSecurityController: DeviceSecurityController
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.topAppBar)
 
         settingsRepository = SettingsRepository(this)
-        epdController = EpdDisplayModeController(this)
+        epdController = EPDDisplayModeController(this)
         deviceSecurityController = DeviceSecurityController(this)
 
         checkPermissionAndShowUI()
@@ -158,8 +158,8 @@ class MainActivity : AppCompatActivity() {
         val checkNormal = dialogView.findViewById<ImageView>(R.id.check3)
 
         fun setChecked(mode: Int) {
-            checkMin.visibility = if (mode == EpdDisplayModeController.MODE_MINIMIZE_AFTERIMAGE) View.VISIBLE else View.GONE
-            checkNormal.visibility = if (mode == EpdDisplayModeController.MODE_NORMAL) View.VISIBLE else View.GONE
+            checkMin.visibility = if (mode == EPDDisplayModeController.MODE_MINIMIZE_AFTERIMAGE) View.VISIBLE else View.GONE
+            checkNormal.visibility = if (mode == EPDDisplayModeController.MODE_NORMAL) View.VISIBLE else View.GONE
             checkMin.bringToFront()
             checkNormal.bringToFront()
         }
@@ -174,9 +174,9 @@ class MainActivity : AppCompatActivity() {
 
         val onClick = View.OnClickListener { view ->
             val sysMode = when (view.id) {
-                R.id.item1 -> EpdDisplayModeController.MODE_MINIMIZE_AFTERIMAGE
-                R.id.item3 -> EpdDisplayModeController.MODE_NORMAL
-                else -> EpdDisplayModeController.MODE_NORMAL
+                R.id.item1 -> EPDDisplayModeController.MODE_MINIMIZE_AFTERIMAGE
+                R.id.item3 -> EPDDisplayModeController.MODE_NORMAL
+                else -> EPDDisplayModeController.MODE_NORMAL
             }
 
             lifecycleScope.launch {
@@ -211,7 +211,7 @@ class MainActivity : AppCompatActivity() {
             val raw = epdController.getDisplayMode()
             val mode = epdController.normalize(raw)
             binding.layoutSettings.tvEpdModeSetting.text = getString(
-                if (mode == EpdDisplayModeController.MODE_MINIMIZE_AFTERIMAGE)
+                if (mode == EPDDisplayModeController.MODE_MINIMIZE_AFTERIMAGE)
                     R.string.setting_value_display_mode_minimize_afterimage
                 else
                     R.string.setting_value_display_mode_normal

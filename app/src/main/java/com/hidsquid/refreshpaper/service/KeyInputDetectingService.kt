@@ -9,9 +9,8 @@ import android.content.IntentFilter
 import android.util.Log
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
-import com.hidsquid.refreshpaper.R
 import com.hidsquid.refreshpaper.SettingsRepository
-import com.hidsquid.refreshpaper.epd.EpdRefreshController
+import com.hidsquid.refreshpaper.epd.EPDRefreshController
 import com.hidsquid.refreshpaper.overlay.OverlayController
 
 @SuppressLint("AccessibilityPolicy")
@@ -53,14 +52,18 @@ class KeyInputDetectingService : AccessibilityService() {
 
     override fun onInterrupt() { /* no-op */ }
 
-    private fun doFullRefresh(): Boolean {
-        val id = overlayController.getUniqueDrawingId()
-        if (id == null) {
-            Log.w(TAG, "doFullRefresh: uniqueDrawingId is null")
-            return false
+    private fun doFullRefresh() {
+        val v = overlayController.getView() ?: run {
+            Log.w(TAG, "doFullRefresh: overlayView is null")
+            return
         }
-        EpdRefreshController.refresh(id)
-        return true
+
+        val id = overlayController.getUniqueDrawingId() ?: run {
+            Log.w(TAG, "doFullRefresh: uniqueDrawingId is null")
+            return
+        }
+
+        EPDRefreshController.refresh(v, id)
     }
 
     override fun onKeyEvent(event: KeyEvent): Boolean {
@@ -90,9 +93,7 @@ class KeyInputDetectingService : AccessibilityService() {
         }
 
         if (isManualRefreshEnabled && keyCode == KeyEvent.KEYCODE_F4) {
-            val ok = doFullRefresh()
-            if (ok) overlayController.poke()
-            return ok
+            doFullRefresh()
         }
 
         return super.onKeyEvent(event)
@@ -120,8 +121,7 @@ class KeyInputDetectingService : AccessibilityService() {
     inner class ScreenRefreshBroadcastReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == ACTION_REFRESH_SCREEN) {
-                val ok = doFullRefresh()
-                if (ok) overlayController.poke()
+                doFullRefresh()
             }
         }
     }
