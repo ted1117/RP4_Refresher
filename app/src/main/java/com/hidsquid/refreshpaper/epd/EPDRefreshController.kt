@@ -1,6 +1,7 @@
 package com.hidsquid.refreshpaper.epd
 
 import android.util.Log
+import android.view.View
 import java.lang.reflect.Method
 
 object EPDRefreshController {
@@ -27,12 +28,14 @@ object EPDRefreshController {
         }
     }
 
-    fun refresh(uniqueDrawingId: Int) {
+    fun refresh(targetView: View, uniqueDrawingId: Int) {
         try {
-            Log.d(TAG, "refresh started!")
             invokeMethod(setEPDModeMethod, 2)
             invokeMethod(setEPDFullRefreshMethod, uniqueDrawingId)
-            invokeMethod(setEPDModeMethod, -1)
+            targetView.postInvalidate()
+            targetView.postOnAnimation {
+                invokeMethod(setEPDModeMethod, -1)
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Reflection error: ", e)
         }
