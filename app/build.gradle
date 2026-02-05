@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.google.ksp)
 }
 
 android {
@@ -25,19 +26,20 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlin {
         compilerOptions {
-            jvmTarget = JvmTarget.JVM_1_8
+            jvmTarget = JvmTarget.JVM_17
         }
     }
 
     buildFeatures {
         viewBinding = true
         dataBinding = true
+        buildConfig = true
     }
 }
 
@@ -52,4 +54,10 @@ dependencies {
     androidTestImplementation libs.espresso.core
 
     implementation libs.core.ktx
+
+    implementation libs.yukihookapi.api
+    implementation libs.kavaref.core
+    implementation libs.kavaref.extension
+    compileOnly libs.xposed.api
+    ksp libs.yukihookapi.ksp.xposed
 }
