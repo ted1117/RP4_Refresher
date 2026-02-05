@@ -15,6 +15,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.hidsquid.refreshpaper.databinding.ActivityMainBinding
+import com.hidsquid.refreshpaper.device.DeviceSecurityController
 import com.hidsquid.refreshpaper.epd.EpdDisplayModeController
 import com.hidsquid.refreshpaper.service.KeyInputDetectingService
 import com.hidsquid.refreshpaper.utils.AccessibilityUtils
@@ -27,6 +28,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var settingsRepository: SettingsRepository
     private lateinit var epdController: EpdDisplayModeController
+    private lateinit var deviceSecurityController: DeviceSecurityController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +39,7 @@ class MainActivity : AppCompatActivity() {
 
         settingsRepository = SettingsRepository(this)
         epdController = EpdDisplayModeController(this)
+        deviceSecurityController = DeviceSecurityController(this)
 
         checkPermissionAndShowUI()
         loadSettings()
@@ -47,6 +50,7 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         checkPermissionAndShowUI()
         updateEpdModeSummary()
+        loadSettings() // Reload settings on resume
     }
 
     private fun checkPermissionAndShowUI() {
@@ -68,6 +72,7 @@ class MainActivity : AppCompatActivity() {
 
         layout.autoRefreshSwitch.isChecked = settingsRepository.isAutoRefreshEnabled()
         layout.manualRefreshSwitch.isChecked = settingsRepository.isManualRefreshEnabled()
+        layout.screenshotSwitch.isChecked = deviceSecurityController.isSecureBypassEnabled()
 
         updateSummaryText()
         updateEpdModeSummary()
@@ -109,6 +114,19 @@ class MainActivity : AppCompatActivity() {
 
         layout.epdModeCard.setOnClickListener {
             showEpdDisplayModeDialog()
+        }
+
+        layout.screenshotSwitch.setOnCheckedChangeListener { _, isChecked ->
+            try {
+                deviceSecurityController.setSecureBypass(isChecked)
+            } catch (e: SecurityException) {
+                Toast.makeText(this, "Permission denied!", Toast.LENGTH_SHORT).show()
+                layout.screenshotSwitch.isChecked = !isChecked
+            }
+        }
+
+        layout.screenshotCard.setOnClickListener {
+            layout.screenshotSwitch.isChecked = !layout.screenshotSwitch.isChecked
         }
     }
 

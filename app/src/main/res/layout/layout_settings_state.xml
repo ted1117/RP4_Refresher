@@ -194,4 +194,71 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/screenshotGroupContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/screen_padding_horizontal"
+        android:background="@drawable/bg_group_rounded"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/group_padding_vertical"
+        android:paddingBottom="@dimen/group_padding_vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/epdModeGroupContainer">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/screenshotCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/row_min_height"
+            android:paddingStart="@dimen/row_padding_horizontal"
+            android:paddingEnd="@dimen/row_padding_horizontal"
+            android:paddingTop="@dimen/row_padding_vertical"
+            android:paddingBottom="@dimen/row_padding_vertical"
+            android:clickable="true"
+            android:focusable="true">
+
+            <TextView
+                android:id="@+id/screenshotTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/setting_title_screenshot_feature"
+                android:textStyle="bold"
+                android:textSize="@dimen/text_size_title"
+                android:textColor="@color/text_primary"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/screenshotSwitch"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/screenshotDesc"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/row_body_margin_top"
+                android:text="@string/setting_desc_screenshot_feature"
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/text_size_setting_value"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/screenshotSwitch"
+                app:layout_constraintTop_toBottomOf="@id/screenshotTitle"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/screenshotSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:thumb="@drawable/shape_switch_thumb"
+                app:thumbTint="@null"
+                app:track="@drawable/selector_switch_track"
+                app:trackTint="@null"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
