@@ -5,7 +5,7 @@ import android.provider.Settings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class EpdDisplayModeController(
+class EPDDisplayModeController(
     private val context: Context,
 ) {
     suspend fun getDisplayMode(): Int = withContext(Dispatchers.IO) {

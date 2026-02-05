@@ -3,8 +3,8 @@ package com.hidsquid.refreshpaper.epd
 import android.util.Log
 import java.lang.reflect.Method
 
-object EpdRefreshController {
-    private const val TAG = "EpdRefreshController"
+object EPDRefreshController {
+    private const val TAG = "EPDRefreshController"
 
     private var setEPDModeMethod: Method? = null
     private var setEPDFullRefreshMethod: Method? = null
