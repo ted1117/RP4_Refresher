@@ -1,36 +1,29 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.RefreshPaper" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-<!--        <item name="colorPrimary">@color/white</item>-->
-        <item name="colorOnPrimary">@color/black</item>
-        <item name="android:windowBackground">@color/white</item>
-        <item name="materialSwitchStyle">@style/AppTheme.Switch</item>
+    <style name="Base.Theme.RefreshPaper" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@android:color/white</item>
+        <item name="colorPrimaryDark">@android:color/black</item>
+        <item name="colorAccent">@android:color/black</item>
+        <item name="android:textColorPrimary">@android:color/black</item>
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="switchStyle">@style/AppTheme.Switch</item>
+        <item name="actionBarStyle">@style/AppTheme.ActionBar</item>
+        <item name="actionBarTheme">@style/ThemeOverlay.AppCompat.ActionBar</item>
     </style>
-
-    <!-- ActionBar style -->
-    <style name="AppTheme.ActionBar" parent="Widget.Material3.ActionBar.Solid">
+    <style name="AppTheme.ActionBar" parent="Widget.AppCompat.Light.ActionBar.Solid">
         <item name="background">@android:color/white</item>
-        <item name="titleTextColor">@android:color/black</item>
+        <item name="titleTextStyle">@style/AppTheme.ActionBar.TitleText</item>
     </style>
-
-    <!-- Custom Button Style -->
-    <style name="CustomButton" parent="Widget.Material3.Button">
-        <item name="android:backgroundTint">@android:color/white</item>
+    <style name="AppTheme.ActionBar.TitleText" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
         <item name="android:textColor">@android:color/black</item>
     </style>
-
-    <!-- Custom Switch Style -->
-    <style name="AppTheme.Switch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Switch</item>
+    <style name="CustomButton" parent="Widget.AppCompat.Button">
+        <item name="backgroundTint">@android:color/white</item>
+        <item name="android:textColor">@android:color/black</item>
     </style>
-
-    <style name="ThemeOverlay.App.Switch" parent="">
-        <item name="colorPrimary">@android:color/darker_gray</item>
-        <item name="colorSurfaceVariant">@android:color/white</item>
+    <style name="AppTheme.Switch" parent="Widget.AppCompat.CompoundButton.Switch">
+        <item name="thumbTint">@android:color/black</item>
+        <item name="trackTint">@android:color/darker_gray</item>
     </style>
-
-
-
     <style name="Theme.RefreshPaper" parent="Base.Theme.RefreshPaper" />
 </resources>
