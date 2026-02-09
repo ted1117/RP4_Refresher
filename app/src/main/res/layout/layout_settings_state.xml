@@ -65,6 +65,7 @@
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:thumb="@drawable/shape_switch_thumb"
+                app:showText="false"
                 app:thumbTint="@null"
                 app:track="@drawable/selector_switch_track"
                 app:trackTint="@null"
@@ -73,7 +74,6 @@
                 app:layout_constraintBottom_toBottomOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
         <View
             android:layout_width="match_parent"
             android:layout_height="@dimen/divider_height"
@@ -123,6 +123,7 @@
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:thumb="@drawable/shape_switch_thumb"
+                app:showText="false"
                 app:thumbTint="@null"
                 app:track="@drawable/selector_switch_track"
                 app:trackTint="@null"
@@ -131,9 +132,7 @@
                 app:layout_constraintBottom_toBottomOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
     </LinearLayout>
-
     <LinearLayout
         android:id="@+id/epdModeGroupContainer"
         android:layout_width="0dp"
@@ -151,7 +150,7 @@
             android:id="@+id/epdModeCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
+            android:background="?android:attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true"
             android:minHeight="@dimen/row_min_height"
@@ -193,7 +192,6 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
-
     <LinearLayout
         android:id="@+id/screenshotGroupContainer"
         android:layout_width="0dp"
@@ -250,6 +248,7 @@
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:thumb="@drawable/shape_switch_thumb"
+                app:showText="false"
                 app:thumbTint="@null"
                 app:track="@drawable/selector_switch_track"
                 app:trackTint="@null"
@@ -277,7 +276,7 @@
             android:id="@+id/labsCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
+            android:background="?android:attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true"
             android:minHeight="@dimen/row_min_height"
@@ -319,5 +318,4 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
