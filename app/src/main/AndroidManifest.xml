@@ -31,6 +31,10 @@
         </activity>
 
         <activity
+            android:name=".LabsActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".RefreshScreen"
             android:exported="true"
             android:launchMode="singleInstance" />

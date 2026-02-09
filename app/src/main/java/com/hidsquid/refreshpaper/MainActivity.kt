@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.hidsquid.refreshpaper.LabsActivity
 import com.hidsquid.refreshpaper.databinding.ActivityMainBinding
 import com.hidsquid.refreshpaper.device.DeviceSecurityController
 import com.hidsquid.refreshpaper.epd.EPDDisplayModeController
@@ -127,6 +128,10 @@ class MainActivity : AppCompatActivity() {
 
         layout.screenshotCard.setOnClickListener {
             layout.screenshotSwitch.isChecked = !layout.screenshotSwitch.isChecked
+        }
+
+        layout.labsCard.setOnClickListener {
+            startActivity(Intent(this, LabsActivity::class.java))
         }
     }
 

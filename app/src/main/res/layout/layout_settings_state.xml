@@ -258,7 +258,66 @@
                 app:layout_constraintBottom_toBottomOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/labsGroupContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/screen_padding_horizontal"
+        android:background="@drawable/bg_group_rounded"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/group_padding_vertical"
+        android:paddingBottom="@dimen/group_padding_vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/screenshotGroupContainer">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/labsCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:minHeight="@dimen/row_min_height"
+            android:paddingStart="@dimen/row_padding_horizontal"
+            android:paddingEnd="@dimen/row_padding_horizontal"
+            android:paddingTop="@dimen/row_padding_vertical"
+            android:paddingBottom="@dimen/row_padding_vertical">
+
+            <TextView
+                android:id="@+id/labsTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/labs_title"
+                android:textColor="@color/text_primary"
+                android:textSize="@dimen/text_size_title"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/labsDesc"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/row_body_margin_top"
+                android:text="@string/labs_description"
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/text_size_setting_value"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/labsTitle" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_arrow_right"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
