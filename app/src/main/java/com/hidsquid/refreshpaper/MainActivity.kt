@@ -11,12 +11,12 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.Switch
-import android.widget.TextView
 import android.widget.Toast
 import android.app.AlertDialog
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.lifecycleScope
 import com.hidsquid.refreshpaper.databinding.ActivityMainBinding
+import com.hidsquid.refreshpaper.brightness.BrightnessDialogController
 import com.hidsquid.refreshpaper.device.DeviceSecurityController
 import com.hidsquid.refreshpaper.epd.EPDDisplayModeController
 import com.hidsquid.refreshpaper.service.KeyInputDetectingService
@@ -31,6 +31,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var settingsRepository: SettingsRepository
     private lateinit var epdController: EPDDisplayModeController
     private lateinit var deviceSecurityController: DeviceSecurityController
+    private lateinit var brightnessDialogController: BrightnessDialogController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +41,7 @@ class MainActivity : ComponentActivity() {
         settingsRepository = SettingsRepository(this)
         epdController = EPDDisplayModeController(this)
         deviceSecurityController = DeviceSecurityController(this)
+        brightnessDialogController = BrightnessDialogController(this, settingsRepository)
 
         checkPermissionAndShowUI()
         loadSettings()
@@ -112,6 +114,10 @@ class MainActivity : ComponentActivity() {
 
         layout.epdModeCard.setOnClickListener {
             showEpdDisplayModeDialog()
+        }
+
+        layout.brightnessCard.setOnClickListener {
+            showBrightnessDialog()
         }
 
         layout.screenshotSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -218,6 +224,10 @@ class MainActivity : ComponentActivity() {
                     R.string.setting_value_display_mode_normal
             )
         }
+    }
+
+    private fun showBrightnessDialog() {
+        brightnessDialogController.show()
     }
 
     private fun showPageCountDialog() {

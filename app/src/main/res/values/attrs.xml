@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="StackBarView">
+        <attr name="barCount" format="integer" />
+        <attr name="progress" format="float" />
+        <attr name="barGap" format="dimension" />
+        <attr name="barThickness" format="dimension" />
+        <attr name="activeColor" format="color" />
+        <attr name="inactiveColor" format="color" />
+    </declare-styleable>
+</resources>
