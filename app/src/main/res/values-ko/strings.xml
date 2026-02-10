@@ -39,7 +39,7 @@
     <string name="labs_touch_refresh_title">터치 기반 리프레시</string>
     <string name="labs_touch_refresh_description">화면을 탭하여 새로고침</string>
     <string name="labs_touch_refresh_requires_auto">먼저 자동 리프레시를 켜주세요</string>
-    <string name="labs_warning_title">⚠️ 경고</string>
+    <string name="labs_warning_title">⚠ 경고</string>
     <string name="labs_warning_message">실험실 기능은 성능 저하나 배터리 소모를 유발할 수 있습니다.</string>
     <string name="labs_warning_dont_show_again">다시 보지 않기</string>
     <string name="labs_warning_confirm">확인</string>

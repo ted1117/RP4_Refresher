@@ -1,13 +1,12 @@
 package com.hidsquid.refreshpaper
 
 import android.os.Bundle
-import android.app.Dialog
+import android.app.Activity
+import android.app.AlertDialog
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.hidsquid.refreshpaper.databinding.ActivityLabsBinding
-import com.hidsquid.refreshpaper.databinding.DialogLabsWarningBinding
 
-class LabsActivity : AppCompatActivity() {
+class LabsActivity : Activity() {
 
     private lateinit var binding: ActivityLabsBinding
     private lateinit var settingsRepository: SettingsRepository
@@ -32,8 +31,6 @@ class LabsActivity : AppCompatActivity() {
     }
 
     private fun setupToolbar() {
-        setSupportActionBar(binding.topAppBar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.topAppBar.setNavigationOnClickListener { finish() }
     }
 
@@ -62,22 +59,22 @@ class LabsActivity : AppCompatActivity() {
     private fun showWarningIfNeeded() {
         if (prefs.getBoolean(PREF_KEY_SKIP_WARNING, false)) return
 
-        val dialogBinding = DialogLabsWarningBinding.inflate(layoutInflater)
-
-        val dialog = Dialog(this)
-        dialog.setContentView(dialogBinding.root)
-        dialog.setCancelable(false)
-        dialog.window?.setBackgroundDrawableResource(R.drawable.shape_dialog_bg)
-        dialog.window?.decorView?.elevation = 0f
-
-        dialogBinding.btnConfirm.setOnClickListener {
-            if (dialogBinding.checkboxDontShowAgain.isChecked) {
-                prefs.edit().putBoolean(PREF_KEY_SKIP_WARNING, true).apply()
+        AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Light_Dialog_Alert)
+            .setTitle(R.string.labs_warning_title)
+            .setMessage(R.string.labs_warning_message)
+            .setPositiveButton(R.string.labs_warning_confirm) { dialog, _ ->
+                dialog.dismiss()
             }
-            dialog.dismiss()
-        }
-
-        dialog.show()
+            .setNeutralButton(R.string.labs_warning_dont_show_again) { dialog, _ ->
+                prefs.edit().putBoolean(PREF_KEY_SKIP_WARNING, true).apply()
+                dialog.dismiss()
+            }
+            .setNegativeButton(android.R.string.cancel) { dialog, _ ->
+                dialog.dismiss()
+                finish()
+            }
+            .setCancelable(false)
+            .show()
     }
 
     companion object {
