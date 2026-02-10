@@ -10,11 +10,12 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.RelativeLayout
+import android.widget.Switch
+import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
+import android.app.AlertDialog
+import androidx.activity.ComponentActivity
 import androidx.lifecycle.lifecycleScope
-import com.hidsquid.refreshpaper.LabsActivity
 import com.hidsquid.refreshpaper.databinding.ActivityMainBinding
 import com.hidsquid.refreshpaper.device.DeviceSecurityController
 import com.hidsquid.refreshpaper.epd.EPDDisplayModeController
@@ -23,7 +24,7 @@ import com.hidsquid.refreshpaper.utils.AccessibilityUtils
 import kotlinx.coroutines.launch
 import androidx.core.graphics.drawable.toDrawable
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -35,8 +36,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        setSupportActionBar(binding.topAppBar)
 
         settingsRepository = SettingsRepository(this)
         epdController = EPDDisplayModeController(this)
@@ -70,7 +69,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadSettings() {
         val layout = binding.layoutSettings
-
         layout.autoRefreshSwitch.isChecked = settingsRepository.isAutoRefreshEnabled()
         layout.manualRefreshSwitch.isChecked = settingsRepository.isManualRefreshEnabled()
         layout.screenshotSwitch.isChecked = deviceSecurityController.isSecureBypassEnabled()
@@ -85,7 +83,6 @@ class MainActivity : AppCompatActivity() {
 
         val showDialogAction = View.OnClickListener { showPageCountDialog() }
         layout.autoRefreshCard.setOnClickListener(showDialogAction)
-        layout.tvCurrentSetting.setOnClickListener(showDialogAction)
 
         layout.autoRefreshSwitch.setOnTouchListener { _, event ->
             if (event.action != MotionEvent.ACTION_UP) return@setOnTouchListener true
@@ -137,7 +134,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun attachAutoOffListener() {
         val layout = binding.layoutSettings
-
         layout.autoRefreshSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (!isChecked) {
                 settingsRepository.setAutoRefreshEnabled(false)

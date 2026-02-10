@@ -4,318 +4,211 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingStart="@dimen/screen_padding_horizontal"
-    android:paddingEnd="@dimen/screen_padding_horizontal"
-    android:paddingTop="@dimen/screen_padding_top">
+    android:paddingStart="?android:attr/listPreferredItemPaddingLeft"
+    android:paddingEnd="?android:attr/listPreferredItemPaddingRight" >
 
     <LinearLayout
         android:id="@+id/groupContainer"
+        style="@style/GroupContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/group_margin_top"
-        android:orientation="vertical"
-        android:background="@drawable/bg_group_rounded"
-        android:paddingTop="@dimen/group_padding_vertical"
-        android:paddingBottom="@dimen/group_padding_vertical"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Row 1: 자동 새로고침 -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/autoRefreshCard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="@dimen/row_min_height"
-            android:paddingStart="@dimen/row_padding_horizontal"
-            android:paddingEnd="@dimen/row_padding_horizontal"
-            android:paddingTop="@dimen/row_padding_vertical"
-            android:paddingBottom="@dimen/row_padding_vertical"
-            android:clickable="true"
-            android:focusable="true">
+            style="@style/ListItemContainer">
 
             <TextView
                 android:id="@+id/autoRefreshTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                style="@style/ListItemTitle"
                 android:text="@string/auto_refresh_cardview_headline"
-                android:textStyle="bold"
-                android:textSize="@dimen/text_size_title"
-                android:textColor="@color/text_primary"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/autoRefreshSwitch"
+                app:layout_constraintEnd_toStartOf="@+id/autoRefreshSwitch"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tvCurrentSetting"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/row_body_margin_top"
+                style="@style/ListItemDesc"
                 android:text="@string/auto_refresh_cardview_text"
-                android:textColor="@color/text_secondary"
-                android:textSize="@dimen/text_size_setting_value"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/autoRefreshSwitch"
-                app:layout_constraintTop_toBottomOf="@id/autoRefreshTitle"
+                app:layout_constraintEnd_toStartOf="@+id/autoRefreshSwitch"
+                app:layout_constraintTop_toBottomOf="@+id/autoRefreshTitle"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
-            <androidx.appcompat.widget.SwitchCompat
+            <Switch
                 android:id="@+id/autoRefreshSwitch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@null"
-                android:thumb="@drawable/shape_switch_thumb"
-                app:showText="false"
-                app:thumbTint="@null"
-                app:track="@drawable/selector_switch_track"
-                app:trackTint="@null"
+                style="@style/ListItemSwitch"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="@dimen/divider_height"
             android:background="@color/divider_color" />
 
-        <!-- Row 2: 수동 새로고침 -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/manualRefreshCard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="@dimen/row_min_height"
-            android:paddingStart="@dimen/row_padding_horizontal"
-            android:paddingEnd="@dimen/row_padding_horizontal"
-            android:paddingTop="@dimen/row_padding_vertical"
-            android:paddingBottom="@dimen/row_padding_vertical"
-            android:clickable="true"
-            android:focusable="true">
+            style="@style/ListItemContainer">
 
             <TextView
                 android:id="@+id/manualRefreshTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                style="@style/ListItemTitle"
                 android:text="@string/manual_refresh_cardview_headline"
-                android:textStyle="bold"
-                android:textSize="@dimen/text_size_title"
-                android:textColor="@color/text_primary"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/manualRefreshSwitch"
+                app:layout_constraintEnd_toStartOf="@+id/manualRefreshSwitch"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/tvManualDesc"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/row_body_margin_top"
+                style="@style/ListItemDesc"
                 android:text="@string/manual_refresh_cardview_text"
-                android:textColor="@color/text_secondary"
-                android:textSize="@dimen/text_size_setting_value"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/manualRefreshSwitch"
-                app:layout_constraintTop_toBottomOf="@id/manualRefreshTitle"
+                app:layout_constraintEnd_toStartOf="@+id/manualRefreshSwitch"
+                app:layout_constraintTop_toBottomOf="@+id/manualRefreshTitle"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
-            <androidx.appcompat.widget.SwitchCompat
+            <Switch
                 android:id="@+id/manualRefreshSwitch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@null"
-                android:thumb="@drawable/shape_switch_thumb"
-                app:showText="false"
-                app:thumbTint="@null"
-                app:track="@drawable/selector_switch_track"
-                app:trackTint="@null"
+                style="@style/ListItemSwitch"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </LinearLayout>
+
     <LinearLayout
         android:id="@+id/epdModeGroupContainer"
+        style="@style/GroupContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/screen_padding_horizontal"
-        android:background="@drawable/bg_group_rounded"
-        android:orientation="vertical"
-        android:paddingTop="@dimen/group_padding_vertical"
-        android:paddingBottom="@dimen/group_padding_vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/groupContainer">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/epdModeCard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?android:attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:minHeight="@dimen/row_min_height"
-            android:paddingStart="@dimen/row_padding_horizontal"
-            android:paddingEnd="@dimen/row_padding_horizontal"
-            android:paddingTop="@dimen/row_padding_vertical"
-            android:paddingBottom="@dimen/row_padding_vertical">
+            style="@style/ListItemContainer">
 
             <TextView
                 android:id="@+id/epdModeTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                style="@style/ListItemTitle"
                 android:text="@string/setting_title_display_mode"
-                android:textColor="@color/text_primary"
-                android:textSize="@dimen/text_size_title"
-                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/epdModeArrow"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tvEpdModeSetting"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/row_body_margin_top"
+                style="@style/ListItemDesc"
                 android:text="@string/setting_value_display_mode_normal"
-                android:textColor="@color/text_secondary"
-                android:textSize="@dimen/text_size_setting_value"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/epdModeTitle" />
+                app:layout_constraintEnd_toStartOf="@+id/epdModeArrow"
+                app:layout_constraintTop_toBottomOf="@+id/epdModeTitle"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
             <ImageView
+                android:id="@+id/epdModeArrow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_arrow_right"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </LinearLayout>
+
     <LinearLayout
         android:id="@+id/screenshotGroupContainer"
+        style="@style/GroupContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/screen_padding_horizontal"
-        android:background="@drawable/bg_group_rounded"
-        android:orientation="vertical"
-        android:paddingTop="@dimen/group_padding_vertical"
-        android:paddingBottom="@dimen/group_padding_vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/epdModeGroupContainer">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/screenshotCard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="@dimen/row_min_height"
-            android:paddingStart="@dimen/row_padding_horizontal"
-            android:paddingEnd="@dimen/row_padding_horizontal"
-            android:paddingTop="@dimen/row_padding_vertical"
-            android:paddingBottom="@dimen/row_padding_vertical"
-            android:clickable="true"
-            android:focusable="true">
+            style="@style/ListItemContainer">
 
             <TextView
                 android:id="@+id/screenshotTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                style="@style/ListItemTitle"
                 android:text="@string/setting_title_screenshot_feature"
-                android:textStyle="bold"
-                android:textSize="@dimen/text_size_title"
-                android:textColor="@color/text_primary"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/screenshotSwitch"
+                app:layout_constraintEnd_toStartOf="@+id/screenshotSwitch"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/screenshotDesc"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/row_body_margin_top"
+                style="@style/ListItemDesc"
                 android:text="@string/setting_desc_screenshot_feature"
-                android:textColor="@color/text_secondary"
-                android:textSize="@dimen/text_size_setting_value"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/screenshotSwitch"
-                app:layout_constraintTop_toBottomOf="@id/screenshotTitle"
+                app:layout_constraintEnd_toStartOf="@+id/screenshotSwitch"
+                app:layout_constraintTop_toBottomOf="@+id/screenshotTitle"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
-            <androidx.appcompat.widget.SwitchCompat
+            <Switch
                 android:id="@+id/screenshotSwitch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@null"
-                android:thumb="@drawable/shape_switch_thumb"
-                app:showText="false"
-                app:thumbTint="@null"
-                app:track="@drawable/selector_switch_track"
-                app:trackTint="@null"
+                style="@style/ListItemSwitch"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/labsGroupContainer"
+        style="@style/GroupContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/screen_padding_horizontal"
-        android:background="@drawable/bg_group_rounded"
-        android:orientation="vertical"
-        android:paddingTop="@dimen/group_padding_vertical"
-        android:paddingBottom="@dimen/group_padding_vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/screenshotGroupContainer">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/labsCard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?android:attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:minHeight="@dimen/row_min_height"
-            android:paddingStart="@dimen/row_padding_horizontal"
-            android:paddingEnd="@dimen/row_padding_horizontal"
-            android:paddingTop="@dimen/row_padding_vertical"
-            android:paddingBottom="@dimen/row_padding_vertical">
+            style="@style/ListItemContainer">
 
             <TextView
                 android:id="@+id/labsTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                style="@style/ListItemTitle"
                 android:text="@string/labs_title"
-                android:textColor="@color/text_primary"
-                android:textSize="@dimen/text_size_title"
-                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/labsArrow"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/labsDesc"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/row_body_margin_top"
+                style="@style/ListItemDesc"
                 android:text="@string/labs_description"
-                android:textColor="@color/text_secondary"
-                android:textSize="@dimen/text_size_setting_value"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/labsTitle" />
+                app:layout_constraintEnd_toStartOf="@+id/labsArrow"
+                app:layout_constraintTop_toBottomOf="@+id/labsTitle"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
             <ImageView
+                android:id="@+id/labsArrow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_arrow_right"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

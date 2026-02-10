@@ -9,8 +9,8 @@
     <dimen name="dialog_padding_top">30dp</dimen>
     <dimen name="dialog_padding_bottom">30dp</dimen>
 
-    <dimen name="text_size_title">18sp</dimen>
-    <dimen name="text_size_item">16sp</dimen>
+    <dimen name="text_size_title">19sp</dimen>
+    <dimen name="text_size_item">17sp</dimen>
     <dimen name="text_size_description">13sp</dimen>
 
     <dimen name="item_padding_vertical">18dp</dimen>
@@ -29,7 +29,7 @@
     <dimen name="group_stroke_width">1dp</dimen>
     <dimen name="group_padding_vertical">4dp</dimen>
 
-    <dimen name="row_min_height">64dp</dimen>
+    <dimen name="row_min_height">72dp</dimen>
     <dimen name="row_padding_horizontal">16dp</dimen>
     <dimen name="row_padding_vertical">12dp</dimen>
 

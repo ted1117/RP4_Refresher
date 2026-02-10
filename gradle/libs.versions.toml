@@ -5,8 +5,6 @@ coreKtx = "1.17.0"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
-appcompat = "1.6.1"
-material = "1.12.0"
 activity = "1.9.0"
 constraintlayout = "2.1.4"
 ksp = "2.0.0-1.0.21"
@@ -19,8 +17,6 @@ core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 yukihookapi-api = { module = "com.highcapable.yukihookapi:api", version.ref = "yukihookapi" }
