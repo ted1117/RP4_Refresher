@@ -27,8 +27,10 @@ class StackBarView @JvmOverloads constructor(
     private var inactiveColor: Int = "#D0D0D0".toColorInt()
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private var onProgressChanged: ((Float) -> Unit)? = null
 
     init {
+        isClickable = true
         if (attrs != null) {
             context.withStyledAttributes(attrs, R.styleable.StackBarView) {
                 barCount = getInt(R.styleable.StackBarView_barCount, barCount).coerceAtLeast(1)
@@ -105,6 +107,10 @@ class StackBarView @JvmOverloads constructor(
         invalidate()
     }
 
+    fun setOnProgressChangedListener(listener: ((Float) -> Unit)?) {
+        onProgressChanged = listener
+    }
+
     fun setBarCount(value: Int) {
         val next = value.coerceAtLeast(1)
         if (next == barCount) return
@@ -115,5 +121,32 @@ class StackBarView @JvmOverloads constructor(
     fun getBarCount(): Int = barCount
 
     private fun dpToPx(dp: Float): Float = dp * resources.displayMetrics.density
+
+    override fun onTouchEvent(event: android.view.MotionEvent): Boolean {
+        val contentHeight = height - paddingTop - paddingBottom
+        if (contentHeight <= 0) return super.onTouchEvent(event)
+
+        when (event.actionMasked) {
+            android.view.MotionEvent.ACTION_DOWN,
+            android.view.MotionEvent.ACTION_MOVE -> {
+                parent?.requestDisallowInterceptTouchEvent(true)
+                val y = event.y.coerceIn(paddingTop.toFloat(), (height - paddingBottom).toFloat())
+                val ratio = 1f - ((y - paddingTop) / contentHeight.toFloat())
+                val next = ratio.coerceIn(0f, 1f)
+                if (next != progress) {
+                    progress = next
+                    invalidate()
+                    onProgressChanged?.invoke(next)
+                }
+                return true
+            }
+            android.view.MotionEvent.ACTION_UP,
+            android.view.MotionEvent.ACTION_CANCEL -> {
+                parent?.requestDisallowInterceptTouchEvent(false)
+                return true
+            }
+        }
+        return super.onTouchEvent(event)
+    }
 
 }
