@@ -27,6 +27,10 @@
     <string name="setting_value_display_mode_minimize_afterimage">잔상 최소화</string>
     <string name="setting_summary_auto_refresh_on">%d 페이지 마다</string>
     <string name="setting_summary_auto_refresh_off">사용 안 함</string>
+    <string name="setting_title_brightness_color">밝기 / 색 온도</string>
+    <string name="setting_desc_brightness_color">오버레이 조절 창 열기</string>
+    <string name="brightness_label">밝기 조절</string>
+    <string name="brightness_color_label">색 온도 조절</string>
 
     <!-- Screenshot Feature -->
     <string name="setting_title_screenshot_feature">Enable Screenshot</string>

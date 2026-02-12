@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import com.hidsquid.refreshpaper.SettingsRepository
+import com.hidsquid.refreshpaper.brightness.BrightnessActivity
 import com.hidsquid.refreshpaper.epd.EPDRefreshController
 import com.hidsquid.refreshpaper.overlay.OverlayController
 
@@ -21,7 +22,7 @@ class KeyInputDetectingService : AccessibilityService() {
 
     private var currentPackageName: String = ""
 
-    private var screenRefreshBroadcastReceiver: ScreenRefreshBroadcastReceiver? = null
+    private var serviceBroadcastReceiver: ServiceBroadcastReceiver? = null
 
     private lateinit var settingsRepository: SettingsRepository
     private lateinit var overlayController: OverlayController
@@ -32,8 +33,14 @@ class KeyInputDetectingService : AccessibilityService() {
         settingsRepository = SettingsRepository(applicationContext)
         overlayController = OverlayController(this)
 
-        screenRefreshBroadcastReceiver = ScreenRefreshBroadcastReceiver()
-        registerReceiver(screenRefreshBroadcastReceiver, IntentFilter(ACTION_REFRESH_SCREEN))
+        serviceBroadcastReceiver = ServiceBroadcastReceiver()
+        registerReceiver(
+            serviceBroadcastReceiver,
+            IntentFilter().apply {
+                addAction(ACTION_REFRESH_SCREEN)
+                addAction(ACTION_SHOW_BRIGHTNESS_ACTIVITY)
+            }
+        )
     }
 
     override fun onServiceConnected() {
@@ -113,15 +120,16 @@ class KeyInputDetectingService : AccessibilityService() {
         overlayController.detachOverlay()
 
         runCatching {
-            screenRefreshBroadcastReceiver?.let { unregisterReceiver(it) }
+            serviceBroadcastReceiver?.let { unregisterReceiver(it) }
         }
-        screenRefreshBroadcastReceiver = null
+        serviceBroadcastReceiver = null
     }
 
-    inner class ScreenRefreshBroadcastReceiver : BroadcastReceiver() {
+    inner class ServiceBroadcastReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent?.action == ACTION_REFRESH_SCREEN) {
-                doFullRefresh()
+            when (intent?.action) {
+                ACTION_REFRESH_SCREEN -> doFullRefresh()
+                ACTION_SHOW_BRIGHTNESS_ACTIVITY -> BrightnessActivity.start(applicationContext)
             }
         }
     }
@@ -130,6 +138,8 @@ class KeyInputDetectingService : AccessibilityService() {
         private const val TAG = "KeyInputService"
         const val EXTRA_NUMBER: String = "EXTRA_NUMBER"
         const val ACTION_REFRESH_SCREEN: String = "com.hidsquid.refreshpaper.ACTION_REFRESH_SCREEN"
+        const val ACTION_SHOW_BRIGHTNESS_ACTIVITY: String =
+            "com.hidsquid.refreshpaper.ACTION_SHOW_BRIGHTNESS_ACTIVITY"
         private const val BLOCKED_APP_PACKAGE_NAME = "com.ridi.paper"
     }
 }

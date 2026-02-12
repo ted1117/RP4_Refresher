@@ -60,6 +60,28 @@ class SettingsRepository(
         }
     }
 
+    fun getScreenBrightness(default: Int = DEFAULT_SCREEN_BRIGHTNESS): Int =
+        Settings.System.getInt(cr, GLOBAL_KEY_SCREEN_BRIGHTNESS, default)
+
+    fun setScreenBrightness(value: Int) {
+        val clamped = value.coerceIn(0, MAX_SCREEN_BRIGHTNESS)
+        try {
+            Settings.System.putInt(cr, GLOBAL_KEY_SCREEN_BRIGHTNESS, clamped)
+        } catch (_: Throwable) {
+        }
+    }
+
+    fun getScreenBrightnessColor(default: Int = DEFAULT_SCREEN_BRIGHTNESS_COLOR): Int =
+        Settings.System.getInt(cr, GLOBAL_KEY_SCREEN_BRIGHTNESS_COLOR, default)
+
+    fun setScreenBrightnessColor(value: Int) {
+        val clamped = value.coerceIn(0, MAX_SCREEN_BRIGHTNESS_COLOR)
+        try {
+            Settings.System.putInt(cr, GLOBAL_KEY_SCREEN_BRIGHTNESS_COLOR, clamped)
+        } catch (_: Throwable) {
+        }
+    }
+
     companion object {
         private const val PREFS_NAME = "MyPrefs"
 
@@ -69,8 +91,14 @@ class SettingsRepository(
         private const val PREF_KEY_TOUCH_REFRESH_ENABLED = "touch_refresh_enabled"
 
         private const val DEFAULT_PAGES_PER_REFRESH = 5
+        private const val DEFAULT_SCREEN_BRIGHTNESS = 0
+        private const val DEFAULT_SCREEN_BRIGHTNESS_COLOR = 0
+        const val MAX_SCREEN_BRIGHTNESS = 206
+        const val MAX_SCREEN_BRIGHTNESS_COLOR = 100
 
         private const val GLOBAL_KEY_TOUCH_REFRESH_ENABLED = "refresh_paper_auto_enabled"
         private const val GLOBAL_KEY_PAGES_PER_REFRESH = "refresh_paper_pages_per_refresh"
+        private const val GLOBAL_KEY_SCREEN_BRIGHTNESS = "screen_brightness"
+        private const val GLOBAL_KEY_SCREEN_BRIGHTNESS_COLOR = "screen_brightness_color"
     }
 }

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/overlayCard"
+        android:layout_width="@dimen/dialog_width"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/dialog_padding_horizontal"
+        android:paddingEnd="@dimen/dialog_padding_horizontal"
+        android:paddingTop="@dimen/dialog_padding_top"
+        android:paddingBottom="@dimen/dialog_padding_bottom">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guide_left_quarter"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.25" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guide_right_quarter"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.75" />
+
+        <TextView
+            android:id="@+id/brightnessTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:text="@string/brightness_label"
+            android:textSize="@dimen/text_size_title"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/guide_left_quarter"
+            app:layout_constraintStart_toStartOf="@+id/guide_left_quarter"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/brightnessPlus"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="@dimen/title_margin_bottom"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:textColor="@android:color/black"
+            android:text="+"
+            android:textSize="40sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/guide_left_quarter"
+            app:layout_constraintStart_toStartOf="@+id/guide_left_quarter"
+            app:layout_constraintTop_toBottomOf="@+id/brightnessTitle" />
+
+        <com.hidsquid.refreshpaper.overlay.StackBarView
+            android:id="@+id/brightnessStack"
+            android:layout_width="48dp"
+            android:layout_height="212dp"
+            android:layout_weight="1.0"
+            app:barCount="20"
+            app:barGap="4dp"
+            app:layout_constraintEnd_toEndOf="@+id/guide_left_quarter"
+            app:layout_constraintStart_toStartOf="@+id/guide_left_quarter"
+            app:layout_constraintTop_toBottomOf="@+id/brightnessPlus" />
+
+        <TextView
+            android:id="@+id/brightnessMinus"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:textColor="@android:color/black"
+            android:text="-"
+            android:textSize="40sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/guide_left_quarter"
+            app:layout_constraintStart_toStartOf="@+id/guide_left_quarter"
+            app:layout_constraintTop_toBottomOf="@+id/brightnessStack" />
+
+        <TextView
+            android:id="@+id/brightnessColorTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:text="@string/brightness_color_label"
+            android:textSize="@dimen/text_size_title"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/guide_right_quarter"
+            app:layout_constraintStart_toStartOf="@+id/guide_right_quarter"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/brightnessColorPlus"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="@dimen/title_margin_bottom"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:textColor="@android:color/black"
+            android:text="+"
+            android:textSize="40sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/guide_right_quarter"
+            app:layout_constraintStart_toStartOf="@+id/guide_right_quarter"
+            app:layout_constraintTop_toBottomOf="@+id/brightnessColorTitle" />
+
+        <com.hidsquid.refreshpaper.overlay.StackBarView
+            android:id="@+id/brightnessColorStack"
+            android:layout_width="48dp"
+            android:layout_height="212dp"
+            app:barCount="20"
+            app:barGap="4dp"
+            app:layout_constraintEnd_toEndOf="@+id/guide_right_quarter"
+            app:layout_constraintStart_toStartOf="@+id/guide_right_quarter"
+            app:layout_constraintTop_toBottomOf="@+id/brightnessColorPlus" />
+
+        <TextView
+            android:id="@+id/brightnessColorMinus"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:textColor="@android:color/black"
+            android:text="-"
+            android:textSize="40sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/guide_right_quarter"
+            app:layout_constraintStart_toStartOf="@+id/guide_right_quarter"
+            app:layout_constraintTop_toBottomOf="@+id/brightnessColorStack" />
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="@dimen/divider_height"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/item_padding_vertical"
+            android:layout_marginBottom="@dimen/item_padding_vertical"
+            android:background="#E0E0E0"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

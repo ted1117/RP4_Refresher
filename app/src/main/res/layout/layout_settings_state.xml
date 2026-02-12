@@ -128,7 +128,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/screenshotGroupContainer"
+        android:id="@+id/brightnessGroupContainer"
         style="@style/GroupContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -136,6 +136,50 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/epdModeGroupContainer">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/brightnessCard"
+            style="@style/ListItemContainer">
+
+            <TextView
+                android:id="@+id/brightnessTitle"
+                style="@style/ListItemTitle"
+                android:text="@string/setting_title_brightness_color"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/brightnessArrow"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/brightnessDesc"
+                style="@style/ListItemDesc"
+                android:text="@string/setting_desc_brightness_color"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/brightnessArrow"
+                app:layout_constraintTop_toBottomOf="@+id/brightnessTitle"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <ImageView
+                android:id="@+id/brightnessArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_arrow_right"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/screenshotGroupContainer"
+        style="@style/GroupContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/screen_padding_horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/brightnessGroupContainer">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/screenshotCard"

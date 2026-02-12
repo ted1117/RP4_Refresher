@@ -40,6 +40,12 @@
             android:exported="true"
             android:launchMode="singleInstance" />
 
+        <activity
+            android:name=".brightness.BrightnessActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.RefreshPaper.BrightnessDialog" />
+
         <service
             android:name=".service.KeyInputDetectingService"
             android:exported="true"
