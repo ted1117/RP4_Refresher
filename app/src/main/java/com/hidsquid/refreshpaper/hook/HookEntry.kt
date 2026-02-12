@@ -1,12 +1,19 @@
 package com.hidsquid.refreshpaper.hook
 
 import android.app.AndroidAppHelper
+import android.app.ActivityManager
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import android.provider.Settings
 import android.view.MotionEvent
+import android.view.View
+import android.widget.ImageButton
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.hook.factory.configs
 import com.highcapable.yukihookapi.hook.factory.encase
+import com.highcapable.yukihookapi.hook.factory.field
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.factory.toClass
 import com.highcapable.yukihookapi.hook.log.YLog
@@ -17,7 +24,6 @@ class HookEntry : IYukiHookXposedInit {
 
     companion object {
         const val ACTION_REFRESH_SCREEN = "com.hidsquid.refreshpaper.ACTION_REFRESH_SCREEN"
-
         const val GLOBAL_KEY_AUTO_REFRESH_ENABLED = "refresh_paper_auto_enabled"
         const val GLOBAL_KEY_PAGES_PER_REFRESH = "refresh_paper_pages_per_refresh"
     }
@@ -99,24 +105,101 @@ class HookEntry : IYukiHookXposedInit {
                 }
         }
 
-        loadApp {
-            if (packageName != "com.kyobo.ebook.eink") return@loadApp
+        loadApp("com.android.systemui") {
+            YLog.debug("Running in SystemUI Hook")
 
-            val WIDEVINE = "edef8ba9-79d6-4ace-a3c8-27dcd51d21ed"
+            val ridiHomeButtonId = "com.android.systemui.R\$id".toClass().field { name = "ridi_status_bar_button_home" }.get().int()
+            val ridiSettingsButtonId = "com.android.systemui.R\$id".toClass().field { name = "ridi_status_bar_button_settings" }.get().int()
+            val ridiBrightnessButtonId = "com.android.systemui.R\$id".toClass().field { name = "ridi_status_bar_button_brightness" }.get().int()
 
-            "android.media.MediaDrm".toClass()
-                .method {
-                    name = "isCryptoSchemeSupported"
-                    paramCount(1)
-                    returnType = Boolean::class.javaPrimitiveType!!
+            "com.android.systemui.statusbar.ridi.RidiStatusBarFragment".toClass().apply {
+
+                method { name = "updateSetupcomplete" }.hook {
+                    after {
+                        val homeButton = this.instanceClass!!.field { name = "mImageButtonHome" }.get().any() as ImageButton
+                        val backButton = this.instanceClass!!.field { name = "mImageButtonBack" }.get().any() as ImageButton
+                        val settingsButton = this.instanceClass!!.field { name = "mImageButtonSettings" }.get().any() as ImageButton
+
+                        homeButton.isEnabled = true
+                        backButton.isEnabled = true
+                        settingsButton.isEnabled = true
+                    }
                 }
-                .hook {
-                    before {
-                        if (args[0].toString().equals(WIDEVINE, ignoreCase = true)) {
-                            result = false
+
+                method {
+                    name = "onViewCreated"
+                    param(View::class.java, Bundle::class.java)
+                }.hook {
+                    after {
+                        val view = args[0] as View
+                        val homeBtn = view.findViewById<ImageButton>(ridiHomeButtonId)
+                        val settingsBtn = view.findViewById<ImageButton>(ridiSettingsButtonId)
+                        val brightnessBtn = view.findViewById<ImageButton>(ridiBrightnessButtonId)
+
+                        val isTargetActivityOnTop = { pkg: String, cls: String ->
+                            try {
+                                val am = appContext?.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
+                                val top = am?.getRunningTasks(1)?.firstOrNull()?.topActivity
+                                top == ComponentName(pkg, cls)
+                            } catch (e: Throwable) {
+                                YLog.error("Failed to inspect top activity: ${e.message}")
+                                false
+                            }
+                        }
+
+                        fun launchIsolatedActivity(pkg: String, cls: String) {
+                            try {
+                                if (isTargetActivityOnTop(pkg, cls)) {
+                                    YLog.debug("Skip launch, already on top: $cls")
+                                    return
+                                }
+
+                                val intent = Intent().apply {
+                                    component = ComponentName(pkg, cls)
+
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
+                                    addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+                                    addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
+                                }
+                                appContext?.startActivity(intent)
+                                YLog.debug("Launched isolated activity: $cls")
+                            } catch (e: Exception) {
+                                YLog.error("Failed to launch $cls: ${e.message}")
+                            }
+                        }
+
+                        // 홈 버튼: 런처 실행
+                        homeBtn.setOnClickListener {
+                            try {
+                                val intent = Intent().apply {
+                                    component = ComponentName("cn.modificator.launcher", "cn.modificator.launcher.Launcher")
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+                                appContext?.startActivity(intent)
+                            } catch (e: Exception) {
+                                YLog.error("Home launch failed: ${e.message}")
+                            }
+                        }
+
+                        // 설정 버튼: 리디 설정 액티비티 독립 실행
+                        settingsBtn.setOnClickListener {
+                            launchIsolatedActivity(
+                                "com.ridi.paper",
+                                "com.ridi.books.viewer.main.activity.SettingsActivity"
+                            )
+                        }
+
+                        // 밝기 버튼: 밝기 조절 팝업 독립 실행
+                        brightnessBtn.setOnClickListener {
+                            launchIsolatedActivity(
+                                "com.ridi.paper",
+                                "com.ridi.books.viewer.common.activity.ExtraBrightnessActivity"
+                            )
                         }
                     }
                 }
+            }
         }
     }
 }

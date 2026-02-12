@@ -2,151 +2,144 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:background="#00000000"
-    android:padding="16dp">
+    android:layout_height="wrap_content">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/overlayCard"
-        android:layout_width="320dp"
+        android:layout_width="@dimen/dialog_width"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:orientation="vertical"
-        android:padding="20dp">
+        android:paddingStart="@dimen/dialog_padding_horizontal"
+        android:paddingEnd="@dimen/dialog_padding_horizontal"
+        android:paddingTop="@dimen/dialog_padding_top"
+        android:paddingBottom="@dimen/dialog_padding_bottom">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guide_left_quarter"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.25" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guide_right_quarter"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.75" />
+
+        <TextView
+            android:id="@+id/brightnessTitle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:textColor="@android:color/black"
+            android:text="@string/brightness_label"
+            android:textSize="@dimen/text_size_title"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/guide_left_quarter"
+            app:layout_constraintStart_toStartOf="@+id/guide_left_quarter"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:orientation="vertical"
-                android:paddingEnd="12dp">
+        <TextView
+            android:id="@+id/brightnessPlus"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="@dimen/title_margin_bottom"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:textColor="@android:color/black"
+            android:text="+"
+            android:textSize="40sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/guide_left_quarter"
+            app:layout_constraintStart_toStartOf="@+id/guide_left_quarter"
+            app:layout_constraintTop_toBottomOf="@+id/brightnessTitle" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="밝기 조절"
-                    android:textColor="@android:color/black"
-                    android:textSize="19sp"
-                    android:textStyle="bold" />
+        <com.hidsquid.refreshpaper.overlay.StackBarView
+            android:id="@+id/brightnessStack"
+            android:layout_width="48dp"
+            android:layout_height="212dp"
+            android:layout_weight="1.0"
+            app:barCount="20"
+            app:barGap="4dp"
+            app:layout_constraintEnd_toEndOf="@+id/guide_left_quarter"
+            app:layout_constraintStart_toStartOf="@+id/guide_left_quarter"
+            app:layout_constraintTop_toBottomOf="@+id/brightnessPlus" />
 
-                <TextView
-                    android:id="@+id/brightnessPlus"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center"
-                    android:minWidth="48dp"
-                    android:minHeight="48dp"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="6dp"
-                    android:text="+"
-                    android:textColor="@android:color/black"
-                    android:textSize="40sp"
-                    android:textStyle="bold" />
+        <TextView
+            android:id="@+id/brightnessMinus"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:textColor="@android:color/black"
+            android:text="-"
+            android:textSize="40sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/guide_left_quarter"
+            app:layout_constraintStart_toStartOf="@+id/guide_left_quarter"
+            app:layout_constraintTop_toBottomOf="@+id/brightnessStack" />
 
-                <com.hidsquid.refreshpaper.overlay.StackBarView
-                    android:id="@+id/brightnessStack"
-                    android:layout_width="56dp"
-                    android:layout_height="212dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    app:barCount="18"
-                    app:progress="0.65" />
+        <TextView
+            android:id="@+id/brightnessColorTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:text="@string/brightness_color_label"
+            android:textSize="@dimen/text_size_title"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/guide_right_quarter"
+            app:layout_constraintStart_toStartOf="@+id/guide_right_quarter"
+            app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/brightnessMinus"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center"
-                    android:minWidth="48dp"
-                    android:minHeight="48dp"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="6dp"
-                    android:text="-"
-                    android:textColor="@android:color/black"
-                    android:textSize="40sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+        <TextView
+            android:id="@+id/brightnessColorPlus"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="@dimen/title_margin_bottom"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:textColor="@android:color/black"
+            android:text="+"
+            android:textSize="40sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/guide_right_quarter"
+            app:layout_constraintStart_toStartOf="@+id/guide_right_quarter"
+            app:layout_constraintTop_toBottomOf="@+id/brightnessColorTitle" />
 
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="#E0E0E0" />
+        <com.hidsquid.refreshpaper.overlay.StackBarView
+            android:id="@+id/brightnessColorStack"
+            android:layout_width="48dp"
+            android:layout_height="212dp"
+            app:barCount="20"
+            app:barGap="4dp"
+            app:layout_constraintEnd_toEndOf="@+id/guide_right_quarter"
+            app:layout_constraintStart_toStartOf="@+id/guide_right_quarter"
+            app:layout_constraintTop_toBottomOf="@+id/brightnessColorPlus" />
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:orientation="vertical"
-                android:paddingStart="12dp">
+        <TextView
+            android:id="@+id/brightnessColorMinus"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:textColor="@android:color/black"
+            android:text="-"
+            android:textSize="40sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/guide_right_quarter"
+            app:layout_constraintStart_toStartOf="@+id/guide_right_quarter"
+            app:layout_constraintTop_toBottomOf="@+id/brightnessColorStack" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="색 온도 조절"
-                    android:textColor="@android:color/black"
-                    android:textSize="19sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/colorPlus"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center"
-                    android:minWidth="48dp"
-                    android:minHeight="48dp"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="6dp"
-                    android:text="+"
-                    android:textColor="@android:color/black"
-                    android:textSize="40sp"
-                    android:textStyle="bold" />
-
-                <com.hidsquid.refreshpaper.overlay.StackBarView
-                    android:id="@+id/colorStack"
-                    android:layout_width="56dp"
-                    android:layout_height="212dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    app:barCount="18"
-                    app:progress="0.35" />
-
-                <TextView
-                    android:id="@+id/colorMinus"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center"
-                    android:minWidth="48dp"
-                    android:minHeight="48dp"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="6dp"
-                    android:text="-"
-                    android:textColor="@android:color/black"
-                    android:textSize="40sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </LinearLayout>
-
-    </LinearLayout>
-
+        <View
+            android:id="@+id/divider"
+            android:layout_width="@dimen/divider_height"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/item_padding_vertical"
+            android:layout_marginBottom="@dimen/item_padding_vertical"
+            android:background="#E0E0E0"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
