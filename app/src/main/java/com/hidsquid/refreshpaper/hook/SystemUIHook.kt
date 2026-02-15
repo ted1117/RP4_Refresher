@@ -5,6 +5,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.view.View
 import android.widget.ImageButton
 import com.highcapable.yukihookapi.hook.factory.field
@@ -13,6 +14,12 @@ import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
 
 object SystemUIHook {
+
+    private const val GLOBAL_KEY_HOME_LAUNCHER_COMPONENT = "refresh_paper_home_launcher_component"
+    private val DEFAULT_HOME_COMPONENT = ComponentName(
+        "cn.modificator.launcher",
+        "cn.modificator.launcher.Launcher"
+    )
 
     fun inject(param: PackageParam) {
         param.loadApp("com.android.systemui") {
@@ -83,16 +90,33 @@ object SystemUIHook {
 
                         homeBtn.setOnClickListener {
                             try {
-                                val intent = Intent().apply {
-                                    component = ComponentName(
-                                        "cn.modificator.launcher",
-                                        "cn.modificator.launcher.Launcher"
+                                val configuredHome = try {
+                                    Settings.Global.getString(
+                                        appContext?.contentResolver,
+                                        GLOBAL_KEY_HOME_LAUNCHER_COMPONENT
                                     )
+                                } catch (_: Throwable) {
+                                    null
+                                }
+                                val homeComponent = configuredHome?.let(ComponentName::unflattenFromString)
+                                    ?: DEFAULT_HOME_COMPONENT
+
+                                val intent = Intent().apply {
+                                    component = homeComponent
                                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                 }
                                 appContext?.startActivity(intent)
                             } catch (e: Exception) {
-                                YLog.error("Home launch failed: ${e.message}")
+                                YLog.error("Home launch failed, fallback to default: ${e.message}")
+                                try {
+                                    val fallbackIntent = Intent().apply {
+                                        component = DEFAULT_HOME_COMPONENT
+                                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    }
+                                    appContext?.startActivity(fallbackIntent)
+                                } catch (fallbackError: Exception) {
+                                    YLog.error("Default home launch failed: ${fallbackError.message}")
+                                }
                             }
                         }
 

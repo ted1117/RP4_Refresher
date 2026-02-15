@@ -82,6 +82,22 @@ class SettingsRepository(
         }
     }
 
+    fun getHomeLauncherComponent(): String =
+        try {
+            Settings.Global.getString(cr, GLOBAL_KEY_HOME_LAUNCHER_COMPONENT)
+                ?.takeIf { it.isNotBlank() }
+                ?: DEFAULT_HOME_LAUNCHER_COMPONENT
+        } catch (_: Throwable) {
+            DEFAULT_HOME_LAUNCHER_COMPONENT
+        }
+
+    fun setHomeLauncherComponent(componentName: String): Boolean =
+        try {
+            Settings.Global.putString(cr, GLOBAL_KEY_HOME_LAUNCHER_COMPONENT, componentName)
+        } catch (_: Throwable) {
+            false
+        }
+
     companion object {
         private const val PREFS_NAME = "MyPrefs"
 
@@ -98,7 +114,13 @@ class SettingsRepository(
 
         private const val GLOBAL_KEY_TOUCH_REFRESH_ENABLED = "refresh_paper_auto_enabled"
         private const val GLOBAL_KEY_PAGES_PER_REFRESH = "refresh_paper_pages_per_refresh"
+        private const val GLOBAL_KEY_HOME_LAUNCHER_COMPONENT = "refresh_paper_home_launcher_component"
         private const val GLOBAL_KEY_SCREEN_BRIGHTNESS = "screen_brightness"
         private const val GLOBAL_KEY_SCREEN_BRIGHTNESS_COLOR = "screen_brightness_color"
+
+        const val DEFAULT_HOME_LAUNCHER_PACKAGE = "cn.modificator.launcher"
+        private const val DEFAULT_HOME_LAUNCHER_CLASS = "cn.modificator.launcher.Launcher"
+        const val DEFAULT_HOME_LAUNCHER_COMPONENT =
+            "$DEFAULT_HOME_LAUNCHER_PACKAGE/$DEFAULT_HOME_LAUNCHER_CLASS"
     }
 }

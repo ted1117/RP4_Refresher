@@ -213,7 +213,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/labsGroupContainer"
+        android:id="@+id/homeLauncherGroupContainer"
         style="@style/GroupContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -221,6 +221,50 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/screenshotGroupContainer">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/homeLauncherCard"
+            style="@style/ListItemContainer">
+
+            <TextView
+                android:id="@+id/homeLauncherTitle"
+                style="@style/ListItemTitle"
+                android:text="@string/setting_title_home_launcher"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/homeLauncherArrow"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvHomeLauncherSetting"
+                style="@style/ListItemDesc"
+                android:text="@string/setting_desc_home_launcher_default"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/homeLauncherArrow"
+                app:layout_constraintTop_toBottomOf="@+id/homeLauncherTitle"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <ImageView
+                android:id="@+id/homeLauncherArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_arrow_right"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/labsGroupContainer"
+        style="@style/GroupContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/screen_padding_horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/homeLauncherGroupContainer">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/labsCard"
