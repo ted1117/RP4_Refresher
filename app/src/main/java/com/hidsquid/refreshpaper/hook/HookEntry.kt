@@ -19,6 +19,6 @@ class HookEntry : IYukiHookXposedInit {
     override fun onHook() = encase {
         SystemServerHook.inject(this)
         AutoRefreshHook.inject(this)
-        RidiSystemUIHook.inject(this)
+        SystemUIHook.inject(this)
     }
 }

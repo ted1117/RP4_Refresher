@@ -9,11 +9,10 @@ import android.view.View
 import android.widget.ImageButton
 import com.highcapable.yukihookapi.hook.factory.field
 import com.highcapable.yukihookapi.hook.factory.method
-import com.highcapable.yukihookapi.hook.factory.toClass
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
 
-object RidiSystemUIHook {
+object SystemUIHook {
 
     fun inject(param: PackageParam) {
         param.loadApp("com.android.systemui") {
