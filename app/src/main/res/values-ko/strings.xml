@@ -37,6 +37,13 @@
     <string name="setting_title_screenshot_feature">스크린샷 허용</string>
     <string name="setting_desc_screenshot_feature">스크린샷 기능 활성화</string>
 
+    <!-- Home Launcher -->
+    <string name="setting_title_home_launcher">홈 버튼 런처</string>
+    <string name="setting_desc_home_launcher_default">E-ink Launcher</string>
+    <string name="dialog_title_home_launcher">런처 앱 선택</string>
+    <string name="toast_home_launcher_no_apps">설치된 런처 앱이 없습니다</string>
+    <string name="toast_home_launcher_save_failed">런처 설정 저장에 실패했습니다</string>
+
     <!-- Labs -->
     <string name="labs_title">실험실</string>
     <string name="labs_description">실험적인 기능 및 설정</string>

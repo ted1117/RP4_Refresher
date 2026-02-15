@@ -19,6 +19,7 @@ import com.hidsquid.refreshpaper.databinding.ActivityMainBinding
 import com.hidsquid.refreshpaper.brightness.BrightnessDialogController
 import com.hidsquid.refreshpaper.device.DeviceSecurityController
 import com.hidsquid.refreshpaper.epd.EPDDisplayModeController
+import com.hidsquid.refreshpaper.launcher.HomeLauncherDialogController
 import com.hidsquid.refreshpaper.service.KeyInputDetectingService
 import com.hidsquid.refreshpaper.utils.AccessibilityUtils
 import kotlinx.coroutines.launch
@@ -32,6 +33,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var epdController: EPDDisplayModeController
     private lateinit var deviceSecurityController: DeviceSecurityController
     private lateinit var brightnessDialogController: BrightnessDialogController
+    private lateinit var homeLauncherDialogController: HomeLauncherDialogController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +44,7 @@ class MainActivity : ComponentActivity() {
         epdController = EPDDisplayModeController(this)
         deviceSecurityController = DeviceSecurityController(this)
         brightnessDialogController = BrightnessDialogController(this, settingsRepository)
+        homeLauncherDialogController = HomeLauncherDialogController(this, settingsRepository)
 
         checkPermissionAndShowUI()
         loadSettings()
@@ -77,6 +80,7 @@ class MainActivity : ComponentActivity() {
 
         updateSummaryText()
         updateEpdModeSummary()
+        updateHomeLauncherSummary()
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -131,6 +135,10 @@ class MainActivity : ComponentActivity() {
 
         layout.screenshotCard.setOnClickListener {
             layout.screenshotSwitch.isChecked = !layout.screenshotSwitch.isChecked
+        }
+
+        layout.homeLauncherCard.setOnClickListener {
+            homeLauncherDialogController.show { updateHomeLauncherSummary() }
         }
 
         layout.labsCard.setOnClickListener {
@@ -308,6 +316,11 @@ class MainActivity : ComponentActivity() {
         dialog.show()
         val widthPx = resources.getDimensionPixelSize(R.dimen.dialog_width)
         dialog.window?.setLayout(widthPx, android.view.ViewGroup.LayoutParams.WRAP_CONTENT)
+    }
+
+    private fun updateHomeLauncherSummary() {
+        val selectedLabel = homeLauncherDialogController.getSelectedLauncherLabel()
+        binding.layoutSettings.tvHomeLauncherSetting.text = selectedLabel
     }
 
     private fun updateSummaryText() {

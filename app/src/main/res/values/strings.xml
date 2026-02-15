@@ -36,6 +36,13 @@
     <string name="setting_title_screenshot_feature">Enable Screenshot</string>
     <string name="setting_desc_screenshot_feature">Allow taking screenshots</string>
 
+    <!-- Home Launcher -->
+    <string name="setting_title_home_launcher">Home Button Launcher</string>
+    <string name="setting_desc_home_launcher_default">E-ink Launcher</string>
+    <string name="dialog_title_home_launcher">Select launcher app</string>
+    <string name="toast_home_launcher_no_apps">No launcher apps found</string>
+    <string name="toast_home_launcher_save_failed">Failed to save launcher setting</string>
+
     <!-- Labs -->
     <string name="labs_title">Labs</string>
     <string name="labs_description">Experimental features and settings</string>
