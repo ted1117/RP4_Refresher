@@ -1,381 +1,447 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:orientation="vertical"
+    android:paddingStart="?android:attr/listPreferredItemPaddingLeft"
+    android:paddingEnd="?android:attr/listPreferredItemPaddingRight"
+    android:paddingTop="@dimen/group_margin_top"
+    android:paddingBottom="@dimen/screen_padding_horizontal">
 
     <LinearLayout
+        android:id="@+id/tabContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingStart="?android:attr/listPreferredItemPaddingLeft"
-        android:paddingEnd="?android:attr/listPreferredItemPaddingRight"
-        android:paddingTop="@dimen/group_margin_top"
-        android:paddingBottom="@dimen/screen_padding_horizontal">
+        android:layout_marginBottom="@dimen/screen_padding_horizontal"
+        android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/refreshSectionTitle"
-            android:layout_width="match_parent"
+            android:id="@+id/tabPrimary"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="6dp"
-            android:paddingStart="4dp"
-            android:text="@string/settings_section_refresh"
+            android:layout_weight="1"
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/bg_settings_tab"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:minHeight="44dp"
+            android:paddingStart="12dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="8dp"
+            android:text="@string/settings_tab_refresh_display"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@color/text_secondary"
+            android:textColor="@color/settings_tab_text"
             android:textStyle="bold" />
-
-        <LinearLayout
-            android:id="@+id/groupContainer"
-            style="@style/GroupContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/autoRefreshCard"
-                style="@style/ListItemContainer">
-
-                <TextView
-                    android:id="@+id/autoRefreshTitle"
-                    style="@style/ListItemTitle"
-                    android:text="@string/auto_refresh_cardview_headline"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/autoRefreshSwitch"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/tvCurrentSetting"
-                    style="@style/ListItemDesc"
-                    android:text="@string/auto_refresh_cardview_text"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/autoRefreshSwitch"
-                    app:layout_constraintTop_toBottomOf="@+id/autoRefreshTitle"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-
-                <Switch
-                    android:id="@+id/autoRefreshSwitch"
-                    style="@style/ListItemSwitch"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/divider_height"
-                android:background="@color/divider_color" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/manualRefreshCard"
-                style="@style/ListItemContainer">
-
-                <TextView
-                    android:id="@+id/manualRefreshTitle"
-                    style="@style/ListItemTitle"
-                    android:text="@string/manual_refresh_cardview_headline"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/manualRefreshSwitch"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    style="@style/ListItemDesc"
-                    android:text="@string/manual_refresh_cardview_text"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/manualRefreshSwitch"
-                    app:layout_constraintTop_toBottomOf="@+id/manualRefreshTitle"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-
-                <Switch
-                    android:id="@+id/manualRefreshSwitch"
-                    style="@style/ListItemSwitch"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </LinearLayout>
 
         <TextView
-            android:id="@+id/displaySectionTitle"
-            android:layout_width="match_parent"
+            android:id="@+id/tabSecondary"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/screen_padding_horizontal"
-            android:layout_marginBottom="6dp"
-            android:paddingStart="4dp"
-            android:text="@string/settings_section_display"
+            android:layout_weight="1"
+            android:layout_marginStart="6dp"
+            android:background="@drawable/bg_settings_tab"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:minHeight="44dp"
+            android:paddingStart="12dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="8dp"
+            android:text="@string/settings_tab_security_system_advanced"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@color/text_secondary"
+            android:textColor="@color/settings_tab_text"
             android:textStyle="bold" />
-
-        <LinearLayout
-            android:id="@+id/epdModeGroupContainer"
-            style="@style/GroupContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/epdModeCard"
-                style="@style/ListItemContainer">
-
-                <TextView
-                    android:id="@+id/epdModeTitle"
-                    style="@style/ListItemTitle"
-                    android:text="@string/setting_title_display_mode"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/epdModeArrow"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/tvEpdModeSetting"
-                    style="@style/ListItemDesc"
-                    android:text="@string/setting_value_display_mode_normal"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/epdModeArrow"
-                    app:layout_constraintTop_toBottomOf="@+id/epdModeTitle"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-
-                <ImageView
-                    android:id="@+id/epdModeArrow"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_arrow_right"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/divider_height"
-                android:background="@color/divider_color" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/brightnessCard"
-                style="@style/ListItemContainer">
-
-                <TextView
-                    android:id="@+id/brightnessTitle"
-                    style="@style/ListItemTitle"
-                    android:text="@string/setting_title_brightness_color"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/brightnessArrow"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/brightnessDesc"
-                    style="@style/ListItemDesc"
-                    android:text="@string/setting_desc_brightness_color"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/brightnessArrow"
-                    app:layout_constraintTop_toBottomOf="@+id/brightnessTitle"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-
-                <ImageView
-                    android:id="@+id/brightnessArrow"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_arrow_right"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/securitySectionTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/screen_padding_horizontal"
-            android:layout_marginBottom="6dp"
-            android:paddingStart="4dp"
-            android:text="@string/settings_section_security"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@color/text_secondary"
-            android:textStyle="bold" />
-
-        <LinearLayout
-            android:id="@+id/screenshotGroupContainer"
-            style="@style/GroupContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/screenshotCard"
-                style="@style/ListItemContainer">
-
-                <TextView
-                    android:id="@+id/screenshotTitle"
-                    style="@style/ListItemTitle"
-                    android:text="@string/setting_title_screenshot_feature"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/screenshotSwitch"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    style="@style/ListItemDesc"
-                    android:text="@string/setting_desc_screenshot_feature"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/screenshotSwitch"
-                    app:layout_constraintTop_toBottomOf="@+id/screenshotTitle"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-
-                <Switch
-                    android:id="@+id/screenshotSwitch"
-                    style="@style/ListItemSwitch"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/systemSectionTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/screen_padding_horizontal"
-            android:layout_marginBottom="6dp"
-            android:paddingStart="4dp"
-            android:text="@string/settings_section_system"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@color/text_secondary"
-            android:textStyle="bold" />
-
-        <LinearLayout
-            android:id="@+id/homeLauncherGroupContainer"
-            style="@style/GroupContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/homeLauncherCard"
-                style="@style/ListItemContainer">
-
-                <TextView
-                    android:id="@+id/homeLauncherTitle"
-                    style="@style/ListItemTitle"
-                    android:text="@string/setting_title_home_launcher"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/homeLauncherArrow"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/tvHomeLauncherSetting"
-                    style="@style/ListItemDesc"
-                    android:text="@string/setting_desc_home_launcher_default"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/homeLauncherArrow"
-                    app:layout_constraintTop_toBottomOf="@+id/homeLauncherTitle"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-
-                <ImageView
-                    android:id="@+id/homeLauncherArrow"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_arrow_right"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/divider_height"
-                android:background="@color/divider_color" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/shutdownTimerCard"
-                style="@style/ListItemContainer">
-
-                <TextView
-                    android:id="@+id/shutdownTimerTitle"
-                    style="@style/ListItemTitle"
-                    android:text="@string/setting_title_shutdown_timer"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/shutdownTimerArrow"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/tvShutdownTimerSetting"
-                    style="@style/ListItemDesc"
-                    android:text="@string/setting_value_shutdown_timer_1h"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/shutdownTimerArrow"
-                    app:layout_constraintTop_toBottomOf="@+id/shutdownTimerTitle"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-
-                <ImageView
-                    android:id="@+id/shutdownTimerArrow"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_arrow_right"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/advancedSectionTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/screen_padding_horizontal"
-            android:layout_marginBottom="6dp"
-            android:paddingStart="4dp"
-            android:text="@string/settings_section_advanced"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@color/text_secondary"
-            android:textStyle="bold" />
-
-        <LinearLayout
-            android:id="@+id/labsGroupContainer"
-            style="@style/GroupContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/labsCard"
-                style="@style/ListItemContainer">
-
-                <TextView
-                    android:id="@+id/labsTitle"
-                    style="@style/ListItemTitle"
-                    android:text="@string/labs_title"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/labsArrow"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    style="@style/ListItemDesc"
-                    android:text="@string/labs_description"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/labsArrow"
-                    app:layout_constraintTop_toBottomOf="@+id/labsTitle"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-
-                <ImageView
-                    android:id="@+id/labsArrow"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_arrow_right"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </LinearLayout>
 
     </LinearLayout>
 
-</androidx.core.widget.NestedScrollView>
+    <FrameLayout
+        android:id="@+id/settingsContentFrame"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:id="@+id/settingsPagePrimary"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/refreshSectionTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:paddingStart="4dp"
+                android:text="@string/settings_section_refresh"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/text_secondary"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/groupContainer"
+                style="@style/GroupContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/autoRefreshCard"
+                    style="@style/ListItemContainer">
+
+                    <TextView
+                        android:id="@+id/autoRefreshTitle"
+                        style="@style/ListItemTitle"
+                        android:text="@string/auto_refresh_cardview_headline"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/autoRefreshSwitch"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvCurrentSetting"
+                        style="@style/ListItemDesc"
+                        android:text="@string/auto_refresh_cardview_text"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/autoRefreshSwitch"
+                        app:layout_constraintTop_toBottomOf="@+id/autoRefreshTitle"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <Switch
+                        android:id="@+id/autoRefreshSwitch"
+                        style="@style/ListItemSwitch"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/divider_height"
+                    android:background="@color/divider_color" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/manualRefreshCard"
+                    style="@style/ListItemContainer">
+
+                    <TextView
+                        android:id="@+id/manualRefreshTitle"
+                        style="@style/ListItemTitle"
+                        android:text="@string/manual_refresh_cardview_headline"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/manualRefreshSwitch"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        style="@style/ListItemDesc"
+                        android:text="@string/manual_refresh_cardview_text"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/manualRefreshSwitch"
+                        app:layout_constraintTop_toBottomOf="@+id/manualRefreshTitle"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <Switch
+                        android:id="@+id/manualRefreshSwitch"
+                        style="@style/ListItemSwitch"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/displaySectionTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/screen_padding_horizontal"
+                android:layout_marginBottom="6dp"
+                android:paddingStart="4dp"
+                android:text="@string/settings_section_display"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/text_secondary"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/epdModeGroupContainer"
+                style="@style/GroupContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/epdModeCard"
+                    style="@style/ListItemContainer">
+
+                    <TextView
+                        android:id="@+id/epdModeTitle"
+                        style="@style/ListItemTitle"
+                        android:text="@string/setting_title_display_mode"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/epdModeArrow"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvEpdModeSetting"
+                        style="@style/ListItemDesc"
+                        android:text="@string/setting_value_display_mode_normal"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/epdModeArrow"
+                        app:layout_constraintTop_toBottomOf="@+id/epdModeTitle"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/epdModeArrow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_arrow_right"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/divider_height"
+                    android:background="@color/divider_color" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/brightnessCard"
+                    style="@style/ListItemContainer">
+
+                    <TextView
+                        android:id="@+id/brightnessTitle"
+                        style="@style/ListItemTitle"
+                        android:text="@string/setting_title_brightness_color"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/brightnessArrow"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/brightnessDesc"
+                        style="@style/ListItemDesc"
+                        android:text="@string/setting_desc_brightness_color"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/brightnessArrow"
+                        app:layout_constraintTop_toBottomOf="@+id/brightnessTitle"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/brightnessArrow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_arrow_right"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/settingsPageSecondary"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/securitySectionTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:paddingStart="4dp"
+                android:text="@string/settings_section_security"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/text_secondary"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/screenshotGroupContainer"
+                style="@style/GroupContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/screenshotCard"
+                    style="@style/ListItemContainer">
+
+                    <TextView
+                        android:id="@+id/screenshotTitle"
+                        style="@style/ListItemTitle"
+                        android:text="@string/setting_title_screenshot_feature"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/screenshotSwitch"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        style="@style/ListItemDesc"
+                        android:text="@string/setting_desc_screenshot_feature"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/screenshotSwitch"
+                        app:layout_constraintTop_toBottomOf="@+id/screenshotTitle"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <Switch
+                        android:id="@+id/screenshotSwitch"
+                        style="@style/ListItemSwitch"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/systemSectionTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/screen_padding_horizontal"
+                android:layout_marginBottom="6dp"
+                android:paddingStart="4dp"
+                android:text="@string/settings_section_system"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/text_secondary"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/homeLauncherGroupContainer"
+                style="@style/GroupContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/homeLauncherCard"
+                    style="@style/ListItemContainer">
+
+                    <TextView
+                        android:id="@+id/homeLauncherTitle"
+                        style="@style/ListItemTitle"
+                        android:text="@string/setting_title_home_launcher"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/homeLauncherArrow"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvHomeLauncherSetting"
+                        style="@style/ListItemDesc"
+                        android:text="@string/setting_desc_home_launcher_default"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/homeLauncherArrow"
+                        app:layout_constraintTop_toBottomOf="@+id/homeLauncherTitle"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/homeLauncherArrow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_arrow_right"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/divider_height"
+                    android:background="@color/divider_color" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/shutdownTimerCard"
+                    style="@style/ListItemContainer">
+
+                    <TextView
+                        android:id="@+id/shutdownTimerTitle"
+                        style="@style/ListItemTitle"
+                        android:text="@string/setting_title_shutdown_timer"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/shutdownTimerArrow"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvShutdownTimerSetting"
+                        style="@style/ListItemDesc"
+                        android:text="@string/setting_value_shutdown_timer_1h"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/shutdownTimerArrow"
+                        app:layout_constraintTop_toBottomOf="@+id/shutdownTimerTitle"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/shutdownTimerArrow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_arrow_right"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/advancedSectionTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/screen_padding_horizontal"
+                android:layout_marginBottom="6dp"
+                android:paddingStart="4dp"
+                android:text="@string/settings_section_advanced"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/text_secondary"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/labsGroupContainer"
+                style="@style/GroupContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/labsCard"
+                    style="@style/ListItemContainer">
+
+                    <TextView
+                        android:id="@+id/labsTitle"
+                        style="@style/ListItemTitle"
+                        android:text="@string/labs_title"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/labsArrow"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        style="@style/ListItemDesc"
+                        android:text="@string/labs_description"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/labsArrow"
+                        app:layout_constraintTop_toBottomOf="@+id/labsTitle"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/labsArrow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_arrow_right"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</LinearLayout>

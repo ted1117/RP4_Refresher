@@ -22,6 +22,8 @@
     <string name="epd_mode_normal_description">전자 잉크 디스플레이의 일반적인 잔상을\n허용합니다.</string>
 
     <!-- Settings Screen -->
+    <string name="settings_tab_refresh_display">Refresh · Display</string>
+    <string name="settings_tab_security_system_advanced">Security · System · Advanced</string>
     <string name="settings_section_refresh">Refresh</string>
     <string name="settings_section_display">Display</string>
     <string name="settings_section_security">Security</string>

@@ -21,6 +21,9 @@
         <meta-data android:name="xposedmodule" android:value="true" />
         <meta-data android:name="xposeddescription" android:value="Screen Capture Bypass" />
         <meta-data android:name="xposedminversion" android:value="93" />
+        <meta-data
+            android:name="xposedscope"
+            android:value="android;com.android.systemui;com.yes24.ebook.einkstore;kr.co.aladin.ebook" />
 
         <activity
             android:name=".MainActivity"

@@ -90,6 +90,7 @@ class MainActivity : ComponentActivity() {
     @SuppressLint("ClickableViewAccessibility")
     private fun setupListeners() {
         val layout = binding.layoutSettings
+        setupSettingsTabs()
 
         val showDialogAction = View.OnClickListener { showPageCountDialog() }
         layout.autoRefreshCard.setOnClickListener(showDialogAction)
@@ -152,6 +153,21 @@ class MainActivity : ComponentActivity() {
         layout.labsCard.setOnClickListener {
             startActivity(Intent(this, LabsActivity::class.java))
         }
+    }
+
+    private fun setupSettingsTabs() {
+        val layout = binding.layoutSettings
+
+        fun selectPrimaryTab(primary: Boolean) {
+            layout.tabPrimary.isSelected = primary
+            layout.tabSecondary.isSelected = !primary
+            layout.settingsPagePrimary.visibility = if (primary) View.VISIBLE else View.GONE
+            layout.settingsPageSecondary.visibility = if (primary) View.GONE else View.VISIBLE
+        }
+
+        layout.tabPrimary.setOnClickListener { selectPrimaryTab(true) }
+        layout.tabSecondary.setOnClickListener { selectPrimaryTab(false) }
+        selectPrimaryTab(true)
     }
 
     private fun attachAutoOffListener() {
