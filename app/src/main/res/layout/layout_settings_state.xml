@@ -264,7 +264,7 @@
         android:layout_marginTop="@dimen/screen_padding_horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/homeLauncherGroupContainer">
+        app:layout_constraintTop_toBottomOf="@+id/shutdownTimerGroupContainer">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/labsCard"
@@ -288,6 +288,50 @@
 
             <ImageView
                 android:id="@+id/labsArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_arrow_right"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/shutdownTimerGroupContainer"
+        style="@style/GroupContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/screen_padding_horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/homeLauncherGroupContainer">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/shutdownTimerCard"
+            style="@style/ListItemContainer">
+
+            <TextView
+                android:id="@+id/shutdownTimerTitle"
+                style="@style/ListItemTitle"
+                android:text="@string/setting_title_shutdown_timer"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/shutdownTimerArrow"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvShutdownTimerSetting"
+                style="@style/ListItemDesc"
+                android:text="@string/setting_value_shutdown_timer_1h"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/shutdownTimerArrow"
+                app:layout_constraintTop_toBottomOf="@+id/shutdownTimerTitle"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <ImageView
+                android:id="@+id/shutdownTimerArrow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_arrow_right"

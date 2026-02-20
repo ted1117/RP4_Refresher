@@ -20,5 +20,6 @@ class HookEntry : IYukiHookXposedInit {
         SystemServerHook.inject(this)
         AutoRefreshHook.inject(this)
         SystemUIHook.inject(this)
+        ShutdownTimerValidatorHook.inject(this)
     }
 }

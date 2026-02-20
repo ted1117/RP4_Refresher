@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/dialog_width"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="?android:attr/dialogPreferredPadding"
+    android:paddingBottom="?android:attr/dialogPreferredPadding">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/dialog_title_shutdown_timer"
+        android:textSize="@dimen/text_size_title"
+        android:textStyle="bold"
+        android:textColor="@color/text_primary"
+        android:paddingStart="?android:attr/dialogPreferredPadding"
+        android:paddingEnd="?android:attr/dialogPreferredPadding"
+        android:layout_marginBottom="@dimen/title_margin_bottom" />
+
+    <RelativeLayout
+        android:id="@+id/item1h"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingVertical="@dimen/item_padding_vertical"
+        android:paddingHorizontal="?android:attr/dialogPreferredPadding">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/shutdown_timer_option_1h"
+            android:textSize="@dimen/text_size_item"
+            android:textColor="@color/text_primary"
+            android:layout_centerVertical="true"/>
+
+        <ImageView
+            android:id="@+id/check1h"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:src="@drawable/ic_check"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:visibility="invisible"/>
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:background="@color/dialog_divider_color"
+        android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"/>
+
+    <RelativeLayout
+        android:id="@+id/item3h"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingVertical="@dimen/item_padding_vertical"
+        android:paddingHorizontal="?android:attr/dialogPreferredPadding">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/shutdown_timer_option_3h"
+            android:textSize="@dimen/text_size_item"
+            android:textColor="@color/text_primary"
+            android:layout_centerVertical="true"/>
+
+        <ImageView
+            android:id="@+id/check3h"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:src="@drawable/ic_check"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:visibility="invisible"/>
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:background="@color/dialog_divider_color"
+        android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"/>
+
+    <RelativeLayout
+        android:id="@+id/item6h"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingVertical="@dimen/item_padding_vertical"
+        android:paddingHorizontal="?android:attr/dialogPreferredPadding">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/shutdown_timer_option_6h"
+            android:textSize="@dimen/text_size_item"
+            android:textColor="@color/text_primary"
+            android:layout_centerVertical="true"/>
+
+        <ImageView
+            android:id="@+id/check6h"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:src="@drawable/ic_check"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:visibility="invisible"/>
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:background="@color/dialog_divider_color"
+        android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"/>
+
+    <RelativeLayout
+        android:id="@+id/item12h"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingVertical="@dimen/item_padding_vertical"
+        android:paddingHorizontal="?android:attr/dialogPreferredPadding">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/shutdown_timer_option_12h"
+            android:textSize="@dimen/text_size_item"
+            android:textColor="@color/text_primary"
+            android:layout_centerVertical="true"/>
+
+        <ImageView
+            android:id="@+id/check12h"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:src="@drawable/ic_check"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:visibility="invisible"/>
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:background="@color/dialog_divider_color"
+        android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"/>
+
+    <RelativeLayout
+        android:id="@+id/item24h"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingVertical="@dimen/item_padding_vertical"
+        android:paddingHorizontal="?android:attr/dialogPreferredPadding">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/shutdown_timer_option_24h"
+            android:textSize="@dimen/text_size_item"
+            android:textColor="@color/text_primary"
+            android:layout_centerVertical="true"/>
+
+        <ImageView
+            android:id="@+id/check24h"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:src="@drawable/ic_check"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:visibility="invisible"/>
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:background="@color/dialog_divider_color"
+        android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"/>
+
+    <RelativeLayout
+        android:id="@+id/item48h"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingVertical="@dimen/item_padding_vertical"
+        android:paddingHorizontal="?android:attr/dialogPreferredPadding">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/shutdown_timer_option_48h"
+            android:textSize="@dimen/text_size_item"
+            android:textColor="@color/text_primary"
+            android:layout_centerVertical="true"/>
+
+        <ImageView
+            android:id="@+id/check48h"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:src="@drawable/ic_check"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:visibility="invisible"/>
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:background="@color/dialog_divider_color"
+        android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"/>
+
+    <RelativeLayout
+        android:id="@+id/item72h"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingVertical="@dimen/item_padding_vertical"
+        android:paddingHorizontal="?android:attr/dialogPreferredPadding">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/shutdown_timer_option_72h"
+            android:textSize="@dimen/text_size_item"
+            android:textColor="@color/text_primary"
+            android:layout_centerVertical="true"/>
+
+        <ImageView
+            android:id="@+id/check72h"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:src="@drawable/ic_check"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:visibility="invisible"/>
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:background="@color/dialog_divider_color"
+        android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"/>
+
+    <RelativeLayout
+        android:id="@+id/itemOff"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingVertical="@dimen/item_padding_vertical"
+        android:paddingHorizontal="?android:attr/dialogPreferredPadding">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/shutdown_timer_option_off"
+            android:textSize="@dimen/text_size_item"
+            android:textColor="@color/text_primary"
+            android:layout_centerVertical="true"/>
+
+        <ImageView
+            android:id="@+id/checkOff"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:src="@drawable/ic_check"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:visibility="invisible"/>
+    </RelativeLayout>
+
+</LinearLayout>

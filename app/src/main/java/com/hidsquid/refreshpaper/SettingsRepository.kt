@@ -98,6 +98,22 @@ class SettingsRepository(
             false
         }
 
+    fun getShutdownTimerHours(default: Int = DEFAULT_SHUTDOWN_TIMER_HOURS): Int {
+        val rawMinutes = Settings.System.getInt(cr, GLOBAL_KEY_SHUTDOWN_TIMER_VALUE, default * 60)
+        if (rawMinutes == 0) return 0
+        if (rawMinutes < 0 || rawMinutes % 60 != 0) return default
+        return rawMinutes / 60
+    }
+
+    fun setShutdownTimerHours(hours: Int): Boolean {
+        val encodedValue = hours * 60
+        return try {
+            Settings.System.putInt(cr, GLOBAL_KEY_SHUTDOWN_TIMER_VALUE, encodedValue)
+        } catch (_: Throwable) {
+            false
+        }
+    }
+
     companion object {
         private const val PREFS_NAME = "MyPrefs"
 
@@ -117,10 +133,13 @@ class SettingsRepository(
         private const val GLOBAL_KEY_HOME_LAUNCHER_COMPONENT = "refresh_paper_home_launcher_component"
         private const val GLOBAL_KEY_SCREEN_BRIGHTNESS = "screen_brightness"
         private const val GLOBAL_KEY_SCREEN_BRIGHTNESS_COLOR = "screen_brightness_color"
+        private const val GLOBAL_KEY_SHUTDOWN_TIMER_VALUE = "shutdown_timer_value"
 
         const val DEFAULT_HOME_LAUNCHER_PACKAGE = "cn.modificator.launcher"
         private const val DEFAULT_HOME_LAUNCHER_CLASS = "cn.modificator.launcher.Launcher"
         const val DEFAULT_HOME_LAUNCHER_COMPONENT =
             "$DEFAULT_HOME_LAUNCHER_PACKAGE/$DEFAULT_HOME_LAUNCHER_CLASS"
+
+        const val DEFAULT_SHUTDOWN_TIMER_HOURS = 1
     }
 }
