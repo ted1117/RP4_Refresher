@@ -17,6 +17,7 @@ class ShutdownTimerDialogController(
     private val settingsRepository: SettingsRepository,
 ) {
     private val hourItems = listOf(
+        0 to (R.id.itemOff to R.id.checkOff),
         1 to (R.id.item1h to R.id.check1h),
         3 to (R.id.item3h to R.id.check3h),
         6 to (R.id.item6h to R.id.check6h),
@@ -51,6 +52,7 @@ class ShutdownTimerDialogController(
 
         val onClick = View.OnClickListener { view ->
             val selectedHours = when (view.id) {
+                R.id.itemOff -> 0
                 R.id.item1h -> 1
                 R.id.item3h -> 3
                 R.id.item6h -> 6
@@ -89,6 +91,7 @@ class ShutdownTimerDialogController(
 
     fun getSelectedTimerLabel(): String {
         val hours = settingsRepository.getShutdownTimerHours()
+        if (hours == 0) return context.getString(R.string.shutdown_timer_option_off)
         return context.resources.getQuantityString(R.plurals.setting_value_shutdown_timer_hours, hours, hours)
     }
 }

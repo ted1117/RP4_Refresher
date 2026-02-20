@@ -100,7 +100,8 @@ class SettingsRepository(
 
     fun getShutdownTimerHours(default: Int = DEFAULT_SHUTDOWN_TIMER_HOURS): Int {
         val rawMinutes = Settings.System.getInt(cr, GLOBAL_KEY_SHUTDOWN_TIMER_VALUE, default * 60)
-        if (rawMinutes <= 0 || rawMinutes % 60 != 0) return default
+        if (rawMinutes == 0) return 0
+        if (rawMinutes < 0 || rawMinutes % 60 != 0) return default
         return rawMinutes / 60
     }
 

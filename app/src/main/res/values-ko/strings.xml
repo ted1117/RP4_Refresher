@@ -54,6 +54,7 @@
     <string name="shutdown_timer_option_24h">24시간</string>
     <string name="shutdown_timer_option_48h">48시간</string>
     <string name="shutdown_timer_option_72h">72시간</string>
+    <string name="shutdown_timer_option_off">설정하지 않음</string>
 
     <!-- Labs -->
     <string name="labs_title">실험실</string>

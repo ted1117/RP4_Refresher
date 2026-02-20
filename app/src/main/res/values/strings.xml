@@ -53,6 +53,7 @@
     <string name="shutdown_timer_option_24h">24 hours</string>
     <string name="shutdown_timer_option_48h">48 hours</string>
     <string name="shutdown_timer_option_72h">72 hours</string>
+    <string name="shutdown_timer_option_off">Off</string>
 
     <!-- Labs -->
     <string name="labs_title">Labs</string>
