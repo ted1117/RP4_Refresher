@@ -20,6 +20,7 @@ import com.hidsquid.refreshpaper.brightness.BrightnessDialogController
 import com.hidsquid.refreshpaper.device.DeviceSecurityController
 import com.hidsquid.refreshpaper.epd.EPDDisplayModeController
 import com.hidsquid.refreshpaper.launcher.HomeLauncherDialogController
+import com.hidsquid.refreshpaper.shutdown.ShutdownTimerDialogController
 import com.hidsquid.refreshpaper.service.KeyInputDetectingService
 import com.hidsquid.refreshpaper.utils.AccessibilityUtils
 import kotlinx.coroutines.launch
@@ -34,6 +35,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var deviceSecurityController: DeviceSecurityController
     private lateinit var brightnessDialogController: BrightnessDialogController
     private lateinit var homeLauncherDialogController: HomeLauncherDialogController
+    private lateinit var shutdownTimerDialogController: ShutdownTimerDialogController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +47,7 @@ class MainActivity : ComponentActivity() {
         deviceSecurityController = DeviceSecurityController(this)
         brightnessDialogController = BrightnessDialogController(this, settingsRepository)
         homeLauncherDialogController = HomeLauncherDialogController(this, settingsRepository)
+        shutdownTimerDialogController = ShutdownTimerDialogController(this, settingsRepository)
 
         checkPermissionAndShowUI()
         loadSettings()
@@ -81,6 +84,7 @@ class MainActivity : ComponentActivity() {
         updateSummaryText()
         updateEpdModeSummary()
         updateHomeLauncherSummary()
+        updateShutdownTimerSummary()
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -139,6 +143,10 @@ class MainActivity : ComponentActivity() {
 
         layout.homeLauncherCard.setOnClickListener {
             homeLauncherDialogController.show { updateHomeLauncherSummary() }
+        }
+
+        layout.shutdownTimerCard.setOnClickListener {
+            shutdownTimerDialogController.show { updateShutdownTimerSummary() }
         }
 
         layout.labsCard.setOnClickListener {
@@ -321,6 +329,10 @@ class MainActivity : ComponentActivity() {
     private fun updateHomeLauncherSummary() {
         val selectedLabel = homeLauncherDialogController.getSelectedLauncherLabel()
         binding.layoutSettings.tvHomeLauncherSetting.text = selectedLabel
+    }
+
+    private fun updateShutdownTimerSummary() {
+        binding.layoutSettings.tvShutdownTimerSetting.text = shutdownTimerDialogController.getSelectedTimerLabel()
     }
 
     private fun updateSummaryText() {
