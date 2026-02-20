@@ -23,6 +23,11 @@
     <string name="epd_mode_normal_description">전자 잉크 디스플레이의 일반적인 잔상을\n허용합니다.</string>
 
     <!-- Settings Screen -->
+    <string name="settings_section_refresh">리프레시</string>
+    <string name="settings_section_display">디스플레이</string>
+    <string name="settings_section_security">보안</string>
+    <string name="settings_section_system">시스템</string>
+    <string name="settings_section_advanced">고급</string>
     <string name="setting_title_display_mode">디스플레이 모드</string>
     <string name="setting_value_display_mode_normal">일반</string>
     <string name="setting_value_display_mode_minimize_afterimage">잔상 최소화</string>
