@@ -3,6 +3,7 @@ package com.hidsquid.refreshpaper.service
 import android.accessibilityservice.AccessibilityService
 import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -73,10 +74,49 @@ class KeyInputDetectingService : AccessibilityService() {
         EPDRefreshController.refresh(v, id)
     }
 
+    private fun launchConfiguredHomeLauncher(): Boolean {
+        val configuredComponent = settingsRepository.getHomeLauncherComponent()
+        val defaultComponent =
+            ComponentName.unflattenFromString(SettingsRepository.DEFAULT_HOME_LAUNCHER_COMPONENT)
+                ?: return false
+        val targetComponent = ComponentName.unflattenFromString(configuredComponent) ?: defaultComponent
+
+        val launchIntent = Intent(Intent.ACTION_MAIN).apply {
+            component = targetComponent
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+
+        return try {
+            startActivity(launchIntent)
+            true
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to launch configured home: $configuredComponent", e)
+            if (targetComponent == defaultComponent) return false
+
+            runCatching {
+                startActivity(
+                    Intent(Intent.ACTION_MAIN).apply {
+                        component = defaultComponent
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
+                )
+                true
+            }.getOrElse { fallbackError ->
+                Log.e(TAG, "Failed to launch default home launcher", fallbackError)
+                false
+            }
+        }
+    }
+
     override fun onKeyEvent(event: KeyEvent): Boolean {
         if (event.action != KeyEvent.ACTION_DOWN) return super.onKeyEvent(event)
 
         val keyCode = event.keyCode
+
+        if (keyCode == KeyEvent.KEYCODE_HOME) {
+            return if (launchConfiguredHomeLauncher()) true else super.onKeyEvent(event)
+        }
+
         val isAutoRefreshEnabled = settingsRepository.isAutoRefreshEnabled()
         val isManualRefreshEnabled = settingsRepository.isManualRefreshEnabled()
         val isBlockedApp = currentPackageName == BLOCKED_APP_PACKAGE_NAME
