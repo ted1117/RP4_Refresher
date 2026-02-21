@@ -14,7 +14,9 @@ object AutoRefreshHook {
 
     fun inject(param: PackageParam) {
         param.loadApp {
-            if (packageName == "com.ridi.paper" ||
+            if (packageName == "android" ||
+                packageName == "com.android.systemui" ||
+                packageName == "com.ridi.paper" ||
                 packageName == "com.android.webview" ||
                 packageName == "com.google.android.webview") {
                 return@loadApp
@@ -24,6 +26,10 @@ object AutoRefreshHook {
                 .method { name = "dispatchTouchEvent"; param(MotionEvent::class.java) }
                 .hook {
                     before {
+                        val ev = args[0] as? MotionEvent ?: return@before
+
+                        if (ev.action != MotionEvent.ACTION_DOWN) return@before
+
                         val isAutoRefreshEnabled = try {
                             Settings.Global.getInt(
                                 appContext!!.contentResolver,
@@ -35,9 +41,6 @@ object AutoRefreshHook {
                         }
 
                         if (!isAutoRefreshEnabled) return@before
-
-                        val ev = args[0] as MotionEvent
-                        if (ev.action != MotionEvent.ACTION_DOWN) return@before
 
                         val trigger = try {
                             Settings.Global.getInt(
