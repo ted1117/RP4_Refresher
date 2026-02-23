@@ -10,10 +10,13 @@ import android.content.IntentFilter
 import android.util.Log
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
+import android.widget.Toast
+import com.hidsquid.refreshpaper.R
 import com.hidsquid.refreshpaper.SettingsRepository
 import com.hidsquid.refreshpaper.brightness.BrightnessActivity
 import com.hidsquid.refreshpaper.epd.EPDRefreshController
 import com.hidsquid.refreshpaper.overlay.OverlayController
+import kotlin.math.abs
 
 @SuppressLint("AccessibilityPolicy")
 class KeyInputDetectingService : AccessibilityService() {
@@ -27,6 +30,12 @@ class KeyInputDetectingService : AccessibilityService() {
 
     private lateinit var settingsRepository: SettingsRepository
     private lateinit var overlayController: OverlayController
+
+    // 스크린샷 상태 추적 (개별 키의 DOWN 이벤트 소비 여부 기록)
+    private var f1KeyTime = 0L
+    private var pageDownKeyTime = 0L
+    private var consumedF1Down = false
+    private var consumedPageDownDown = false
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onCreate() {
@@ -46,9 +55,7 @@ class KeyInputDetectingService : AccessibilityService() {
 
     override fun onServiceConnected() {
         super.onServiceConnected()
-
         triggerCount = settingsRepository.getPagesPerRefresh()
-
         overlayController.attachOverlay()
     }
 
@@ -108,15 +115,86 @@ class KeyInputDetectingService : AccessibilityService() {
         }
     }
 
+    private fun handleScreenshotChord(event: KeyEvent): Boolean {
+        if (!settingsRepository.isScreenshotChordEnabled()) {
+            return false
+        }
+
+        when (event.keyCode) {
+            KeyEvent.KEYCODE_F1 -> {
+                when (event.action) {
+                    KeyEvent.ACTION_DOWN -> {
+                        f1KeyTime = event.eventTime
+                        if (pageDownKeyTime > 0L && abs(f1KeyTime - pageDownKeyTime) <= SCREENSHOT_CHORD_DELAY_MS) {
+                            consumedF1Down = true
+                            triggerScreenshot(abs(f1KeyTime - pageDownKeyTime))
+                            return true
+                        }
+                        consumedF1Down = false
+                        return false
+                    }
+                    KeyEvent.ACTION_UP -> {
+                        f1KeyTime = 0L
+                        val consume = consumedF1Down
+                        consumedF1Down = false
+                        return consume
+                    }
+                }
+            }
+
+            KeyEvent.KEYCODE_PAGE_DOWN -> {
+                when (event.action) {
+                    KeyEvent.ACTION_DOWN -> {
+                        pageDownKeyTime = event.eventTime
+                        if (f1KeyTime > 0L && abs(pageDownKeyTime - f1KeyTime) <= SCREENSHOT_CHORD_DELAY_MS) {
+                            consumedPageDownDown = true
+                            triggerScreenshot(abs(pageDownKeyTime - f1KeyTime))
+                            return true
+                        }
+                        consumedPageDownDown = false
+                        return false
+                    }
+                    KeyEvent.ACTION_UP -> {
+                        pageDownKeyTime = 0L
+                        val consume = consumedPageDownDown
+                        consumedPageDownDown = false
+                        return consume
+                    }
+                }
+            }
+        }
+
+        return false
+    }
+
+    private fun triggerScreenshot(timeDiff: Long) {
+        val success = performGlobalAction(GLOBAL_ACTION_TAKE_SCREENSHOT)
+        if (success) {
+            android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                Toast.makeText(
+                    applicationContext,
+                    R.string.toast_screenshot_captured,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }, 500L)
+        }
+    }
+
     override fun onKeyEvent(event: KeyEvent): Boolean {
+        // 스크린샷
+        if (handleScreenshotChord(event)) return true
+
+        // ACTION_DOWN만 처리
         if (event.action != KeyEvent.ACTION_DOWN) return super.onKeyEvent(event)
 
         val keyCode = event.keyCode
 
+        // HOME 키
         if (keyCode == KeyEvent.KEYCODE_HOME) {
             return if (launchConfiguredHomeLauncher()) true else super.onKeyEvent(event)
         }
 
+        // 자동 리프레시
         val isAutoRefreshEnabled = settingsRepository.isAutoRefreshEnabled()
         val isManualRefreshEnabled = settingsRepository.isManualRefreshEnabled()
         val isBlockedApp = currentPackageName == BLOCKED_APP_PACKAGE_NAME
@@ -139,6 +217,7 @@ class KeyInputDetectingService : AccessibilityService() {
             }
         }
 
+        // 수동 리프레시
         if (isManualRefreshEnabled && keyCode == KeyEvent.KEYCODE_F4) {
             doFullRefresh()
         }
@@ -176,6 +255,7 @@ class KeyInputDetectingService : AccessibilityService() {
 
     companion object {
         private const val TAG = "KeyInputService"
+        private const val SCREENSHOT_CHORD_DELAY_MS = 250L
         const val EXTRA_NUMBER: String = "EXTRA_NUMBER"
         const val ACTION_REFRESH_SCREEN: String = "com.hidsquid.refreshpaper.ACTION_REFRESH_SCREEN"
         const val ACTION_SHOW_BRIGHTNESS_ACTIVITY: String =
