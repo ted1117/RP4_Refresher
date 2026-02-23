@@ -27,12 +27,22 @@
             android:paddingEnd="?android:attr/listPreferredItemPaddingRight"
             android:paddingTop="@dimen/screen_padding_top">
 
+            <TextView
+                android:id="@+id/refreshSectionTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:paddingStart="4dp"
+                android:text="@string/labs_section_refresh"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/text_secondary"
+                android:textStyle="bold" />
+
             <LinearLayout
                 android:id="@+id/touchRefreshGroupContainer"
                 style="@style/GroupContainer"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/group_margin_top">
+                android:layout_height="wrap_content">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/touchRefreshCard"
@@ -63,10 +73,25 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/divider_height"
-                    android:background="@color/divider_color" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/screenshotSectionTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/screen_padding_horizontal"
+                android:layout_marginBottom="6dp"
+                android:paddingStart="4dp"
+                android:text="@string/labs_section_screenshot"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/text_secondary"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/screenshotGroupContainer"
+                style="@style/GroupContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/powerPageScreenshotCard"
@@ -91,6 +116,41 @@
 
                     <Switch
                         android:id="@+id/powerPageScreenshotSwitch"
+                        style="@style/ListItemSwitch"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/divider_height"
+                    android:background="@color/divider_color" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/screenshotToastCard"
+                    style="@style/ListItemContainer">
+
+                    <TextView
+                        android:id="@+id/screenshotToastTitle"
+                        style="@style/ListItemTitle"
+                        android:text="@string/labs_screenshot_toast_title"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/screenshotToastSwitch"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/screenshotToastDesc"
+                        style="@style/ListItemDesc"
+                        android:text="@string/labs_screenshot_toast_description"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/screenshotToastSwitch"
+                        app:layout_constraintTop_toBottomOf="@+id/screenshotToastTitle"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <Switch
+                        android:id="@+id/screenshotToastSwitch"
                         style="@style/ListItemSwitch"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"

@@ -68,6 +68,26 @@ class SettingsRepository(
         }
     }
 
+    fun isScreenshotToastEnabled(): Boolean {
+        return try {
+            Settings.Global.getInt(cr, GLOBAL_KEY_SCREENSHOT_TOAST_ENABLED, 1) == 1
+        } catch (_: Throwable) {
+            true
+        }
+    }
+
+    fun setScreenshotToastEnabled(enabled: Boolean): Boolean {
+        return try {
+            Settings.Global.putInt(
+                cr,
+                GLOBAL_KEY_SCREENSHOT_TOAST_ENABLED,
+                if (enabled) 1 else 0
+            )
+        } catch (_: Throwable) {
+            false
+        }
+    }
+
     fun isManualRefreshEnabled(): Boolean =
         prefs.getBoolean(PREF_KEY_MANUAL_REFRESH_ENABLED, false)
 
@@ -161,6 +181,8 @@ class SettingsRepository(
         private const val GLOBAL_KEY_PAGES_PER_REFRESH = "refresh_paper_pages_per_refresh"
         private const val GLOBAL_KEY_POWER_PAGE_SCREENSHOT_ENABLED =
             "refresh_paper_screenshot_chord_enabled"
+        private const val GLOBAL_KEY_SCREENSHOT_TOAST_ENABLED =
+            "refresh_paper_screenshot_toast_enabled"
         private const val GLOBAL_KEY_HOME_LAUNCHER_COMPONENT = "refresh_paper_home_launcher_component"
         private const val GLOBAL_KEY_SCREEN_BRIGHTNESS = "screen_brightness"
         private const val GLOBAL_KEY_SCREEN_BRIGHTNESS_COLOR = "screen_brightness_color"

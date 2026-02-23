@@ -10,8 +10,6 @@ import android.content.IntentFilter
 import android.util.Log
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
-import android.widget.Toast
-import com.hidsquid.refreshpaper.R
 import com.hidsquid.refreshpaper.SettingsRepository
 import com.hidsquid.refreshpaper.brightness.BrightnessActivity
 import com.hidsquid.refreshpaper.epd.EPDRefreshController
@@ -127,7 +125,7 @@ class KeyInputDetectingService : AccessibilityService() {
                         f1KeyTime = event.eventTime
                         if (pageDownKeyTime > 0L && abs(f1KeyTime - pageDownKeyTime) <= SCREENSHOT_CHORD_DELAY_MS) {
                             consumedF1Down = true
-                            triggerScreenshot(abs(f1KeyTime - pageDownKeyTime))
+                            triggerScreenshot()
                             return true
                         }
                         consumedF1Down = false
@@ -148,7 +146,7 @@ class KeyInputDetectingService : AccessibilityService() {
                         pageDownKeyTime = event.eventTime
                         if (f1KeyTime > 0L && abs(pageDownKeyTime - f1KeyTime) <= SCREENSHOT_CHORD_DELAY_MS) {
                             consumedPageDownDown = true
-                            triggerScreenshot(abs(pageDownKeyTime - f1KeyTime))
+                            triggerScreenshot()
                             return true
                         }
                         consumedPageDownDown = false
@@ -167,17 +165,8 @@ class KeyInputDetectingService : AccessibilityService() {
         return false
     }
 
-    private fun triggerScreenshot(timeDiff: Long) {
-        val success = performGlobalAction(GLOBAL_ACTION_TAKE_SCREENSHOT)
-        if (success) {
-            android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-                Toast.makeText(
-                    applicationContext,
-                    R.string.toast_screenshot_captured,
-                    Toast.LENGTH_SHORT
-                ).show()
-            }, 500L)
-        }
+    private fun triggerScreenshot() {
+        performGlobalAction(GLOBAL_ACTION_TAKE_SCREENSHOT)
     }
 
     override fun onKeyEvent(event: KeyEvent): Boolean {

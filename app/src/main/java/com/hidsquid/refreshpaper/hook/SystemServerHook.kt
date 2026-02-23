@@ -119,6 +119,7 @@ object SystemServerHook {
                 }        }    }
 
     private fun triggerScreenshotChord(instance: Any, eventTime: Long) {
+        if (isScreenshotChordActive) return
         isScreenshotChordActive = true
         setField(instance, "mPowerKeyHandled", true)
         setField(instance, "mScreenshotChordPowerKeyTriggered", true)
@@ -155,16 +156,18 @@ object SystemServerHook {
         }
     }
 
-    private fun invokeDirectScreenshot(instance: Any) {
-        runCatching {
-            val displayPolicy = field(instance, "mDefaultDisplayPolicy").get(instance) ?: return@runCatching
+    private fun invokeDirectScreenshot(instance: Any): Boolean {
+        return runCatching {
+            val displayPolicy = field(instance, "mDefaultDisplayPolicy").get(instance)
+                ?: return@runCatching false
             val takeScreenshot = displayPolicy.javaClass.getDeclaredMethod(
                 "takeScreenshot",
                 Int::class.javaPrimitiveType
             )
             takeScreenshot.isAccessible = true
             takeScreenshot.invoke(displayPolicy, 1)
-        }
+            true
+        }.getOrDefault(false)
     }
 
     private fun field(instance: Any, name: String) = instance.javaClass.getDeclaredField(name).apply {
