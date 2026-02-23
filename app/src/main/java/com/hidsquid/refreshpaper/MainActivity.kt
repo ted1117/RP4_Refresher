@@ -80,6 +80,7 @@ class MainActivity : ComponentActivity() {
         layout.autoRefreshSwitch.isChecked = settingsRepository.isAutoRefreshEnabled()
         layout.manualRefreshSwitch.isChecked = settingsRepository.isManualRefreshEnabled()
         layout.screenshotSwitch.isChecked = deviceSecurityController.isSecureBypassEnabled()
+        layout.screenshotChordSwitch.isChecked = settingsRepository.isScreenshotChordEnabled()
 
         updateSummaryText()
         updateEpdModeSummary()
@@ -140,6 +141,14 @@ class MainActivity : ComponentActivity() {
 
         layout.screenshotCard.setOnClickListener {
             layout.screenshotSwitch.isChecked = !layout.screenshotSwitch.isChecked
+        }
+
+        layout.screenshotChordSwitch.setOnCheckedChangeListener { _, isChecked ->
+            settingsRepository.setScreenshotChordEnabled(isChecked)
+        }
+
+        layout.screenshotChordCard.setOnClickListener {
+            layout.screenshotChordSwitch.isChecked = !layout.screenshotChordSwitch.isChecked
         }
 
         layout.homeLauncherCard.setOnClickListener {

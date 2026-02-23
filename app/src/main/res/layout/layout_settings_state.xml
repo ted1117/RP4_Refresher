@@ -298,6 +298,41 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/divider_height"
+                    android:background="@color/divider_color" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/screenshotChordCard"
+                    style="@style/ListItemContainer">
+
+                    <TextView
+                        android:id="@+id/screenshotChordTitle"
+                        style="@style/ListItemTitle"
+                        android:text="@string/setting_title_screenshot_chord"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/screenshotChordSwitch"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/screenshotChordDesc"
+                        style="@style/ListItemDesc"
+                        android:text="@string/setting_desc_screenshot_chord"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/screenshotChordSwitch"
+                        app:layout_constraintTop_toBottomOf="@+id/screenshotChordTitle"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <Switch
+                        android:id="@+id/screenshotChordSwitch"
+                        style="@style/ListItemSwitch"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
             </LinearLayout>
 
             <TextView

@@ -5,9 +5,12 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.view.View
 import android.widget.ImageButton
+import android.widget.Toast
 import com.highcapable.yukihookapi.hook.factory.field
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.log.YLog
@@ -16,6 +19,7 @@ import com.highcapable.yukihookapi.hook.param.PackageParam
 object SystemUIHook {
 
     private const val GLOBAL_KEY_HOME_LAUNCHER_COMPONENT = "refresh_paper_home_launcher_component"
+    private const val GLOBAL_KEY_SCREENSHOT_TOAST_ENABLED = "refresh_paper_screenshot_toast_enabled"
     private val DEFAULT_HOME_COMPONENT = ComponentName(
         "cn.modificator.launcher",
         "cn.modificator.launcher.Launcher"
@@ -24,6 +28,34 @@ object SystemUIHook {
     fun inject(param: PackageParam) {
         param.loadApp("com.android.systemui") {
             YLog.debug("Running in SystemUI Hook")
+
+            runCatching {
+                "com.android.systemui.screenshot.GlobalScreenshot".toClass()
+                    .method {
+                        name = "saveScreenshotInWorkerThread"
+                        paramCount = 1
+                        param(Runnable::class.java)
+                    }
+                    .hook {
+                        before {
+                            val context = appContext ?: return@before
+                            val originalFinisher = args[0] as? Runnable ?: return@before
+                            args[0] = Runnable {
+                                runCatching { originalFinisher.run() }.onFailure {
+                                    YLog.error("Wrapped screenshot finisher failed: ${it.message}")
+                                }
+                                if (isScreenshotToastEnabled(context)) {
+                                    Handler(Looper.getMainLooper()).post {
+                                        Toast.makeText(context, "스크린샷 촬영", Toast.LENGTH_SHORT)
+                                            .show()
+                                    }
+                                }
+                            }
+                        }
+                    }
+            }.onFailure {
+                YLog.error("Failed to hook GlobalScreenshot finisher: ${it.message}")
+            }
 
             val ridiHomeButtonId = "com.android.systemui.R\$id".toClass()
                 .field { name = "ridi_status_bar_button_home" }.get().int()
@@ -137,5 +169,15 @@ object SystemUIHook {
                 }
             }
         }
+    }
+
+    private fun isScreenshotToastEnabled(context: Context): Boolean {
+        return runCatching {
+            Settings.Global.getInt(
+                context.contentResolver,
+                GLOBAL_KEY_SCREENSHOT_TOAST_ENABLED,
+                1
+            ) == 1
+        }.getOrDefault(true)
     }
 }

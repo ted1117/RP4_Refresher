@@ -26,7 +26,7 @@
     <string name="settings_tab_security_system_advanced">Security · System · Advanced</string>
     <string name="settings_section_refresh">Refresh</string>
     <string name="settings_section_display">Display</string>
-    <string name="settings_section_security">Security</string>
+    <string name="settings_section_security">Screenshot</string>
     <string name="settings_section_system">System</string>
     <string name="settings_section_advanced">Advanced</string>
     <string name="setting_title_display_mode">디스플레이 모드</string>
@@ -42,6 +42,9 @@
     <!-- Screenshot Feature -->
     <string name="setting_title_screenshot_feature">Enable Screenshot</string>
     <string name="setting_desc_screenshot_feature">Allow taking screenshots</string>
+    <string name="setting_title_screenshot_chord">Screenshot Shortcut</string>
+    <string name="setting_desc_screenshot_chord">Take screenshot with accessibility key combo</string>
+    <string name="toast_screenshot_captured">Screenshot captured</string>
 
     <!-- Home Launcher -->
     <string name="setting_title_home_launcher">Home Button Launcher</string>
@@ -65,9 +68,17 @@
     <!-- Labs -->
     <string name="labs_title">Labs</string>
     <string name="labs_description">Experimental features and settings</string>
+    <string name="labs_section_refresh">Refresh</string>
+    <string name="labs_section_screenshot">Screenshot</string>
     <string name="labs_touch_refresh_title">Touch-based Refresh</string>
     <string name="labs_touch_refresh_description">Refresh by tapping the screen</string>
     <string name="labs_touch_refresh_requires_auto">Enable Auto Refresh first</string>
+    <string name="labs_power_page_screenshot_title">Power + Page Down Screenshot</string>
+    <string name="labs_power_page_screenshot_description">Enable screenshot hook for Power + Page Down chord</string>
+    <string name="labs_power_page_screenshot_save_failed">Failed to save screenshot hook setting</string>
+    <string name="labs_screenshot_toast_title">Screenshot Completion Notice</string>
+    <string name="labs_screenshot_toast_description">Show a notice when screenshot is saved</string>
+    <string name="labs_screenshot_toast_save_failed">Failed to save screenshot notice setting</string>
     <string name="labs_warning_title">Labs Warning</string>
     <string name="labs_warning_message">Entering Labs may cause performance degradation or increased battery usage.</string>
     <string name="labs_warning_dont_show_again">Don’t show again</string>

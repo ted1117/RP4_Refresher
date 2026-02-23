@@ -27,7 +27,7 @@
     <string name="settings_tab_security_system_advanced">보안 · 시스템 · 고급</string>
     <string name="settings_section_refresh">리프레시</string>
     <string name="settings_section_display">디스플레이</string>
-    <string name="settings_section_security">보안</string>
+    <string name="settings_section_security">스크린샷</string>
     <string name="settings_section_system">시스템</string>
     <string name="settings_section_advanced">고급</string>
     <string name="setting_title_display_mode">디스플레이 모드</string>
@@ -41,8 +41,11 @@
     <string name="brightness_color_label">색 온도 조절</string>
 
     <!-- Screenshot Feature -->
-    <string name="setting_title_screenshot_feature">스크린샷 허용</string>
-    <string name="setting_desc_screenshot_feature">스크린샷 기능 활성화</string>
+    <string name="setting_title_screenshot_feature">스크린샷</string>
+    <string name="setting_desc_screenshot_feature">스크린샷 방지 우회</string>
+    <string name="setting_title_screenshot_chord">스크린샷 단축키</string>
+    <string name="setting_desc_screenshot_chord">퀵 버튼 + 페이지 넘김 하단 키 조합으로 스크린샷 촬영</string>
+    <string name="toast_screenshot_captured">스크린샷 촬영</string>
 
     <!-- Home Launcher -->
     <string name="setting_title_home_launcher">홈 버튼 런처</string>
@@ -66,11 +69,19 @@
     <!-- Labs -->
     <string name="labs_title">실험실</string>
     <string name="labs_description">실험적인 기능 및 설정</string>
-    <string name="labs_touch_refresh_title">터치 기반 리프레시</string>
-    <string name="labs_touch_refresh_description">화면을 탭하여 새로고침</string>
-    <string name="labs_touch_refresh_requires_auto">먼저 자동 리프레시를 켜주세요</string>
+    <string name="labs_section_refresh">리프레시</string>
+    <string name="labs_section_screenshot">스크린샷</string>
+    <string name="labs_touch_refresh_title">터치 기반 새로고침</string>
+    <string name="labs_touch_refresh_description">화면을 탭하여 리프레시</string>
+    <string name="labs_touch_refresh_requires_auto">먼저 자동 새로고침을 켜주세요</string>
+    <string name="labs_power_page_screenshot_title">스크린샷 단축키</string>
+    <string name="labs_power_page_screenshot_description">전원 + 페이지 넘김 하단키로 스크린샷 촬영</string>
+    <string name="labs_power_page_screenshot_save_failed">스크린샷 후크 설정 저장에 실패했습니다</string>
+    <string name="labs_screenshot_toast_title">스크린샷 완료 알림</string>
+    <string name="labs_screenshot_toast_description">스크린샷이 저장되면 알림을 표시합니다</string>
+    <string name="labs_screenshot_toast_save_failed">스크린샷 완료 알림 설정 저장에 실패했습니다</string>
     <string name="labs_warning_title">⚠ 경고</string>
-    <string name="labs_warning_message">실험실 기능은 성능 저하나 배터리 소모를 유발할 수 있습니다.</string>
+    <string name="labs_warning_message">실험실 기능은 성능 저하나 배터리 소모를 유발할 수 있으며 정상 동작을 보장하지 않습니다.</string>
     <string name="labs_warning_dont_show_again">다시 보지 않기</string>
     <string name="labs_warning_confirm">확인</string>
 
