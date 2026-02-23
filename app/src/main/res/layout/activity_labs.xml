@@ -63,6 +63,41 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/divider_height"
+                    android:background="@color/divider_color" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/powerPageScreenshotCard"
+                    style="@style/ListItemContainer">
+
+                    <TextView
+                        android:id="@+id/powerPageScreenshotTitle"
+                        style="@style/ListItemTitle"
+                        android:text="@string/labs_power_page_screenshot_title"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/powerPageScreenshotSwitch"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/powerPageScreenshotDesc"
+                        style="@style/ListItemDesc"
+                        android:text="@string/labs_power_page_screenshot_description"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/powerPageScreenshotSwitch"
+                        app:layout_constraintTop_toBottomOf="@+id/powerPageScreenshotTitle"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <Switch
+                        android:id="@+id/powerPageScreenshotSwitch"
+                        style="@style/ListItemSwitch"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
             </LinearLayout>
 
         </LinearLayout>
