@@ -13,6 +13,7 @@
     <string name="manual_refresh_cardview_text">Toggle the manual refresh feature</string>
     <string name="manual_refresh_description">수동 리프레시 설정</string>
     <string name="dialog_title">Page Refresh</string>
+    <string name="quick_settings_title">Settings</string>
 
     <!-- EPD Display Mode -->
     <string name="epd_mode_dialog_title">잔상 최소화 설정</string>

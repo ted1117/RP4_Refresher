@@ -49,6 +49,13 @@
             android:excludeFromRecents="true"
             android:theme="@style/Theme.RefreshPaper.BrightnessDialog" />
 
+        <activity
+            android:name=".StatusBarSettingsActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.RefreshPaper.StatusBarSettingsDialog" />
+
         <service
             android:name=".service.KeyInputDetectingService"
             android:exported="true"

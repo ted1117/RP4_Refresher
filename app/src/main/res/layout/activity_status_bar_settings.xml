@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/dialog_width"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_static_rounded_panel"
+    android:orientation="vertical"
+    android:paddingTop="?android:attr/dialogPreferredPadding"
+    android:paddingBottom="?android:attr/dialogPreferredPadding">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/title_margin_bottom"
+        android:paddingStart="?android:attr/dialogPreferredPadding"
+        android:paddingEnd="?android:attr/dialogPreferredPadding"
+        android:text="@string/quick_settings_title"
+        android:textColor="@color/text_primary"
+        android:textSize="@dimen/text_size_title"
+        android:textStyle="bold" />
+
+    <RelativeLayout
+        android:id="@+id/autoRefreshCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingVertical="@dimen/item_padding_vertical"
+        android:paddingHorizontal="?android:attr/dialogPreferredPadding">
+
+        <TextView
+            android:id="@+id/quickAutoRefreshTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/auto_refresh_cardview_headline"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/text_size_item" />
+
+        <TextView
+            android:id="@+id/tvQuickAutoRefreshSummary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="8dp"
+            android:layout_toStartOf="@+id/autoRefreshArrow"
+            android:text="@string/setting_summary_auto_refresh_off"
+            android:textColor="@color/text_secondary"
+            android:textSize="@dimen/text_size_item" />
+
+        <ImageView
+            android:id="@+id/autoRefreshArrow"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_arrow_right" />
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"
+        android:background="@color/dialog_divider_color" />
+
+    <RelativeLayout
+        android:id="@+id/manualRefreshCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingVertical="@dimen/item_padding_vertical"
+        android:paddingHorizontal="?android:attr/dialogPreferredPadding">
+
+        <TextView
+            android:id="@+id/quickManualRefreshTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/manual_refresh_cardview_headline"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/text_size_item" />
+
+        <Switch
+            android:id="@+id/quickManualRefreshSwitch"
+            style="@style/ListItemSwitch"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true" />
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"
+        android:background="@color/dialog_divider_color" />
+
+    <RelativeLayout
+        android:id="@+id/epdModeCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingVertical="@dimen/item_padding_vertical"
+        android:paddingHorizontal="?android:attr/dialogPreferredPadding">
+
+        <TextView
+            android:id="@+id/quickEpdModeTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/setting_title_display_mode"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/text_size_item" />
+
+        <TextView
+            android:id="@+id/tvQuickEpdModeSummary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="8dp"
+            android:layout_toStartOf="@+id/epdModeArrow"
+            android:text="@string/setting_value_display_mode_normal"
+            android:textColor="@color/text_secondary"
+            android:textSize="@dimen/text_size_item" />
+
+        <ImageView
+            android:id="@+id/epdModeArrow"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_arrow_right" />
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"
+        android:background="@color/dialog_divider_color" />
+
+    <RelativeLayout
+        android:id="@+id/shutdownTimerCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingVertical="@dimen/item_padding_vertical"
+        android:paddingHorizontal="?android:attr/dialogPreferredPadding">
+
+        <TextView
+            android:id="@+id/quickShutdownTimerTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/setting_title_shutdown_timer"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/text_size_item" />
+
+        <TextView
+            android:id="@+id/tvQuickShutdownTimerSummary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="8dp"
+            android:layout_toStartOf="@+id/shutdownTimerArrow"
+            android:text="@string/setting_value_shutdown_timer_1h"
+            android:textColor="@color/text_secondary"
+            android:textSize="@dimen/text_size_item" />
+
+        <ImageView
+            android:id="@+id/shutdownTimerArrow"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_arrow_right" />
+
+    </RelativeLayout>
+
+</LinearLayout>
