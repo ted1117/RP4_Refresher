@@ -16,6 +16,7 @@ import androidx.core.graphics.drawable.toDrawable
 import androidx.lifecycle.lifecycleScope
 import com.hidsquid.refreshpaper.epd.EPDDisplayModeController
 import com.hidsquid.refreshpaper.service.KeyInputDetectingService
+import com.hidsquid.refreshpaper.shutdown.SleepModeTimerDialogController
 import com.hidsquid.refreshpaper.shutdown.ShutdownTimerDialogController
 import kotlinx.coroutines.launch
 
@@ -23,11 +24,13 @@ class StatusBarSettingsActivity : ComponentActivity() {
 
     private lateinit var settingsRepository: SettingsRepository
     private lateinit var epdController: EPDDisplayModeController
+    private lateinit var sleepModeTimerDialogController: SleepModeTimerDialogController
     private lateinit var shutdownTimerDialogController: ShutdownTimerDialogController
 
     private lateinit var autoRefreshSummary: TextView
     private lateinit var manualRefreshSwitch: Switch
     private lateinit var epdModeSummary: TextView
+    private lateinit var sleepModeTimerSummary: TextView
     private lateinit var shutdownTimerSummary: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,11 +40,13 @@ class StatusBarSettingsActivity : ComponentActivity() {
 
         settingsRepository = SettingsRepository(this)
         epdController = EPDDisplayModeController(this)
+        sleepModeTimerDialogController = SleepModeTimerDialogController(this, settingsRepository)
         shutdownTimerDialogController = ShutdownTimerDialogController(this, settingsRepository)
 
         autoRefreshSummary = findViewById(R.id.tvQuickAutoRefreshSummary)
         manualRefreshSwitch = findViewById(R.id.quickManualRefreshSwitch)
         epdModeSummary = findViewById(R.id.tvQuickEpdModeSummary)
+        sleepModeTimerSummary = findViewById(R.id.tvQuickSleepModeTimerSummary)
         shutdownTimerSummary = findViewById(R.id.tvQuickShutdownTimerSummary)
 
         setupListeners()
@@ -73,6 +78,12 @@ class StatusBarSettingsActivity : ComponentActivity() {
             showEpdDisplayModeDialog()
         }
 
+        findViewById<View>(R.id.sleepModeTimerCard).setOnClickListener {
+            sleepModeTimerDialogController.show {
+                updateSleepModeTimerSummary()
+            }
+        }
+
         findViewById<View>(R.id.shutdownTimerCard).setOnClickListener {
             shutdownTimerDialogController.show {
                 updateShutdownTimerSummary()
@@ -89,6 +100,7 @@ class StatusBarSettingsActivity : ComponentActivity() {
 
         updateAutoRefreshSummary()
         updateEpdModeSummary()
+        updateSleepModeTimerSummary()
         updateShutdownTimerSummary()
     }
 
@@ -266,5 +278,9 @@ class StatusBarSettingsActivity : ComponentActivity() {
 
     private fun updateShutdownTimerSummary() {
         shutdownTimerSummary.text = shutdownTimerDialogController.getSelectedTimerLabel()
+    }
+
+    private fun updateSleepModeTimerSummary() {
+        sleepModeTimerSummary.text = sleepModeTimerDialogController.getSelectedTimerLabel()
     }
 }
