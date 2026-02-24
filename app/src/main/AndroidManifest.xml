@@ -53,7 +53,10 @@
             android:name=".StatusBarSettingsActivity"
             android:exported="true"
             android:excludeFromRecents="true"
-            android:launchMode="singleTop"
+            android:finishOnTaskLaunch="true"
+            android:launchMode="singleTask"
+            android:noHistory="true"
+            android:taskAffinity="com.hidsquid.refreshpaper.quicksettings"
             android:theme="@style/Theme.RefreshPaper.StatusBarSettingsDialog" />
 
         <service
