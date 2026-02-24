@@ -20,6 +20,7 @@ import com.hidsquid.refreshpaper.brightness.BrightnessDialogController
 import com.hidsquid.refreshpaper.device.DeviceSecurityController
 import com.hidsquid.refreshpaper.epd.EPDDisplayModeController
 import com.hidsquid.refreshpaper.launcher.HomeLauncherDialogController
+import com.hidsquid.refreshpaper.shutdown.SleepModeTimerDialogController
 import com.hidsquid.refreshpaper.shutdown.ShutdownTimerDialogController
 import com.hidsquid.refreshpaper.service.KeyInputDetectingService
 import com.hidsquid.refreshpaper.utils.AccessibilityUtils
@@ -35,6 +36,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var deviceSecurityController: DeviceSecurityController
     private lateinit var brightnessDialogController: BrightnessDialogController
     private lateinit var homeLauncherDialogController: HomeLauncherDialogController
+    private lateinit var sleepModeTimerDialogController: SleepModeTimerDialogController
     private lateinit var shutdownTimerDialogController: ShutdownTimerDialogController
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,6 +49,7 @@ class MainActivity : ComponentActivity() {
         deviceSecurityController = DeviceSecurityController(this)
         brightnessDialogController = BrightnessDialogController(this, settingsRepository)
         homeLauncherDialogController = HomeLauncherDialogController(this, settingsRepository)
+        sleepModeTimerDialogController = SleepModeTimerDialogController(this, settingsRepository)
         shutdownTimerDialogController = ShutdownTimerDialogController(this, settingsRepository)
 
         checkPermissionAndShowUI()
@@ -85,6 +88,7 @@ class MainActivity : ComponentActivity() {
         updateSummaryText()
         updateEpdModeSummary()
         updateHomeLauncherSummary()
+        updateSleepModeTimerSummary()
         updateShutdownTimerSummary()
     }
 
@@ -153,6 +157,10 @@ class MainActivity : ComponentActivity() {
 
         layout.homeLauncherCard.setOnClickListener {
             homeLauncherDialogController.show { updateHomeLauncherSummary() }
+        }
+
+        layout.sleepModeTimerCard.setOnClickListener {
+            sleepModeTimerDialogController.show { updateSleepModeTimerSummary() }
         }
 
         layout.shutdownTimerCard.setOnClickListener {
@@ -354,6 +362,10 @@ class MainActivity : ComponentActivity() {
     private fun updateHomeLauncherSummary() {
         val selectedLabel = homeLauncherDialogController.getSelectedLauncherLabel()
         binding.layoutSettings.tvHomeLauncherSetting.text = selectedLabel
+    }
+
+    private fun updateSleepModeTimerSummary() {
+        binding.layoutSettings.tvSleepModeTimerSetting.text = sleepModeTimerDialogController.getSelectedTimerLabel()
     }
 
     private fun updateShutdownTimerSummary() {

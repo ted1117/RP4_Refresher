@@ -53,6 +53,18 @@
     <string name="dialog_title_home_launcher">Select launcher app</string>
     <string name="toast_home_launcher_no_apps">No launcher apps found</string>
     <string name="toast_home_launcher_save_failed">Failed to save launcher setting</string>
+    <string name="setting_title_sleep_mode_timer">Sleep mode timer</string>
+    <string name="setting_value_sleep_mode_timer_default">1 minute</string>
+    <string name="dialog_title_sleep_mode_timer">Select sleep mode timer</string>
+    <string name="toast_sleep_mode_timer_save_failed">Failed to save sleep mode timer</string>
+    <string name="sleep_mode_timer_option_3m">3 minutes</string>
+    <string name="sleep_mode_timer_option_5m">5 minutes</string>
+    <string name="sleep_mode_timer_option_10m">10 minutes</string>
+    <string name="sleep_mode_timer_option_15m">15 minutes</string>
+    <string name="sleep_mode_timer_option_30m">30 minutes</string>
+    <string name="sleep_mode_timer_option_45m">45 minutes</string>
+    <string name="sleep_mode_timer_option_60m">60 minutes</string>
+    <string name="sleep_mode_timer_option_off">Off</string>
     <string name="setting_title_shutdown_timer">Shutdown timer</string>
     <string name="setting_value_shutdown_timer_1h">1 hour</string>
     <string name="dialog_title_shutdown_timer">Select shutdown timer</string>
@@ -90,6 +102,11 @@
     <string name="dialog_page_count_item_off">안 함</string>
 
     <!-- Shutdown Timer -->
+    <plurals name="setting_value_sleep_mode_timer_minutes">
+        <item quantity="one">%d minute</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
+
     <plurals name="setting_value_shutdown_timer_hours">
         <item quantity="one">%d hour</item>
         <item quantity="other">%d hours</item>

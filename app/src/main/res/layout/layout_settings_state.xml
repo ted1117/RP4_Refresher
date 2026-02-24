@@ -391,6 +391,43 @@
                     android:background="@color/divider_color" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/sleepModeTimerCard"
+                    style="@style/ListItemContainer">
+
+                    <TextView
+                        android:id="@+id/sleepModeTimerTitle"
+                        style="@style/ListItemTitle"
+                        android:text="@string/setting_title_sleep_mode_timer"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/sleepModeTimerArrow"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvSleepModeTimerSetting"
+                        style="@style/ListItemDesc"
+                        android:text="@string/setting_value_sleep_mode_timer_default"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/sleepModeTimerArrow"
+                        app:layout_constraintTop_toBottomOf="@+id/sleepModeTimerTitle"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/sleepModeTimerArrow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_arrow_right"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/divider_height"
+                    android:background="@color/divider_color" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/shutdownTimerCard"
                     style="@style/ListItemContainer">
 

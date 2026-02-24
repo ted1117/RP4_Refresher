@@ -130,6 +130,18 @@ class SettingsRepository(
         }
     }
 
+    fun getScreenOffTimeoutMillis(default: Int = DEFAULT_SCREEN_OFF_TIMEOUT_MILLIS): Int =
+        Settings.System.getInt(cr, GLOBAL_KEY_SCREEN_OFF_TIMEOUT, default)
+
+    fun setScreenOffTimeoutMillis(value: Int): Boolean {
+        val clamped = value.coerceAtLeast(0)
+        return try {
+            Settings.System.putInt(cr, GLOBAL_KEY_SCREEN_OFF_TIMEOUT, clamped)
+        } catch (_: Throwable) {
+            false
+        }
+    }
+
     fun getHomeLauncherComponent(): String =
         try {
             Settings.Global.getString(cr, GLOBAL_KEY_HOME_LAUNCHER_COMPONENT)
@@ -186,6 +198,7 @@ class SettingsRepository(
         private const val GLOBAL_KEY_HOME_LAUNCHER_COMPONENT = "refresh_paper_home_launcher_component"
         private const val GLOBAL_KEY_SCREEN_BRIGHTNESS = "screen_brightness"
         private const val GLOBAL_KEY_SCREEN_BRIGHTNESS_COLOR = "screen_brightness_color"
+        private const val GLOBAL_KEY_SCREEN_OFF_TIMEOUT = "screen_off_timeout"
         private const val GLOBAL_KEY_SHUTDOWN_TIMER_VALUE = "shutdown_timer_value"
 
         const val DEFAULT_HOME_LAUNCHER_PACKAGE = "cn.modificator.launcher"
@@ -194,5 +207,6 @@ class SettingsRepository(
             "$DEFAULT_HOME_LAUNCHER_PACKAGE/$DEFAULT_HOME_LAUNCHER_CLASS"
 
         const val DEFAULT_SHUTDOWN_TIMER_HOURS = 1
+        const val DEFAULT_SCREEN_OFF_TIMEOUT_MILLIS = 60_000
     }
 }

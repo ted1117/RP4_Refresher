@@ -54,6 +54,18 @@
     <string name="dialog_title_home_launcher">런처 앱 선택</string>
     <string name="toast_home_launcher_no_apps">설치된 런처 앱이 없습니다</string>
     <string name="toast_home_launcher_save_failed">런처 설정 저장에 실패했습니다</string>
+    <string name="setting_title_sleep_mode_timer">슬립 모드 타이머</string>
+    <string name="setting_value_sleep_mode_timer_default">1분</string>
+    <string name="dialog_title_sleep_mode_timer">슬립 모드 타이머 설정</string>
+    <string name="toast_sleep_mode_timer_save_failed">슬립 모드 타이머 저장에 실패했습니다</string>
+    <string name="sleep_mode_timer_option_3m">3분</string>
+    <string name="sleep_mode_timer_option_5m">5분</string>
+    <string name="sleep_mode_timer_option_10m">10분</string>
+    <string name="sleep_mode_timer_option_15m">15분</string>
+    <string name="sleep_mode_timer_option_30m">30분</string>
+    <string name="sleep_mode_timer_option_45m">45분</string>
+    <string name="sleep_mode_timer_option_60m">60분</string>
+    <string name="sleep_mode_timer_option_off">설정하지 않음</string>
     <string name="setting_title_shutdown_timer">전원 끄기 타이머</string>
     <string name="setting_value_shutdown_timer_1h">1시간</string>
     <string name="dialog_title_shutdown_timer">전원 끄기 타이머 설정</string>
@@ -91,6 +103,11 @@
     <string name="dialog_page_count_item_off">안 함</string>
 
     <!-- Shutdown Timer -->
+    <plurals name="setting_value_sleep_mode_timer_minutes">
+        <item quantity="one">%d분</item>
+        <item quantity="other">%d분</item>
+    </plurals>
+
     <plurals name="setting_value_shutdown_timer_hours">
         <item quantity="one">%d시간</item>
         <item quantity="other">%d시간</item>
