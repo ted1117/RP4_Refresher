@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/dialog_width"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="?android:attr/dialogPreferredPadding"
+    android:paddingBottom="?android:attr/dialogPreferredPadding">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/title_margin_bottom"
+        android:paddingStart="?android:attr/dialogPreferredPadding"
+        android:paddingEnd="?android:attr/dialogPreferredPadding"
+        android:text="@string/dialog_title_sleep_mode_timer"
+        android:textColor="@color/text_primary"
+        android:textSize="@dimen/text_size_title"
+        android:textStyle="bold" />
+
+    <RelativeLayout
+        android:id="@+id/item3m"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingHorizontal="?android:attr/dialogPreferredPadding"
+        android:paddingVertical="@dimen/item_padding_vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/sleep_mode_timer_option_3m"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/text_size_item" />
+
+        <ImageView
+            android:id="@+id/check3m"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_check"
+            android:visibility="invisible" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"
+        android:background="@color/dialog_divider_color" />
+
+    <RelativeLayout
+        android:id="@+id/item5m"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingHorizontal="?android:attr/dialogPreferredPadding"
+        android:paddingVertical="@dimen/item_padding_vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/sleep_mode_timer_option_5m"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/text_size_item" />
+
+        <ImageView
+            android:id="@+id/check5m"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_check"
+            android:visibility="invisible" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"
+        android:background="@color/dialog_divider_color" />
+
+    <RelativeLayout
+        android:id="@+id/item10m"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingHorizontal="?android:attr/dialogPreferredPadding"
+        android:paddingVertical="@dimen/item_padding_vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/sleep_mode_timer_option_10m"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/text_size_item" />
+
+        <ImageView
+            android:id="@+id/check10m"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_check"
+            android:visibility="invisible" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"
+        android:background="@color/dialog_divider_color" />
+
+    <RelativeLayout
+        android:id="@+id/item15m"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingHorizontal="?android:attr/dialogPreferredPadding"
+        android:paddingVertical="@dimen/item_padding_vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/sleep_mode_timer_option_15m"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/text_size_item" />
+
+        <ImageView
+            android:id="@+id/check15m"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_check"
+            android:visibility="invisible" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"
+        android:background="@color/dialog_divider_color" />
+
+    <RelativeLayout
+        android:id="@+id/item30m"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingHorizontal="?android:attr/dialogPreferredPadding"
+        android:paddingVertical="@dimen/item_padding_vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/sleep_mode_timer_option_30m"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/text_size_item" />
+
+        <ImageView
+            android:id="@+id/check30m"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_check"
+            android:visibility="invisible" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"
+        android:background="@color/dialog_divider_color" />
+
+    <RelativeLayout
+        android:id="@+id/item45m"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingHorizontal="?android:attr/dialogPreferredPadding"
+        android:paddingVertical="@dimen/item_padding_vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/sleep_mode_timer_option_45m"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/text_size_item" />
+
+        <ImageView
+            android:id="@+id/check45m"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_check"
+            android:visibility="invisible" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"
+        android:background="@color/dialog_divider_color" />
+
+    <RelativeLayout
+        android:id="@+id/item60m"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingHorizontal="?android:attr/dialogPreferredPadding"
+        android:paddingVertical="@dimen/item_padding_vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/sleep_mode_timer_option_60m"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/text_size_item" />
+
+        <ImageView
+            android:id="@+id/check60m"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_check"
+            android:visibility="invisible" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"
+        android:background="@color/dialog_divider_color" />
+
+    <RelativeLayout
+        android:id="@+id/itemOff"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingHorizontal="?android:attr/dialogPreferredPadding"
+        android:paddingVertical="@dimen/item_padding_vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/sleep_mode_timer_option_off"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/text_size_item" />
+
+        <ImageView
+            android:id="@+id/checkOff"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_check"
+            android:visibility="invisible" />
+    </RelativeLayout>
+
+</LinearLayout>
