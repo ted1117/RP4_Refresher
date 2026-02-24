@@ -18,6 +18,13 @@ import com.highcapable.yukihookapi.hook.param.PackageParam
 
 object SystemUIHook {
 
+    private const val PACKAGE_REFRESH_PAPER = "com.hidsquid.refreshpaper"
+    private const val PACKAGE_RIDI_PAPER = "com.ridi.paper"
+    private const val CLASS_STATUS_BAR_SETTINGS_ACTIVITY =
+        "com.hidsquid.refreshpaper.StatusBarSettingsActivity"
+    private const val CLASS_RIDI_SETTINGS_ACTIVITY =
+        "com.ridi.books.viewer.main.activity.SettingsActivity"
+
     private const val GLOBAL_KEY_HOME_LAUNCHER_COMPONENT = "refresh_paper_home_launcher_component"
     private const val GLOBAL_KEY_SCREENSHOT_TOAST_ENABLED = "refresh_paper_screenshot_toast_enabled"
     private val DEFAULT_HOME_COMPONENT = ComponentName(
@@ -88,14 +95,29 @@ object SystemUIHook {
                         val settingsBtn = view.findViewById<ImageButton>(ridiSettingsButtonId)
                         val brightnessBtn = view.findViewById<ImageButton>(ridiBrightnessButtonId)
 
-                        val isTargetActivityOnTop = { pkg: String, cls: String ->
+                        val getTopActivityComponent = {
                             try {
                                 val am = appContext?.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
-                                val top = am?.getRunningTasks(1)?.firstOrNull()?.topActivity
-                                top == ComponentName(pkg, cls)
+                                am?.getRunningTasks(1)?.firstOrNull()?.topActivity
                             } catch (e: Throwable) {
                                 YLog.error("Failed to inspect top activity: ${e.message}")
-                                false
+                                null
+                            }
+                        }
+
+                        val isTargetActivityOnTop = { pkg: String, cls: String ->
+                            getTopActivityComponent() == ComponentName(pkg, cls)
+                        }
+
+                        val getTopTaskPackages = {
+                            try {
+                                val am = appContext?.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
+                                am?.getRunningTasks(2)
+                                    ?.mapNotNull { it.topActivity?.packageName }
+                                    ?: emptyList()
+                            } catch (e: Throwable) {
+                                YLog.error("Failed to inspect running tasks: ${e.message}")
+                                emptyList()
                             }
                         }
 
@@ -118,6 +140,38 @@ object SystemUIHook {
                             } catch (e: Exception) {
                                 YLog.error("Failed to launch $cls: ${e.message}")
                             }
+                        }
+
+                        fun launchStatusBarSettingsDialog() {
+                            try {
+                                if (isTargetActivityOnTop(PACKAGE_REFRESH_PAPER, CLASS_STATUS_BAR_SETTINGS_ACTIVITY)) {
+                                    YLog.debug("Skip launch, quick settings already on top")
+                                    return
+                                }
+
+                                val intent = Intent().apply {
+                                    component = ComponentName(
+                                        PACKAGE_REFRESH_PAPER,
+                                        CLASS_STATUS_BAR_SETTINGS_ACTIVITY
+                                    )
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+                                    addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
+                                    addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                                }
+                                appContext?.startActivity(intent)
+                                YLog.debug("Launched quick settings dialog")
+                            } catch (e: Exception) {
+                                YLog.error("Failed to launch quick settings dialog: ${e.message}")
+                            }
+                        }
+
+                        val isRidiForeground = {
+                            val topPackages = getTopTaskPackages()
+                            val topPackage = topPackages.firstOrNull()
+                            val secondPackage = topPackages.getOrNull(1)
+                            topPackage == PACKAGE_RIDI_PAPER ||
+                                (topPackage == "com.android.systemui" && secondPackage == PACKAGE_RIDI_PAPER)
                         }
 
                         homeBtn.setOnClickListener {
@@ -153,10 +207,15 @@ object SystemUIHook {
                         }
 
                         settingsBtn.setOnClickListener {
-                            launchIsolatedActivity(
-                                "com.ridi.paper",
-                                "com.ridi.books.viewer.main.activity.SettingsActivity"
-                            )
+                            if (isRidiForeground()) {
+                                YLog.debug("Ridi foreground detected, fallback to Ridi settings")
+                                launchIsolatedActivity(
+                                    PACKAGE_RIDI_PAPER,
+                                    CLASS_RIDI_SETTINGS_ACTIVITY
+                                )
+                            } else {
+                                launchStatusBarSettingsDialog()
+                            }
                         }
 
                         brightnessBtn.setOnClickListener {

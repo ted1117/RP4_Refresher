@@ -14,6 +14,7 @@
     <string name="manual_refresh_cardview_text">미테르 리모컨 새로고침 버튼 활성화</string>
     <string name="manual_refresh_description">미테르 리모컨의 새로고침 버튼을 활성화합니다</string>
     <string name="dialog_title">페이지 새로고침</string>
+    <string name="quick_settings_title">간단 설정</string>
 
     <!-- EPD Display Mode -->
     <string name="epd_mode_dialog_title">잔상 최소화 설정</string>
