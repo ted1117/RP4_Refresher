@@ -1,17 +1,12 @@
 package com.hidsquid.refreshpaper.hook
 
-import android.app.AndroidAppHelper
-import android.content.Context
-import android.provider.Settings
 import android.view.KeyEvent
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.factory.toClass
 import com.highcapable.yukihookapi.hook.param.PackageParam
+import com.hidsquid.refreshpaper.ModulePrefs
 
 object SystemServerHook {
-
-    private const val GLOBAL_KEY_SCREENSHOT_CHORD_ENABLED =
-        "refresh_paper_screenshot_chord_enabled"
 
     @Volatile
     private var isPowerKeyDown = false
@@ -32,13 +27,11 @@ object SystemServerHook {
                 }
                 .hook {
                     before {
-                        val ctx = AndroidAppHelper.currentApplication()
-                        val cr = ctx.contentResolver
-                        val isBypassOn = try {
-                            Settings.Global.getInt(cr, "secure_bypass_on", 1) == 1
-                        } catch (_: Throwable) {
-                            true
-                        }
+                        val isBypassOn =
+                            HookPrefs.getBoolean(
+                                ModulePrefs.KEY_SECURE_BYPASS_ENABLED,
+                                true
+                            )
                         if (isBypassOn) result = false
                     }
                 }
@@ -51,7 +44,7 @@ object SystemServerHook {
                     before {
                         val event = args[0] as? KeyEvent ?: return@before
                         val pwm = this.instance ?: return@before
-                        if (!isPowerPageScreenshotEnabled(pwm)) {
+                        if (!isPowerPageScreenshotEnabled()) {
                             resetChordState()
                             return@before
                         }
@@ -99,7 +92,7 @@ object SystemServerHook {
                 .hook {
                     before {
                         val pwm = this.instance ?: return@before
-                        if (!isPowerPageScreenshotEnabled(pwm)) {
+                        if (!isPowerPageScreenshotEnabled()) {
                             resetChordState()
                             return@before
                         }
@@ -116,7 +109,9 @@ object SystemServerHook {
                             result = -1L
                         }
                     }
-                }        }    }
+                }
+        }
+    }
 
     private fun triggerScreenshotChord(instance: Any, eventTime: Long) {
         if (isScreenshotChordActive) return
@@ -129,13 +124,11 @@ object SystemServerHook {
         invokeDirectScreenshot(instance)
     }
 
-    private fun isPowerPageScreenshotEnabled(instance: Any): Boolean {
-        val context = runCatching { field(instance, "mContext").get(instance) as? Context }.getOrNull()
-        val resolver = context?.contentResolver ?: return true
-        return runCatching {
-            val newRaw = Settings.Global.getString(resolver, GLOBAL_KEY_SCREENSHOT_CHORD_ENABLED)
-            if (newRaw != null) newRaw.toIntOrNull() == 1 else true
-        }.getOrDefault(true)
+    private fun isPowerPageScreenshotEnabled(): Boolean {
+        return HookPrefs.getBoolean(
+            ModulePrefs.KEY_POWER_PAGE_SCREENSHOT_ENABLED,
+            true
+        )
     }
 
     private fun resetChordState() {
