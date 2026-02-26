@@ -1,24 +1,23 @@
 package com.hidsquid.refreshpaper.device
 
 import android.content.Context
-import android.provider.Settings
 import android.util.Log
+import com.hidsquid.refreshpaper.ModulePrefs
 
 class DeviceSecurityController(private val context: Context) {
 
-    private val contentResolver = context.contentResolver
+    private val appContext = context.applicationContext
+    private val prefs = appContext.getSharedPreferences(ModulePrefs.PREFS_NAME, Context.MODE_PRIVATE)
 
     @Throws(SecurityException::class)
     fun setSecureBypass(enable: Boolean) {
-        val value = if (enable) 1 else 0
-
-        Settings.Global.putInt(contentResolver, SETTING_KEY, value)
+        prefs.edit().putBoolean(ModulePrefs.KEY_SECURE_BYPASS_ENABLED, enable).commit()
         Log.d(TAG, "Screenshot setting changed successfully: $enable")
     }
 
     fun isSecureBypassEnabled(): Boolean {
         return try {
-            Settings.Global.getInt(contentResolver, SETTING_KEY, 1) == 1
+            prefs.getBoolean(ModulePrefs.KEY_SECURE_BYPASS_ENABLED, true)
         } catch (e: Exception) {
             Log.e(TAG, "Failed to read secure bypass setting", e)
             false
@@ -27,6 +26,5 @@ class DeviceSecurityController(private val context: Context) {
 
     companion object {
         private const val TAG = "DeviceSecurity"
-        private const val SETTING_KEY = "secure_bypass_on"
     }
 }

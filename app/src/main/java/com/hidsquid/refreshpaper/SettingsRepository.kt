@@ -1,111 +1,85 @@
 package com.hidsquid.refreshpaper
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.provider.Settings
+import android.util.Log
 
 class SettingsRepository(
     context: Context,
 ) {
-    private val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    private val appContext = context.applicationContext
+
+    private val prefs = createPrefs(appContext)
 
     private val cr = context.contentResolver
 
     fun isAutoRefreshEnabled(): Boolean =
-        prefs.getBoolean(PREF_KEY_AUTO_REFRESH_ENABLED, false)
+        prefs.getBoolean(ModulePrefs.KEY_AUTO_REFRESH_ENABLED, false)
 
     fun setAutoRefreshEnabled(enabled: Boolean) {
-        prefs.edit().putBoolean(PREF_KEY_AUTO_REFRESH_ENABLED, enabled).apply()
-        val touchPref = prefs.getBoolean(PREF_KEY_TOUCH_REFRESH_ENABLED, false)
-        val effectiveTouch = enabled && touchPref
-        try {
-            Settings.Global.putInt(cr, GLOBAL_KEY_TOUCH_REFRESH_ENABLED, if (effectiveTouch) 1 else 0)
-        } catch (e: SecurityException) {
-
-        }
+        prefs.edit()
+            .putBoolean(ModulePrefs.KEY_AUTO_REFRESH_ENABLED, enabled)
+            .commit()
     }
 
     fun isTouchRefreshEnabled(): Boolean {
         if (!isAutoRefreshEnabled()) return false
-        return prefs.getBoolean(PREF_KEY_TOUCH_REFRESH_ENABLED, false)
+        return prefs.getBoolean(ModulePrefs.KEY_TOUCH_REFRESH_ENABLED, false)
     }
 
     fun setTouchRefreshEnabled(enabled: Boolean) {
-        prefs.edit().putBoolean(PREF_KEY_TOUCH_REFRESH_ENABLED, enabled).apply()
-        val effective = enabled && isAutoRefreshEnabled()
-        val value = if (effective) 1 else 0
-        try {
-            Settings.Global.putInt(cr, GLOBAL_KEY_TOUCH_REFRESH_ENABLED, value)
-        } catch (e: SecurityException) {
-
-        }
+        prefs.edit()
+            .putBoolean(ModulePrefs.KEY_TOUCH_REFRESH_ENABLED, enabled)
+            .commit()
     }
 
     fun isScreenshotChordEnabled(): Boolean {
-        return prefs.getBoolean(PREF_KEY_SCREENSHOT_CHORD_ENABLED, true)
+        return prefs.getBoolean(ModulePrefs.KEY_SCREENSHOT_CHORD_ENABLED, true)
     }
 
     fun setScreenshotChordEnabled(enabled: Boolean) {
-        prefs.edit().putBoolean(PREF_KEY_SCREENSHOT_CHORD_ENABLED, enabled).apply()
+        prefs.edit()
+            .putBoolean(ModulePrefs.KEY_SCREENSHOT_CHORD_ENABLED, enabled)
+            .commit()
     }
 
     fun isPowerPageScreenshotEnabled(): Boolean {
-        return try {
-            Settings.Global.getInt(cr, GLOBAL_KEY_POWER_PAGE_SCREENSHOT_ENABLED, 1) == 1
-        } catch (_: Throwable) {
-            true
-        }
+        return prefs.getBoolean(ModulePrefs.KEY_POWER_PAGE_SCREENSHOT_ENABLED, true)
     }
 
     fun setPowerPageScreenshotEnabled(enabled: Boolean): Boolean {
-        return try {
-            Settings.Global.putInt(
-                cr,
-                GLOBAL_KEY_POWER_PAGE_SCREENSHOT_ENABLED,
-                if (enabled) 1 else 0
-            )
-        } catch (_: Throwable) {
-            false
-        }
+        return prefs.edit()
+            .putBoolean(ModulePrefs.KEY_POWER_PAGE_SCREENSHOT_ENABLED, enabled)
+            .commit()
     }
 
     fun isScreenshotToastEnabled(): Boolean {
-        return try {
-            Settings.Global.getInt(cr, GLOBAL_KEY_SCREENSHOT_TOAST_ENABLED, 1) == 1
-        } catch (_: Throwable) {
-            true
-        }
+        return prefs.getBoolean(ModulePrefs.KEY_SCREENSHOT_TOAST_ENABLED, true)
     }
 
     fun setScreenshotToastEnabled(enabled: Boolean): Boolean {
-        return try {
-            Settings.Global.putInt(
-                cr,
-                GLOBAL_KEY_SCREENSHOT_TOAST_ENABLED,
-                if (enabled) 1 else 0
-            )
-        } catch (_: Throwable) {
-            false
-        }
+        return prefs.edit()
+            .putBoolean(ModulePrefs.KEY_SCREENSHOT_TOAST_ENABLED, enabled)
+            .commit()
     }
 
     fun isManualRefreshEnabled(): Boolean =
-        prefs.getBoolean(PREF_KEY_MANUAL_REFRESH_ENABLED, false)
+        prefs.getBoolean(ModulePrefs.KEY_MANUAL_REFRESH_ENABLED, false)
 
     fun setManualRefreshEnabled(enabled: Boolean) {
-        prefs.edit().putBoolean(PREF_KEY_MANUAL_REFRESH_ENABLED, enabled).apply()
+        prefs.edit()
+            .putBoolean(ModulePrefs.KEY_MANUAL_REFRESH_ENABLED, enabled)
+            .commit()
     }
 
     fun getPagesPerRefresh(): Int =
-        prefs.getInt(PREF_KEY_PAGES_PER_REFRESH, DEFAULT_PAGES_PER_REFRESH)
+        prefs.getInt(ModulePrefs.KEY_PAGES_PER_REFRESH, DEFAULT_PAGES_PER_REFRESH)
 
     fun setPagesPerRefresh(pages: Int) {
-        prefs.edit().putInt(PREF_KEY_PAGES_PER_REFRESH, pages).apply()
-
-        try {
-            Settings.Global.putInt(cr, GLOBAL_KEY_PAGES_PER_REFRESH, pages)
-        } catch (e: SecurityException) {
-
-        }
+        prefs.edit()
+            .putInt(ModulePrefs.KEY_PAGES_PER_REFRESH, pages)
+            .commit()
     }
 
     fun getScreenBrightness(default: Int = DEFAULT_SCREEN_BRIGHTNESS): Int =
@@ -144,7 +118,7 @@ class SettingsRepository(
 
     fun getHomeLauncherComponent(): String =
         try {
-            Settings.Global.getString(cr, GLOBAL_KEY_HOME_LAUNCHER_COMPONENT)
+            prefs.getString(ModulePrefs.KEY_HOME_LAUNCHER_COMPONENT, null)
                 ?.takeIf { it.isNotBlank() }
                 ?: DEFAULT_HOME_LAUNCHER_COMPONENT
         } catch (_: Throwable) {
@@ -152,11 +126,7 @@ class SettingsRepository(
         }
 
     fun setHomeLauncherComponent(componentName: String): Boolean =
-        try {
-            Settings.Global.putString(cr, GLOBAL_KEY_HOME_LAUNCHER_COMPONENT, componentName)
-        } catch (_: Throwable) {
-            false
-        }
+        prefs.edit().putString(ModulePrefs.KEY_HOME_LAUNCHER_COMPONENT, componentName).commit()
 
     fun getShutdownTimerHours(default: Int = DEFAULT_SHUTDOWN_TIMER_HOURS): Int {
         val rawMinutes = Settings.System.getInt(cr, GLOBAL_KEY_SHUTDOWN_TIMER_VALUE, default * 60)
@@ -175,27 +145,13 @@ class SettingsRepository(
     }
 
     companion object {
-        private const val PREFS_NAME = "MyPrefs"
-
-        private const val PREF_KEY_AUTO_REFRESH_ENABLED = "auto_refresh_enabled"
-        private const val PREF_KEY_MANUAL_REFRESH_ENABLED = "manual_refresh_enabled"
-        private const val PREF_KEY_PAGES_PER_REFRESH = "numberInput"
-        private const val PREF_KEY_TOUCH_REFRESH_ENABLED = "touch_refresh_enabled"
-        private const val PREF_KEY_SCREENSHOT_CHORD_ENABLED = "screenshot_chord_enabled"
-
+        private const val TAG = "SettingsRepository"
         private const val DEFAULT_PAGES_PER_REFRESH = 5
         private const val DEFAULT_SCREEN_BRIGHTNESS = 0
         private const val DEFAULT_SCREEN_BRIGHTNESS_COLOR = 0
         const val MAX_SCREEN_BRIGHTNESS = 206
         const val MAX_SCREEN_BRIGHTNESS_COLOR = 100
 
-        private const val GLOBAL_KEY_TOUCH_REFRESH_ENABLED = "refresh_paper_auto_enabled"
-        private const val GLOBAL_KEY_PAGES_PER_REFRESH = "refresh_paper_pages_per_refresh"
-        private const val GLOBAL_KEY_POWER_PAGE_SCREENSHOT_ENABLED =
-            "refresh_paper_screenshot_chord_enabled"
-        private const val GLOBAL_KEY_SCREENSHOT_TOAST_ENABLED =
-            "refresh_paper_screenshot_toast_enabled"
-        private const val GLOBAL_KEY_HOME_LAUNCHER_COMPONENT = "refresh_paper_home_launcher_component"
         private const val GLOBAL_KEY_SCREEN_BRIGHTNESS = "screen_brightness"
         private const val GLOBAL_KEY_SCREEN_BRIGHTNESS_COLOR = "screen_brightness_color"
         private const val GLOBAL_KEY_SCREEN_OFF_TIMEOUT = "screen_off_timeout"
@@ -208,5 +164,13 @@ class SettingsRepository(
 
         const val DEFAULT_SHUTDOWN_TIMER_HOURS = 1
         const val DEFAULT_SCREEN_OFF_TIMEOUT_MILLIS = 60_000
+    }
+
+    private fun createPrefs(context: Context) = try {
+        @SuppressLint("WorldReadableFiles")
+        context.getSharedPreferences(ModulePrefs.PREFS_NAME, Context.MODE_WORLD_READABLE)
+    } catch (e: SecurityException) {
+        Log.w(TAG, "MODE_WORLD_READABLE unsupported, fallback to MODE_PRIVATE", e)
+        context.getSharedPreferences(ModulePrefs.PREFS_NAME, Context.MODE_PRIVATE)
     }
 }

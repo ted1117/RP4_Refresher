@@ -7,7 +7,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.provider.Settings
 import android.view.View
 import android.widget.ImageButton
 import android.widget.Toast
@@ -15,6 +14,7 @@ import com.highcapable.yukihookapi.hook.factory.field
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
+import com.hidsquid.refreshpaper.ModulePrefs
 
 object SystemUIHook {
 
@@ -25,8 +25,6 @@ object SystemUIHook {
     private const val CLASS_RIDI_SETTINGS_ACTIVITY =
         "com.ridi.books.viewer.main.activity.SettingsActivity"
 
-    private const val GLOBAL_KEY_HOME_LAUNCHER_COMPONENT = "refresh_paper_home_launcher_component"
-    private const val GLOBAL_KEY_SCREENSHOT_TOAST_ENABLED = "refresh_paper_screenshot_toast_enabled"
     private val DEFAULT_HOME_COMPONENT = ComponentName(
         "cn.modificator.launcher",
         "cn.modificator.launcher.Launcher"
@@ -51,7 +49,7 @@ object SystemUIHook {
                                 runCatching { originalFinisher.run() }.onFailure {
                                     YLog.error("Wrapped screenshot finisher failed: ${it.message}")
                                 }
-                                if (isScreenshotToastEnabled(context)) {
+                                if (isScreenshotToastEnabled()) {
                                     Handler(Looper.getMainLooper()).post {
                                         Toast.makeText(context, "스크린샷 촬영", Toast.LENGTH_SHORT)
                                             .show()
@@ -176,15 +174,12 @@ object SystemUIHook {
 
                         homeBtn.setOnClickListener {
                             try {
-                                val configuredHome = try {
-                                    Settings.Global.getString(
-                                        appContext?.contentResolver,
-                                        GLOBAL_KEY_HOME_LAUNCHER_COMPONENT
-                                    )
-                                } catch (_: Throwable) {
-                                    null
-                                }
-                                val homeComponent = configuredHome?.let(ComponentName::unflattenFromString)
+                                val configuredHome = HookPrefs.getString(
+                                    ModulePrefs.KEY_HOME_LAUNCHER_COMPONENT,
+                                    DEFAULT_HOME_COMPONENT.flattenToString(),
+                                    forceReload = true
+                                )
+                                val homeComponent = configuredHome.let(ComponentName::unflattenFromString)
                                     ?: DEFAULT_HOME_COMPONENT
 
                                 val intent = Intent().apply {
@@ -230,13 +225,11 @@ object SystemUIHook {
         }
     }
 
-    private fun isScreenshotToastEnabled(context: Context): Boolean {
-        return runCatching {
-            Settings.Global.getInt(
-                context.contentResolver,
-                GLOBAL_KEY_SCREENSHOT_TOAST_ENABLED,
-                1
-            ) == 1
-        }.getOrDefault(true)
+    private fun isScreenshotToastEnabled(): Boolean {
+        return HookPrefs.getBoolean(
+            ModulePrefs.KEY_SCREENSHOT_TOAST_ENABLED,
+            true,
+            forceReload = true
+        )
     }
 }
