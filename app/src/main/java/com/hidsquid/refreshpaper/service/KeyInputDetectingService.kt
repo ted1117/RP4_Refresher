@@ -11,6 +11,7 @@ import android.os.SystemClock
 import android.util.Log
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
+import androidx.core.content.IntentCompat
 import com.hidsquid.refreshpaper.BuildConfig
 import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_BACK
 import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_BRIGHTNESS
@@ -58,6 +59,7 @@ class KeyInputDetectingService : AccessibilityService() {
             IntentFilter().apply {
                 addAction(ACTION_REFRESH_SCREEN)
                 addAction(ACTION_SHOW_BRIGHTNESS_ACTIVITY)
+                addAction(ACTION_RP400_GLOBAL_BUTTON)
             }
         )
     }
@@ -183,6 +185,17 @@ class KeyInputDetectingService : AccessibilityService() {
         performGlobalAction(GLOBAL_ACTION_TAKE_SCREENSHOT)
     }
 
+    private fun runConfiguredF1Action(selectedAction: Int): Boolean {
+        return when (selectedAction) {
+            F1_ACTION_BACK -> performGlobalAction(GLOBAL_ACTION_BACK)
+            F1_ACTION_SCREENSHOT -> performGlobalAction(GLOBAL_ACTION_TAKE_SCREENSHOT)
+            F1_ACTION_QUICK_SETTINGS -> launchQuickSettingsDialog()
+            F1_ACTION_BRIGHTNESS -> launchBrightnessDialog()
+            F1_ACTION_MANUAL_REFRESH -> triggerManualRefresh()
+            else -> performGlobalAction(GLOBAL_ACTION_BACK)
+        }
+    }
+
     private fun handleF1ShortPress(): Boolean {
         val now = SystemClock.uptimeMillis()
 
@@ -201,14 +214,15 @@ class KeyInputDetectingService : AccessibilityService() {
         lastHandledF1ActionTime = now
 
         val selectedAction = settingsRepository.getF1Action()
-        return when (selectedAction) {
-            F1_ACTION_BACK -> performGlobalAction(GLOBAL_ACTION_BACK)
-            F1_ACTION_SCREENSHOT -> performGlobalAction(GLOBAL_ACTION_TAKE_SCREENSHOT)
-            F1_ACTION_QUICK_SETTINGS -> launchQuickSettingsDialog()
-            F1_ACTION_BRIGHTNESS -> launchBrightnessDialog()
-            F1_ACTION_MANUAL_REFRESH -> triggerManualRefresh()
-            else -> performGlobalAction(GLOBAL_ACTION_BACK)
+        return runConfiguredF1Action(selectedAction)
+    }
+
+    private fun handleF1LongPress(): Boolean {
+        if (isBlockedForegroundApp()) {
+            return false
         }
+        val selectedAction = settingsRepository.getF1LongPressAction(settingsRepository.getF1Action())
+        return runConfiguredF1Action(selectedAction)
     }
 
     private fun triggerManualRefresh(): Boolean {
@@ -254,6 +268,36 @@ class KeyInputDetectingService : AccessibilityService() {
         return currentPackageName.isBlank() || currentPackageName == BLOCKED_APP_PACKAGE_NAME
     }
 
+    private fun handleRp400GlobalButton(intent: Intent) {
+        val keyEvent = IntentCompat.getParcelableExtra(
+            intent,
+            Intent.EXTRA_KEY_EVENT,
+            KeyEvent::class.java
+        ) ?: return
+
+        if (keyEvent.keyCode != KeyEvent.KEYCODE_F1) return
+
+        val isLongPress = keyEvent.action == KeyEvent.ACTION_MULTIPLE ||
+            keyEvent.repeatCount > 0 ||
+            (keyEvent.flags and KeyEvent.FLAG_LONG_PRESS) != 0 ||
+            (keyEvent.flags and KeyEvent.FLAG_CANCELED_LONG_PRESS) != 0
+
+        Log.d(
+            TAG,
+            "[RP400] action=${keyEvent.action} repeat=${keyEvent.repeatCount} " +
+                "flags=0x${keyEvent.flags.toString(16)} long=$isLongPress"
+        )
+
+        if (isLongPress) {
+            handleF1LongPress()
+            return
+        }
+
+        if (keyEvent.action == KeyEvent.ACTION_UP) {
+            handleF1ShortPress()
+        }
+    }
+
     override fun onKeyEvent(event: KeyEvent): Boolean {
         // 스크린샷
         if (handleScreenshotChord(event)) return true
@@ -261,10 +305,6 @@ class KeyInputDetectingService : AccessibilityService() {
         val keyCode = event.keyCode
 
         if (event.action != KeyEvent.ACTION_UP) return super.onKeyEvent(event)
-
-        if (keyCode == KeyEvent.KEYCODE_F1) {
-            return if (handleF1ShortPress()) true else super.onKeyEvent(event)
-        }
 
 
         // HOME 키
@@ -327,6 +367,7 @@ class KeyInputDetectingService : AccessibilityService() {
             when (intent?.action) {
                 ACTION_REFRESH_SCREEN -> doFullRefresh()
                 ACTION_SHOW_BRIGHTNESS_ACTIVITY -> launchBrightnessDialog()
+                ACTION_RP400_GLOBAL_BUTTON -> handleRp400GlobalButton(intent)
             }
         }
     }
@@ -338,6 +379,7 @@ class KeyInputDetectingService : AccessibilityService() {
         const val ACTION_REFRESH_SCREEN: String = "com.hidsquid.refreshpaper.ACTION_REFRESH_SCREEN"
         const val ACTION_SHOW_BRIGHTNESS_ACTIVITY: String =
             "com.hidsquid.refreshpaper.ACTION_SHOW_BRIGHTNESS_ACTIVITY"
+        const val ACTION_RP400_GLOBAL_BUTTON: String = "ridi.intent.action.GLOBAL_BUTTON"
         private const val F1_ACTION_DEBOUNCE_MS = 120L
         private const val BLOCKED_APP_PACKAGE_NAME = "com.ridi.paper"
         private const val CLASS_STATUS_BAR_SETTINGS_ACTIVITY =

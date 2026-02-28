@@ -11,6 +11,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.Switch
+import android.widget.TextView
 import android.widget.Toast
 import android.app.AlertDialog
 import androidx.activity.ComponentActivity
@@ -87,6 +88,7 @@ class MainActivity : ComponentActivity() {
         updateEpdModeSummary()
         updateHomeLauncherSummary()
         updateF1ActionSummary()
+        updateF1LongActionSummary()
         updateSleepModeTimerSummary()
         updateShutdownTimerSummary()
     }
@@ -159,7 +161,23 @@ class MainActivity : ComponentActivity() {
         }
 
         layout.f1ActionCard.setOnClickListener {
-            showF1ActionDialog()
+            showF1ActionDialog(
+                currentAction = settingsRepository.getF1Action(),
+                titleRes = R.string.dialog_title_f1_short_action
+            ) { selectedAction ->
+                settingsRepository.setF1Action(selectedAction)
+                updateF1ActionSummary()
+            }
+        }
+
+        layout.f1LongActionCard.setOnClickListener {
+            showF1ActionDialog(
+                currentAction = settingsRepository.getF1LongPressAction(settingsRepository.getF1Action()),
+                titleRes = R.string.dialog_title_f1_long_action
+            ) { selectedAction ->
+                settingsRepository.setF1LongPressAction(selectedAction)
+                updateF1LongActionSummary()
+            }
         }
 
         layout.sleepModeTimerCard.setOnClickListener {
@@ -367,8 +385,11 @@ class MainActivity : ComponentActivity() {
         binding.layoutSettings.tvHomeLauncherSetting.text = selectedLabel
     }
 
-    private fun showF1ActionDialog() {
-        val currentAction = settingsRepository.getF1Action()
+    private fun showF1ActionDialog(
+        currentAction: Int,
+        titleRes: Int,
+        onSelected: (Int) -> Unit
+    ) {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_f1_action, null)
         val dialog = AlertDialog.Builder(this)
             .setView(dialogView)
@@ -376,6 +397,7 @@ class MainActivity : ComponentActivity() {
             .create()
 
         dialog.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
+        dialogView.findViewById<TextView>(R.id.dialogTitle).setText(titleRes)
 
         val itemBack = dialogView.findViewById<RelativeLayout>(R.id.itemBack)
         val itemScreenshot = dialogView.findViewById<RelativeLayout>(R.id.itemScreenshot)
@@ -414,8 +436,7 @@ class MainActivity : ComponentActivity() {
                 else -> SettingsRepository.F1_ACTION_BACK
             }
 
-            settingsRepository.setF1Action(selectedAction)
-            updateF1ActionSummary()
+            onSelected(selectedAction)
             dialog.dismiss()
         }
 
@@ -433,15 +454,26 @@ class MainActivity : ComponentActivity() {
     private fun updateF1ActionSummary() {
         val selectedAction = settingsRepository.getF1Action()
         binding.layoutSettings.tvF1ActionSetting.text = getString(
-            when (selectedAction) {
-                SettingsRepository.F1_ACTION_BACK -> R.string.setting_value_f1_action_back
-                SettingsRepository.F1_ACTION_SCREENSHOT -> R.string.setting_value_f1_action_screenshot
-                SettingsRepository.F1_ACTION_QUICK_SETTINGS -> R.string.setting_value_f1_action_quick_settings
-                SettingsRepository.F1_ACTION_BRIGHTNESS -> R.string.setting_value_f1_action_brightness
-                SettingsRepository.F1_ACTION_MANUAL_REFRESH -> R.string.setting_value_f1_action_manual_refresh
-                else -> R.string.setting_value_f1_action_back
-            }
+            getF1ActionLabelRes(selectedAction)
         )
+    }
+
+    private fun updateF1LongActionSummary() {
+        val selectedAction = settingsRepository.getF1LongPressAction(settingsRepository.getF1Action())
+        binding.layoutSettings.tvF1LongActionSetting.text = getString(
+            getF1ActionLabelRes(selectedAction)
+        )
+    }
+
+    private fun getF1ActionLabelRes(action: Int): Int {
+        return when (action) {
+            SettingsRepository.F1_ACTION_BACK -> R.string.setting_value_f1_action_back
+            SettingsRepository.F1_ACTION_SCREENSHOT -> R.string.setting_value_f1_action_screenshot
+            SettingsRepository.F1_ACTION_QUICK_SETTINGS -> R.string.setting_value_f1_action_quick_settings
+            SettingsRepository.F1_ACTION_BRIGHTNESS -> R.string.setting_value_f1_action_brightness
+            SettingsRepository.F1_ACTION_MANUAL_REFRESH -> R.string.setting_value_f1_action_manual_refresh
+            else -> R.string.setting_value_f1_action_back
+        }
     }
 
     private fun updateSleepModeTimerSummary() {

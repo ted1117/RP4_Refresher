@@ -145,6 +145,16 @@ class SettingsRepository(
         return prefs.edit().putInt(ModulePrefs.KEY_F1_ACTION, action).commit()
     }
 
+    fun getF1LongPressAction(default: Int = F1_ACTION_BACK): Int {
+        val value = prefs.getInt(ModulePrefs.KEY_F1_LONG_PRESS_ACTION, default)
+        return if (value in VALID_F1_ACTIONS) value else default
+    }
+
+    fun setF1LongPressAction(action: Int): Boolean {
+        if (action !in VALID_F1_ACTIONS) return false
+        return prefs.edit().putInt(ModulePrefs.KEY_F1_LONG_PRESS_ACTION, action).commit()
+    }
+
     fun getShutdownTimerHours(default: Int = DEFAULT_SHUTDOWN_TIMER_HOURS): Int {
         val rawMinutes = Settings.System.getInt(cr, GLOBAL_KEY_SHUTDOWN_TIMER_VALUE, default * 60)
         if (rawMinutes == 0) return 0

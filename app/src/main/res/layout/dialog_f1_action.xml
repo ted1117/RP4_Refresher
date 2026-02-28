@@ -7,6 +7,7 @@
     android:paddingBottom="?android:attr/dialogPreferredPadding">
 
     <TextView
+        android:id="@+id/dialogTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/title_margin_bottom"

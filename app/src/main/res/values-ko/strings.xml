@@ -55,13 +55,16 @@
     <string name="dialog_title_home_launcher">런처 앱 선택</string>
     <string name="toast_home_launcher_no_apps">설치된 런처 앱이 없습니다</string>
     <string name="toast_home_launcher_save_failed">런처 설정 저장에 실패했습니다</string>
-    <string name="setting_title_f1_action">퀵 버튼 동작</string>
+    <string name="setting_title_f1_action">퀵 버튼 짧게 누름 동작</string>
+    <string name="setting_title_f1_long_action">퀵 버튼 길게 누름 동작</string>
     <string name="setting_value_f1_action_back">뒤로가기</string>
     <string name="setting_value_f1_action_screenshot">스크린샷</string>
     <string name="setting_value_f1_action_quick_settings">간단 설정</string>
     <string name="setting_value_f1_action_brightness">밝기 설정 창</string>
     <string name="setting_value_f1_action_manual_refresh">수동 리프레시</string>
     <string name="dialog_title_f1_action">퀵 버튼 동작 선택</string>
+    <string name="dialog_title_f1_short_action">퀵 버튼 짧게 누름 동작 선택</string>
+    <string name="dialog_title_f1_long_action">퀵 버튼 길게 누름 동작 선택</string>
     <string name="setting_title_sleep_mode_timer">슬립 모드 타이머</string>
     <string name="setting_value_sleep_mode_timer_default">1분</string>
     <string name="dialog_title_sleep_mode_timer">슬립 모드 타이머 설정</string>

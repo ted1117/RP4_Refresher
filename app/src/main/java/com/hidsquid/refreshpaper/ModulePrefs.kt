@@ -12,5 +12,6 @@ object ModulePrefs {
     const val KEY_SCREENSHOT_TOAST_ENABLED = "rp_screenshot_toast_enabled"
     const val KEY_HOME_LAUNCHER_COMPONENT = "rp_home_launcher_component"
     const val KEY_F1_ACTION = "rp_f1_action"
+    const val KEY_F1_LONG_PRESS_ACTION = "rp_f1_long_press_action"
     const val KEY_SECURE_BYPASS_ENABLED = "rp_secure_bypass_enabled"
 }

@@ -54,13 +54,16 @@
     <string name="dialog_title_home_launcher">Select launcher app</string>
     <string name="toast_home_launcher_no_apps">No launcher apps found</string>
     <string name="toast_home_launcher_save_failed">Failed to save launcher setting</string>
-    <string name="setting_title_f1_action">Quick Button Action</string>
+    <string name="setting_title_f1_action">Quick Button Short Press</string>
+    <string name="setting_title_f1_long_action">Quick Button Long Press</string>
     <string name="setting_value_f1_action_back">Back</string>
     <string name="setting_value_f1_action_screenshot">Screenshot</string>
     <string name="setting_value_f1_action_quick_settings">Quick Settings</string>
     <string name="setting_value_f1_action_brightness">Brightness Dialog</string>
     <string name="setting_value_f1_action_manual_refresh">Manual Refresh</string>
     <string name="dialog_title_f1_action">Choose Quick Button action</string>
+    <string name="dialog_title_f1_short_action">Choose short press action</string>
+    <string name="dialog_title_f1_long_action">Choose long press action</string>
     <string name="setting_title_sleep_mode_timer">Sleep mode timer</string>
     <string name="setting_value_sleep_mode_timer_default">1 minute</string>
     <string name="dialog_title_sleep_mode_timer">Select sleep mode timer</string>
