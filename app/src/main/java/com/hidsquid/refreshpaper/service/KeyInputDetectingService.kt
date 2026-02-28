@@ -12,7 +12,6 @@ import android.util.Log
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import androidx.core.content.IntentCompat
-import com.hidsquid.refreshpaper.BuildConfig
 import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_BACK
 import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_BRIGHTNESS
 import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_HOME_LAUNCHER
@@ -235,9 +234,6 @@ class KeyInputDetectingService : AccessibilityService() {
     }
 
     private fun launchQuickSettingsDialog(): Boolean {
-        if (isTargetActivityOnTop(BuildConfig.APPLICATION_ID, CLASS_STATUS_BAR_SETTINGS_ACTIVITY)) {
-            return true
-        }
         return runCatching {
             startActivity(
                 Intent(this, StatusBarSettingsActivity::class.java).apply {
@@ -262,10 +258,6 @@ class KeyInputDetectingService : AccessibilityService() {
             Log.e(TAG, "Failed to launch brightness dialog", it)
             false
         }
-    }
-
-    private fun isTargetActivityOnTop(packageName: String, className: String): Boolean {
-        return currentPackageName == packageName && currentClassName == className
     }
 
     private fun isBlockedForegroundApp(): Boolean {
@@ -386,7 +378,5 @@ class KeyInputDetectingService : AccessibilityService() {
         const val ACTION_RP400_GLOBAL_BUTTON: String = "ridi.intent.action.GLOBAL_BUTTON"
         private const val F1_ACTION_DEBOUNCE_MS = 120L
         private const val BLOCKED_APP_PACKAGE_NAME = "com.ridi.paper"
-        private const val CLASS_STATUS_BAR_SETTINGS_ACTIVITY =
-            "com.hidsquid.refreshpaper.StatusBarSettingsActivity"
     }
 }
