@@ -260,6 +260,13 @@ class KeyInputDetectingService : AccessibilityService() {
 
         val keyCode = event.keyCode
 
+        if (event.action != KeyEvent.ACTION_UP) return super.onKeyEvent(event)
+
+        if (keyCode == KeyEvent.KEYCODE_F1) {
+            return if (handleF1ShortPress()) true else super.onKeyEvent(event)
+        }
+
+
         // HOME 키
         if (keyCode == KeyEvent.KEYCODE_HOME) {
             return if (launchConfiguredHomeLauncher()) true else super.onKeyEvent(event)
