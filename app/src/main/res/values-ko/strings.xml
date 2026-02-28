@@ -62,6 +62,8 @@
     <string name="setting_value_f1_action_quick_settings">간단 설정</string>
     <string name="setting_value_f1_action_brightness">밝기 설정 창</string>
     <string name="setting_value_f1_action_manual_refresh">수동 리프레시</string>
+    <string name="setting_value_f1_action_home_launcher">홈으로 이동</string>
+    <string name="setting_value_f1_action_none">설정 안 함</string>
     <string name="dialog_title_f1_action">퀵 버튼 동작 선택</string>
     <string name="dialog_title_f1_short_action">퀵 버튼 짧게 누름 동작 선택</string>
     <string name="dialog_title_f1_long_action">퀵 버튼 길게 누름 동작 선택</string>

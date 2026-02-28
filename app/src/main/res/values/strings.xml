@@ -61,6 +61,8 @@
     <string name="setting_value_f1_action_quick_settings">Quick Settings</string>
     <string name="setting_value_f1_action_brightness">Brightness Dialog</string>
     <string name="setting_value_f1_action_manual_refresh">Manual Refresh</string>
+    <string name="setting_value_f1_action_home_launcher">Home Launcher</string>
+    <string name="setting_value_f1_action_none">None</string>
     <string name="dialog_title_f1_action">Choose Quick Button action</string>
     <string name="dialog_title_f1_short_action">Choose short press action</string>
     <string name="dialog_title_f1_long_action">Choose long press action</string>

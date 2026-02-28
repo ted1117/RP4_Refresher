@@ -15,7 +15,9 @@ import androidx.core.content.IntentCompat
 import com.hidsquid.refreshpaper.BuildConfig
 import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_BACK
 import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_BRIGHTNESS
+import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_HOME_LAUNCHER
 import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_MANUAL_REFRESH
+import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_NONE
 import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_QUICK_SETTINGS
 import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_SCREENSHOT
 import com.hidsquid.refreshpaper.SettingsRepository
@@ -192,6 +194,8 @@ class KeyInputDetectingService : AccessibilityService() {
             F1_ACTION_QUICK_SETTINGS -> launchQuickSettingsDialog()
             F1_ACTION_BRIGHTNESS -> launchBrightnessDialog()
             F1_ACTION_MANUAL_REFRESH -> triggerManualRefresh()
+            F1_ACTION_HOME_LAUNCHER -> launchConfiguredHomeLauncher()
+            F1_ACTION_NONE -> true
             else -> performGlobalAction(GLOBAL_ACTION_BACK)
         }
     }

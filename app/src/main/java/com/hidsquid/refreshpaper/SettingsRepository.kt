@@ -135,7 +135,9 @@ class SettingsRepository(
             F1_ACTION_SCREENSHOT,
             F1_ACTION_QUICK_SETTINGS,
             F1_ACTION_BRIGHTNESS,
-            F1_ACTION_MANUAL_REFRESH -> value
+            F1_ACTION_MANUAL_REFRESH,
+            F1_ACTION_HOME_LAUNCHER,
+            F1_ACTION_NONE -> value
             else -> default
         }
     }
@@ -194,6 +196,8 @@ class SettingsRepository(
         const val F1_ACTION_QUICK_SETTINGS = 2
         const val F1_ACTION_BRIGHTNESS = 3
         const val F1_ACTION_MANUAL_REFRESH = 4
+        const val F1_ACTION_HOME_LAUNCHER = 5
+        const val F1_ACTION_NONE = 6
 
         const val DEFAULT_SHUTDOWN_TIMER_HOURS = 1
         const val DEFAULT_SCREEN_OFF_TIMEOUT_MILLIS = 60_000
@@ -203,7 +207,9 @@ class SettingsRepository(
             F1_ACTION_SCREENSHOT,
             F1_ACTION_QUICK_SETTINGS,
             F1_ACTION_BRIGHTNESS,
-            F1_ACTION_MANUAL_REFRESH
+            F1_ACTION_MANUAL_REFRESH,
+            F1_ACTION_HOME_LAUNCHER,
+            F1_ACTION_NONE
         )
     }
 

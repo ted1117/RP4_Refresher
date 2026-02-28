@@ -404,12 +404,16 @@ class MainActivity : ComponentActivity() {
         val itemQuickSettings = dialogView.findViewById<RelativeLayout>(R.id.itemQuickSettings)
         val itemBrightness = dialogView.findViewById<RelativeLayout>(R.id.itemBrightness)
         val itemManualRefresh = dialogView.findViewById<RelativeLayout>(R.id.itemManualRefresh)
+        val itemHomeLauncher = dialogView.findViewById<RelativeLayout>(R.id.itemHomeLauncher)
+        val itemNone = dialogView.findViewById<RelativeLayout>(R.id.itemNone)
 
         val checkBack = dialogView.findViewById<ImageView>(R.id.checkBack)
         val checkScreenshot = dialogView.findViewById<ImageView>(R.id.checkScreenshot)
         val checkQuickSettings = dialogView.findViewById<ImageView>(R.id.checkQuickSettings)
         val checkBrightness = dialogView.findViewById<ImageView>(R.id.checkBrightness)
         val checkManualRefresh = dialogView.findViewById<ImageView>(R.id.checkManualRefresh)
+        val checkHomeLauncher = dialogView.findViewById<ImageView>(R.id.checkHomeLauncher)
+        val checkNone = dialogView.findViewById<ImageView>(R.id.checkNone)
 
         fun setChecked(selectedAction: Int) {
             checkBack.visibility =
@@ -422,6 +426,10 @@ class MainActivity : ComponentActivity() {
                 if (selectedAction == SettingsRepository.F1_ACTION_BRIGHTNESS) View.VISIBLE else View.GONE
             checkManualRefresh.visibility =
                 if (selectedAction == SettingsRepository.F1_ACTION_MANUAL_REFRESH) View.VISIBLE else View.GONE
+            checkHomeLauncher.visibility =
+                if (selectedAction == SettingsRepository.F1_ACTION_HOME_LAUNCHER) View.VISIBLE else View.GONE
+            checkNone.visibility =
+                if (selectedAction == SettingsRepository.F1_ACTION_NONE) View.VISIBLE else View.GONE
         }
 
         setChecked(currentAction)
@@ -433,6 +441,8 @@ class MainActivity : ComponentActivity() {
                 R.id.itemQuickSettings -> SettingsRepository.F1_ACTION_QUICK_SETTINGS
                 R.id.itemBrightness -> SettingsRepository.F1_ACTION_BRIGHTNESS
                 R.id.itemManualRefresh -> SettingsRepository.F1_ACTION_MANUAL_REFRESH
+                R.id.itemHomeLauncher -> SettingsRepository.F1_ACTION_HOME_LAUNCHER
+                R.id.itemNone -> SettingsRepository.F1_ACTION_NONE
                 else -> SettingsRepository.F1_ACTION_BACK
             }
 
@@ -445,6 +455,8 @@ class MainActivity : ComponentActivity() {
         itemQuickSettings.setOnClickListener(onClick)
         itemBrightness.setOnClickListener(onClick)
         itemManualRefresh.setOnClickListener(onClick)
+        itemHomeLauncher.setOnClickListener(onClick)
+        itemNone.setOnClickListener(onClick)
 
         dialog.show()
         val widthPx = resources.getDimensionPixelSize(R.dimen.dialog_width)
@@ -472,6 +484,8 @@ class MainActivity : ComponentActivity() {
             SettingsRepository.F1_ACTION_QUICK_SETTINGS -> R.string.setting_value_f1_action_quick_settings
             SettingsRepository.F1_ACTION_BRIGHTNESS -> R.string.setting_value_f1_action_brightness
             SettingsRepository.F1_ACTION_MANUAL_REFRESH -> R.string.setting_value_f1_action_manual_refresh
+            SettingsRepository.F1_ACTION_HOME_LAUNCHER -> R.string.setting_value_f1_action_home_launcher
+            SettingsRepository.F1_ACTION_NONE -> R.string.setting_value_f1_action_none
             else -> R.string.setting_value_f1_action_back
         }
     }
