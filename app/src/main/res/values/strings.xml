@@ -23,10 +23,11 @@
     <string name="epd_mode_normal_description">전자 잉크 디스플레이의 일반적인 잔상을\n허용합니다.</string>
 
     <!-- Settings Screen -->
-    <string name="settings_tab_refresh_display">Refresh · Display</string>
+    <string name="settings_tab_refresh_display">Refresh · Display · Quick Button</string>
     <string name="settings_tab_security_system_advanced">Security · System · Advanced</string>
     <string name="settings_section_refresh">Refresh</string>
     <string name="settings_section_display">Display</string>
+    <string name="settings_section_quick_button">Quick Button</string>
     <string name="settings_section_security">Screenshot</string>
     <string name="settings_section_system">System</string>
     <string name="settings_section_advanced">Advanced</string>
@@ -53,6 +54,13 @@
     <string name="dialog_title_home_launcher">Select launcher app</string>
     <string name="toast_home_launcher_no_apps">No launcher apps found</string>
     <string name="toast_home_launcher_save_failed">Failed to save launcher setting</string>
+    <string name="setting_title_f1_action">Quick Button Action</string>
+    <string name="setting_value_f1_action_back">Back</string>
+    <string name="setting_value_f1_action_screenshot">Screenshot</string>
+    <string name="setting_value_f1_action_quick_settings">Quick Settings</string>
+    <string name="setting_value_f1_action_brightness">Brightness Dialog</string>
+    <string name="setting_value_f1_action_manual_refresh">Manual Refresh</string>
+    <string name="dialog_title_f1_action">Choose Quick Button action</string>
     <string name="setting_title_sleep_mode_timer">Sleep mode timer</string>
     <string name="setting_value_sleep_mode_timer_default">1 minute</string>
     <string name="dialog_title_sleep_mode_timer">Select sleep mode timer</string>

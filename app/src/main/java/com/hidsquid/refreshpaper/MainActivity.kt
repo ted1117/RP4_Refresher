@@ -16,7 +16,7 @@ import android.app.AlertDialog
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.lifecycleScope
 import com.hidsquid.refreshpaper.databinding.ActivityMainBinding
-import com.hidsquid.refreshpaper.brightness.BrightnessDialogController
+import com.hidsquid.refreshpaper.brightness.BrightnessActivity
 import com.hidsquid.refreshpaper.device.DeviceSecurityController
 import com.hidsquid.refreshpaper.epd.EPDDisplayModeController
 import com.hidsquid.refreshpaper.launcher.HomeLauncherDialogController
@@ -34,7 +34,6 @@ class MainActivity : ComponentActivity() {
     private lateinit var settingsRepository: SettingsRepository
     private lateinit var epdController: EPDDisplayModeController
     private lateinit var deviceSecurityController: DeviceSecurityController
-    private lateinit var brightnessDialogController: BrightnessDialogController
     private lateinit var homeLauncherDialogController: HomeLauncherDialogController
     private lateinit var sleepModeTimerDialogController: SleepModeTimerDialogController
     private lateinit var shutdownTimerDialogController: ShutdownTimerDialogController
@@ -47,7 +46,6 @@ class MainActivity : ComponentActivity() {
         settingsRepository = SettingsRepository(this)
         epdController = EPDDisplayModeController(this)
         deviceSecurityController = DeviceSecurityController(this)
-        brightnessDialogController = BrightnessDialogController(this, settingsRepository)
         homeLauncherDialogController = HomeLauncherDialogController(this, settingsRepository)
         sleepModeTimerDialogController = SleepModeTimerDialogController(this, settingsRepository)
         shutdownTimerDialogController = ShutdownTimerDialogController(this, settingsRepository)
@@ -88,6 +86,7 @@ class MainActivity : ComponentActivity() {
         updateSummaryText()
         updateEpdModeSummary()
         updateHomeLauncherSummary()
+        updateF1ActionSummary()
         updateSleepModeTimerSummary()
         updateShutdownTimerSummary()
     }
@@ -157,6 +156,10 @@ class MainActivity : ComponentActivity() {
 
         layout.homeLauncherCard.setOnClickListener {
             homeLauncherDialogController.show { updateHomeLauncherSummary() }
+        }
+
+        layout.f1ActionCard.setOnClickListener {
+            showF1ActionDialog()
         }
 
         layout.sleepModeTimerCard.setOnClickListener {
@@ -276,7 +279,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun showBrightnessDialog() {
-        brightnessDialogController.show()
+        BrightnessActivity.start(this)
     }
 
     private fun showPageCountDialog() {
@@ -362,6 +365,83 @@ class MainActivity : ComponentActivity() {
     private fun updateHomeLauncherSummary() {
         val selectedLabel = homeLauncherDialogController.getSelectedLauncherLabel()
         binding.layoutSettings.tvHomeLauncherSetting.text = selectedLabel
+    }
+
+    private fun showF1ActionDialog() {
+        val currentAction = settingsRepository.getF1Action()
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_f1_action, null)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(true)
+            .create()
+
+        dialog.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
+
+        val itemBack = dialogView.findViewById<RelativeLayout>(R.id.itemBack)
+        val itemScreenshot = dialogView.findViewById<RelativeLayout>(R.id.itemScreenshot)
+        val itemQuickSettings = dialogView.findViewById<RelativeLayout>(R.id.itemQuickSettings)
+        val itemBrightness = dialogView.findViewById<RelativeLayout>(R.id.itemBrightness)
+        val itemManualRefresh = dialogView.findViewById<RelativeLayout>(R.id.itemManualRefresh)
+
+        val checkBack = dialogView.findViewById<ImageView>(R.id.checkBack)
+        val checkScreenshot = dialogView.findViewById<ImageView>(R.id.checkScreenshot)
+        val checkQuickSettings = dialogView.findViewById<ImageView>(R.id.checkQuickSettings)
+        val checkBrightness = dialogView.findViewById<ImageView>(R.id.checkBrightness)
+        val checkManualRefresh = dialogView.findViewById<ImageView>(R.id.checkManualRefresh)
+
+        fun setChecked(selectedAction: Int) {
+            checkBack.visibility =
+                if (selectedAction == SettingsRepository.F1_ACTION_BACK) View.VISIBLE else View.GONE
+            checkScreenshot.visibility =
+                if (selectedAction == SettingsRepository.F1_ACTION_SCREENSHOT) View.VISIBLE else View.GONE
+            checkQuickSettings.visibility =
+                if (selectedAction == SettingsRepository.F1_ACTION_QUICK_SETTINGS) View.VISIBLE else View.GONE
+            checkBrightness.visibility =
+                if (selectedAction == SettingsRepository.F1_ACTION_BRIGHTNESS) View.VISIBLE else View.GONE
+            checkManualRefresh.visibility =
+                if (selectedAction == SettingsRepository.F1_ACTION_MANUAL_REFRESH) View.VISIBLE else View.GONE
+        }
+
+        setChecked(currentAction)
+
+        val onClick = View.OnClickListener { view ->
+            val selectedAction = when (view.id) {
+                R.id.itemBack -> SettingsRepository.F1_ACTION_BACK
+                R.id.itemScreenshot -> SettingsRepository.F1_ACTION_SCREENSHOT
+                R.id.itemQuickSettings -> SettingsRepository.F1_ACTION_QUICK_SETTINGS
+                R.id.itemBrightness -> SettingsRepository.F1_ACTION_BRIGHTNESS
+                R.id.itemManualRefresh -> SettingsRepository.F1_ACTION_MANUAL_REFRESH
+                else -> SettingsRepository.F1_ACTION_BACK
+            }
+
+            settingsRepository.setF1Action(selectedAction)
+            updateF1ActionSummary()
+            dialog.dismiss()
+        }
+
+        itemBack.setOnClickListener(onClick)
+        itemScreenshot.setOnClickListener(onClick)
+        itemQuickSettings.setOnClickListener(onClick)
+        itemBrightness.setOnClickListener(onClick)
+        itemManualRefresh.setOnClickListener(onClick)
+
+        dialog.show()
+        val widthPx = resources.getDimensionPixelSize(R.dimen.dialog_width)
+        dialog.window?.setLayout(widthPx, android.view.ViewGroup.LayoutParams.WRAP_CONTENT)
+    }
+
+    private fun updateF1ActionSummary() {
+        val selectedAction = settingsRepository.getF1Action()
+        binding.layoutSettings.tvF1ActionSetting.text = getString(
+            when (selectedAction) {
+                SettingsRepository.F1_ACTION_BACK -> R.string.setting_value_f1_action_back
+                SettingsRepository.F1_ACTION_SCREENSHOT -> R.string.setting_value_f1_action_screenshot
+                SettingsRepository.F1_ACTION_QUICK_SETTINGS -> R.string.setting_value_f1_action_quick_settings
+                SettingsRepository.F1_ACTION_BRIGHTNESS -> R.string.setting_value_f1_action_brightness
+                SettingsRepository.F1_ACTION_MANUAL_REFRESH -> R.string.setting_value_f1_action_manual_refresh
+                else -> R.string.setting_value_f1_action_back
+            }
+        )
     }
 
     private fun updateSleepModeTimerSummary() {

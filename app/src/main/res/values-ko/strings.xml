@@ -24,10 +24,11 @@
     <string name="epd_mode_normal_description">전자 잉크 디스플레이의 일반적인 잔상을\n허용합니다.</string>
 
     <!-- Settings Screen -->
-    <string name="settings_tab_refresh_display">리프레시 · 디스플레이</string>
+    <string name="settings_tab_refresh_display">리프레시 · 디스플레이 · 퀵 버튼</string>
     <string name="settings_tab_security_system_advanced">보안 · 시스템 · 고급</string>
     <string name="settings_section_refresh">리프레시</string>
     <string name="settings_section_display">디스플레이</string>
+    <string name="settings_section_quick_button">퀵 버튼</string>
     <string name="settings_section_security">스크린샷</string>
     <string name="settings_section_system">시스템</string>
     <string name="settings_section_advanced">고급</string>
@@ -54,6 +55,13 @@
     <string name="dialog_title_home_launcher">런처 앱 선택</string>
     <string name="toast_home_launcher_no_apps">설치된 런처 앱이 없습니다</string>
     <string name="toast_home_launcher_save_failed">런처 설정 저장에 실패했습니다</string>
+    <string name="setting_title_f1_action">퀵 버튼 동작</string>
+    <string name="setting_value_f1_action_back">뒤로가기</string>
+    <string name="setting_value_f1_action_screenshot">스크린샷</string>
+    <string name="setting_value_f1_action_quick_settings">간단 설정</string>
+    <string name="setting_value_f1_action_brightness">밝기 설정 창</string>
+    <string name="setting_value_f1_action_manual_refresh">수동 리프레시</string>
+    <string name="dialog_title_f1_action">퀵 버튼 동작 선택</string>
     <string name="setting_title_sleep_mode_timer">슬립 모드 타이머</string>
     <string name="setting_value_sleep_mode_timer_default">1분</string>
     <string name="dialog_title_sleep_mode_timer">슬립 모드 타이머 설정</string>

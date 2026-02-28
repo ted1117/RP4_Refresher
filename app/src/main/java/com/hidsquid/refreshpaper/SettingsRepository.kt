@@ -128,6 +128,23 @@ class SettingsRepository(
     fun setHomeLauncherComponent(componentName: String): Boolean =
         prefs.edit().putString(ModulePrefs.KEY_HOME_LAUNCHER_COMPONENT, componentName).commit()
 
+    fun getF1Action(default: Int = F1_ACTION_BACK): Int {
+        val value = prefs.getInt(ModulePrefs.KEY_F1_ACTION, default)
+        return when (value) {
+            F1_ACTION_BACK,
+            F1_ACTION_SCREENSHOT,
+            F1_ACTION_QUICK_SETTINGS,
+            F1_ACTION_BRIGHTNESS,
+            F1_ACTION_MANUAL_REFRESH -> value
+            else -> default
+        }
+    }
+
+    fun setF1Action(action: Int): Boolean {
+        if (action !in VALID_F1_ACTIONS) return false
+        return prefs.edit().putInt(ModulePrefs.KEY_F1_ACTION, action).commit()
+    }
+
     fun getShutdownTimerHours(default: Int = DEFAULT_SHUTDOWN_TIMER_HOURS): Int {
         val rawMinutes = Settings.System.getInt(cr, GLOBAL_KEY_SHUTDOWN_TIMER_VALUE, default * 60)
         if (rawMinutes == 0) return 0
@@ -162,8 +179,22 @@ class SettingsRepository(
         const val DEFAULT_HOME_LAUNCHER_COMPONENT =
             "$DEFAULT_HOME_LAUNCHER_PACKAGE/$DEFAULT_HOME_LAUNCHER_CLASS"
 
+        const val F1_ACTION_BACK = 0
+        const val F1_ACTION_SCREENSHOT = 1
+        const val F1_ACTION_QUICK_SETTINGS = 2
+        const val F1_ACTION_BRIGHTNESS = 3
+        const val F1_ACTION_MANUAL_REFRESH = 4
+
         const val DEFAULT_SHUTDOWN_TIMER_HOURS = 1
         const val DEFAULT_SCREEN_OFF_TIMEOUT_MILLIS = 60_000
+
+        private val VALID_F1_ACTIONS = setOf(
+            F1_ACTION_BACK,
+            F1_ACTION_SCREENSHOT,
+            F1_ACTION_QUICK_SETTINGS,
+            F1_ACTION_BRIGHTNESS,
+            F1_ACTION_MANUAL_REFRESH
+        )
     }
 
     private fun createPrefs(context: Context) = try {

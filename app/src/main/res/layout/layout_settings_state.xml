@@ -243,6 +243,58 @@
 
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/quickButtonSectionTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/screen_padding_horizontal"
+                android:layout_marginBottom="6dp"
+                android:paddingStart="4dp"
+                android:text="@string/settings_section_quick_button"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/text_secondary"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/quickButtonGroupContainer"
+                style="@style/GroupContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/f1ActionCard"
+                    style="@style/ListItemContainer">
+
+                    <TextView
+                        android:id="@+id/f1ActionTitle"
+                        style="@style/ListItemTitle"
+                        android:text="@string/setting_title_f1_action"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/f1ActionArrow"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvF1ActionSetting"
+                        style="@style/ListItemDesc"
+                        android:text="@string/setting_value_f1_action_back"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/f1ActionArrow"
+                        app:layout_constraintTop_toBottomOf="@+id/f1ActionTitle"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/f1ActionArrow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_arrow_right"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
+
         </LinearLayout>
 
         <LinearLayout
