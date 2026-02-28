@@ -24,6 +24,8 @@ object SystemUIHook {
         "com.hidsquid.refreshpaper.StatusBarSettingsActivity"
     private const val CLASS_RIDI_SETTINGS_ACTIVITY =
         "com.ridi.books.viewer.main.activity.SettingsActivity"
+    private const val CLASS_RIDI_BRIGHTNESS_ACTIVITY =
+        "com.ridi.books.viewer.common.activity.ExtraBrightnessActivity"
 
     private val DEFAULT_HOME_COMPONENT = ComponentName(
         "cn.modificator.launcher",
@@ -215,8 +217,8 @@ object SystemUIHook {
 
                         brightnessBtn.setOnClickListener {
                             launchIsolatedActivity(
-                                "com.ridi.paper",
-                                "com.ridi.books.viewer.common.activity.ExtraBrightnessActivity"
+                                PACKAGE_RIDI_PAPER,
+                                CLASS_RIDI_BRIGHTNESS_ACTIVITY
                             )
                         }
                     }

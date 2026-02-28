@@ -48,7 +48,7 @@
             android:name=".brightness.BrightnessActivity"
             android:exported="true"
             android:excludeFromRecents="true"
-            android:theme="@style/Theme.RefreshPaper.BrightnessDialog" />
+            android:theme="@style/Theme.RefreshPaper.StatusBarSettingsDialog" />
 
         <activity
             android:name=".StatusBarSettingsActivity"

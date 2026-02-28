@@ -7,10 +7,18 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.SystemClock
 import android.util.Log
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
+import com.hidsquid.refreshpaper.BuildConfig
+import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_BACK
+import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_BRIGHTNESS
+import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_MANUAL_REFRESH
+import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_QUICK_SETTINGS
+import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_SCREENSHOT
 import com.hidsquid.refreshpaper.SettingsRepository
+import com.hidsquid.refreshpaper.StatusBarSettingsActivity
 import com.hidsquid.refreshpaper.brightness.BrightnessActivity
 import com.hidsquid.refreshpaper.epd.EPDRefreshController
 import com.hidsquid.refreshpaper.overlay.OverlayController
@@ -23,6 +31,7 @@ class KeyInputDetectingService : AccessibilityService() {
     private var triggerCount = 5
 
     private var currentPackageName: String = ""
+    private var currentClassName: String = ""
 
     private var serviceBroadcastReceiver: ServiceBroadcastReceiver? = null
 
@@ -34,6 +43,8 @@ class KeyInputDetectingService : AccessibilityService() {
     private var pageDownKeyTime = 0L
     private var consumedF1Down = false
     private var consumedPageDownDown = false
+    private var skipNextF1Action = false
+    private var lastHandledF1ActionTime = 0L
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onCreate() {
@@ -59,7 +70,8 @@ class KeyInputDetectingService : AccessibilityService() {
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event?.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-            currentPackageName = event.packageName?.toString() ?: ""
+            currentPackageName = event.packageName?.toString().orEmpty()
+            currentClassName = event.className?.toString().orEmpty()
         }
     }
 
@@ -125,6 +137,7 @@ class KeyInputDetectingService : AccessibilityService() {
                         f1KeyTime = event.eventTime
                         if (pageDownKeyTime > 0L && abs(f1KeyTime - pageDownKeyTime) <= SCREENSHOT_CHORD_DELAY_MS) {
                             consumedF1Down = true
+                            skipNextF1Action = true
                             triggerScreenshot()
                             return true
                         }
@@ -146,6 +159,7 @@ class KeyInputDetectingService : AccessibilityService() {
                         pageDownKeyTime = event.eventTime
                         if (f1KeyTime > 0L && abs(pageDownKeyTime - f1KeyTime) <= SCREENSHOT_CHORD_DELAY_MS) {
                             consumedPageDownDown = true
+                            skipNextF1Action = true
                             triggerScreenshot()
                             return true
                         }
@@ -169,14 +183,89 @@ class KeyInputDetectingService : AccessibilityService() {
         performGlobalAction(GLOBAL_ACTION_TAKE_SCREENSHOT)
     }
 
+    private fun handleF1ShortPress(): Boolean {
+        val now = SystemClock.uptimeMillis()
+
+        if (skipNextF1Action) {
+            skipNextF1Action = false
+            return true
+        }
+
+        if (isBlockedForegroundApp()) {
+            return false
+        }
+
+        if (now - lastHandledF1ActionTime <= F1_ACTION_DEBOUNCE_MS) {
+            return true
+        }
+        lastHandledF1ActionTime = now
+
+        val selectedAction = settingsRepository.getF1Action()
+        return when (selectedAction) {
+            F1_ACTION_BACK -> performGlobalAction(GLOBAL_ACTION_BACK)
+            F1_ACTION_SCREENSHOT -> performGlobalAction(GLOBAL_ACTION_TAKE_SCREENSHOT)
+            F1_ACTION_QUICK_SETTINGS -> launchQuickSettingsDialog()
+            F1_ACTION_BRIGHTNESS -> launchBrightnessDialog()
+            F1_ACTION_MANUAL_REFRESH -> triggerManualRefresh()
+            else -> performGlobalAction(GLOBAL_ACTION_BACK)
+        }
+    }
+
+    private fun triggerManualRefresh(): Boolean {
+        doFullRefresh()
+        return true
+    }
+
+    private fun launchQuickSettingsDialog(): Boolean {
+        if (isTargetActivityOnTop(BuildConfig.APPLICATION_ID, CLASS_STATUS_BAR_SETTINGS_ACTIVITY)) {
+            return true
+        }
+        return runCatching {
+            startActivity(
+                Intent(this, StatusBarSettingsActivity::class.java).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+                    addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
+                    addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                }
+            )
+            true
+        }.getOrElse {
+            Log.e(TAG, "Failed to launch quick settings dialog", it)
+            false
+        }
+    }
+
+    private fun launchBrightnessDialog(): Boolean {
+        return runCatching {
+            BrightnessActivity.start(applicationContext)
+            true
+        }.getOrElse {
+            Log.e(TAG, "Failed to launch brightness dialog", it)
+            false
+        }
+    }
+
+    private fun isTargetActivityOnTop(packageName: String, className: String): Boolean {
+        return currentPackageName == packageName && currentClassName == className
+    }
+
+    private fun isBlockedForegroundApp(): Boolean {
+        return currentPackageName.isBlank() || currentPackageName == BLOCKED_APP_PACKAGE_NAME
+    }
+
     override fun onKeyEvent(event: KeyEvent): Boolean {
         // 스크린샷
         if (handleScreenshotChord(event)) return true
 
-        // ACTION_DOWN만 처리
-        if (event.action != KeyEvent.ACTION_DOWN) return super.onKeyEvent(event)
-
         val keyCode = event.keyCode
+
+        if (event.action != KeyEvent.ACTION_UP) return super.onKeyEvent(event)
+
+        if (keyCode == KeyEvent.KEYCODE_F1) {
+            return if (handleF1ShortPress()) true else super.onKeyEvent(event)
+        }
+
 
         // HOME 키
         if (keyCode == KeyEvent.KEYCODE_HOME) {
@@ -186,7 +275,7 @@ class KeyInputDetectingService : AccessibilityService() {
         // 자동 리프레시
         val isAutoRefreshEnabled = settingsRepository.isAutoRefreshEnabled()
         val isManualRefreshEnabled = settingsRepository.isManualRefreshEnabled()
-        val isBlockedApp = currentPackageName == BLOCKED_APP_PACKAGE_NAME
+        val isBlockedApp = isBlockedForegroundApp()
 
         if (!isBlockedApp && isAutoRefreshEnabled) {
             when (keyCode) {
@@ -237,7 +326,7 @@ class KeyInputDetectingService : AccessibilityService() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
                 ACTION_REFRESH_SCREEN -> doFullRefresh()
-                ACTION_SHOW_BRIGHTNESS_ACTIVITY -> BrightnessActivity.start(applicationContext)
+                ACTION_SHOW_BRIGHTNESS_ACTIVITY -> launchBrightnessDialog()
             }
         }
     }
@@ -249,6 +338,9 @@ class KeyInputDetectingService : AccessibilityService() {
         const val ACTION_REFRESH_SCREEN: String = "com.hidsquid.refreshpaper.ACTION_REFRESH_SCREEN"
         const val ACTION_SHOW_BRIGHTNESS_ACTIVITY: String =
             "com.hidsquid.refreshpaper.ACTION_SHOW_BRIGHTNESS_ACTIVITY"
+        private const val F1_ACTION_DEBOUNCE_MS = 120L
         private const val BLOCKED_APP_PACKAGE_NAME = "com.ridi.paper"
+        private const val CLASS_STATUS_BAR_SETTINGS_ACTIVITY =
+            "com.hidsquid.refreshpaper.StatusBarSettingsActivity"
     }
 }
