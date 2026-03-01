@@ -99,6 +99,15 @@
     <string name="labs_touch_refresh_title">Touch-based Refresh</string>
     <string name="labs_touch_refresh_description">Refresh by tapping the screen</string>
     <string name="labs_touch_refresh_requires_auto">Enable Auto Refresh first</string>
+    <string name="labs_page_key_tap_title">Page Key Touch Mapping</string>
+    <string name="labs_page_key_tap_description">Convert Page Up/Down keys to center-side taps</string>
+    <string name="labs_page_key_tap_save_failed">Failed to save page key touch mapping setting</string>
+    <string name="labs_page_key_tap_apps_title">Target Apps</string>
+    <string name="labs_page_key_tap_apps_none">None selected</string>
+    <string name="labs_page_key_tap_apps_count">%d selected</string>
+    <string name="labs_page_key_tap_apps_dialog_title">Select target apps</string>
+    <string name="labs_page_key_tap_apps_empty">No selectable apps found</string>
+    <string name="labs_page_key_tap_apps_save_failed">Failed to save target apps</string>
     <string name="labs_power_page_screenshot_title">Power + Page Down Screenshot</string>
     <string name="labs_power_page_screenshot_description">Enable screenshot hook for Power + Page Down chord</string>
     <string name="labs_power_page_screenshot_save_failed">Failed to save screenshot hook setting</string>

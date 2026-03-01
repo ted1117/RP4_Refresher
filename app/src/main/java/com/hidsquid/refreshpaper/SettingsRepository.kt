@@ -64,6 +64,40 @@ class SettingsRepository(
             .commit()
     }
 
+    fun isPageKeyTapEnabled(): Boolean {
+        return prefs.getBoolean(ModulePrefs.KEY_PAGE_KEY_TAP_ENABLED, false)
+    }
+
+    fun setPageKeyTapEnabled(enabled: Boolean): Boolean {
+        return prefs.edit()
+            .putBoolean(ModulePrefs.KEY_PAGE_KEY_TAP_ENABLED, enabled)
+            .commit()
+    }
+
+    fun getPageKeyTapTargetPackages(): Set<String> {
+        return prefs.getStringSet(ModulePrefs.KEY_PAGE_KEY_TAP_TARGET_PACKAGES, emptySet())
+            ?.mapNotNull { value ->
+                value?.trim()?.takeIf { it.isNotEmpty() }
+            }
+            ?.toSet()
+            .orEmpty()
+    }
+
+    fun setPageKeyTapTargetPackages(packages: Set<String>): Boolean {
+        val sanitized = packages
+            .mapNotNull { value -> value.trim().takeIf { it.isNotEmpty() } }
+            .toSet()
+
+        return prefs.edit()
+            .putStringSet(ModulePrefs.KEY_PAGE_KEY_TAP_TARGET_PACKAGES, sanitized)
+            .commit()
+    }
+
+    fun isPageKeyTapTargetPackage(packageName: String): Boolean {
+        if (packageName.isBlank()) return false
+        return getPageKeyTapTargetPackages().contains(packageName)
+    }
+
     fun isManualRefreshEnabled(): Boolean =
         prefs.getBoolean(ModulePrefs.KEY_MANUAL_REFRESH_ENABLED, false)
 

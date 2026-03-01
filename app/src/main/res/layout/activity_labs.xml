@@ -73,6 +73,77 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/divider_height"
+                    android:background="@color/divider_color" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/pageKeyTapCard"
+                    style="@style/ListItemContainer">
+
+                    <TextView
+                        android:id="@+id/pageKeyTapTitle"
+                        style="@style/ListItemTitle"
+                        android:text="@string/labs_page_key_tap_title"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/pageKeyTapSwitch"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        style="@style/ListItemDesc"
+                        android:text="@string/labs_page_key_tap_description"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/pageKeyTapSwitch"
+                        app:layout_constraintTop_toBottomOf="@+id/pageKeyTapTitle"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <Switch
+                        android:id="@+id/pageKeyTapSwitch"
+                        style="@style/ListItemSwitch"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/divider_height"
+                    android:background="@color/divider_color" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/pageKeyTapAppsCard"
+                    style="@style/ListItemContainer">
+
+                    <TextView
+                        android:id="@+id/pageKeyTapAppsTitle"
+                        style="@style/ListItemTitle"
+                        android:text="@string/labs_page_key_tap_apps_title"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <TextView
+                        android:id="@+id/pageKeyTapAppsSummary"
+                        style="@style/ListItemDesc"
+                        android:layout_marginEnd="8dp"
+                        android:text="@string/labs_page_key_tap_apps_none"
+                        app:layout_constraintEnd_toStartOf="@+id/pageKeyTapAppsArrow"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/pageKeyTapAppsArrow"
+                        android:layout_width="@dimen/icon_size"
+                        android:layout_height="@dimen/icon_size"
+                        android:src="@drawable/ic_arrow_right"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
             </LinearLayout>
 
             <TextView
