@@ -76,6 +76,58 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/pageKeyTapSectionTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/screen_padding_horizontal"
+                android:layout_marginBottom="6dp"
+                android:paddingStart="4dp"
+                android:text="@string/labs_section_page_key_tap"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/text_secondary"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/pageKeyTapGroupContainer"
+                style="@style/GroupContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/pageKeyTapCard"
+                    style="@style/ListItemContainer">
+
+                    <TextView
+                        android:id="@+id/pageKeyTapTitle"
+                        style="@style/ListItemTitle"
+                        android:text="@string/labs_page_key_tap_title"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/pageKeyTapAppsArrow"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/pageKeyTapDescription"
+                        style="@style/ListItemDesc"
+                        android:text="@string/labs_page_key_tap_description"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/pageKeyTapAppsArrow"
+                        app:layout_constraintTop_toBottomOf="@+id/pageKeyTapTitle"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/pageKeyTapAppsArrow"
+                        android:layout_width="@dimen/icon_size"
+                        android:layout_height="@dimen/icon_size"
+                        android:src="@drawable/ic_arrow_right"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
+
+            <TextView
                 android:id="@+id/screenshotSectionTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

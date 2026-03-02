@@ -3,7 +3,17 @@ package com.hidsquid.refreshpaper
 import android.os.Bundle
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Intent
+import android.content.pm.ApplicationInfo
+import android.graphics.Color
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.RelativeLayout
+import android.widget.TextView
 import android.widget.Toast
+import androidx.core.graphics.drawable.toDrawable
 import com.hidsquid.refreshpaper.databinding.ActivityLabsBinding
 
 class LabsActivity : Activity() {
@@ -57,6 +67,10 @@ class LabsActivity : Activity() {
             settingsRepository.setTouchRefreshEnabled(isChecked)
         }
 
+        binding.pageKeyTapCard.setOnClickListener {
+            showPageKeyTapAppsDialog()
+        }
+
         binding.powerPageScreenshotCard.setOnClickListener {
             binding.powerPageScreenshotSwitch.toggle()
         }
@@ -84,6 +98,96 @@ class LabsActivity : Activity() {
         }
     }
 
+    private fun showPageKeyTapAppsDialog() {
+        val options = getPageKeyTapTargetCandidates()
+        if (options.isEmpty()) {
+            Toast.makeText(this, R.string.labs_page_key_tap_apps_empty, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val selectedPackages = settingsRepository.getPageKeyTapTargetPackages().toMutableSet()
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_page_key_tap_apps, null)
+        val titleView = dialogView.findViewById<TextView>(R.id.dialogTitle)
+        val itemContainer = dialogView.findViewById<LinearLayout>(R.id.itemContainer)
+        titleView.setText(R.string.labs_page_key_tap_apps_dialog_title)
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(true)
+            .create()
+        dialog.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
+
+        options.forEachIndexed { index, option ->
+            val itemView =
+                LayoutInflater.from(this).inflate(R.layout.dialog_home_launcher_item, itemContainer, false)
+            val itemRoot = itemView.findViewById<RelativeLayout>(R.id.itemRoot)
+            val itemTitle = itemView.findViewById<TextView>(R.id.itemTitle)
+            val itemCheck = itemView.findViewById<ImageView>(R.id.itemCheck)
+            val itemDivider = itemView.findViewById<View>(R.id.itemDivider)
+
+            itemTitle.text = option.label
+            itemCheck.visibility = if (selectedPackages.contains(option.packageName)) View.VISIBLE else View.INVISIBLE
+            itemDivider.visibility = if (index == options.lastIndex) View.GONE else View.VISIBLE
+
+            itemRoot.setOnClickListener {
+                val toggled = selectedPackages.toMutableSet().apply {
+                    if (contains(option.packageName)) remove(option.packageName) else add(option.packageName)
+                }
+
+                val savedTargets = settingsRepository.setPageKeyTapTargetPackages(toggled)
+                val savedEnabled = settingsRepository.setPageKeyTapEnabled(toggled.isNotEmpty())
+
+                if (!savedTargets) {
+                    Toast.makeText(this, R.string.labs_page_key_tap_apps_save_failed, Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                if (!savedEnabled) {
+                    Toast.makeText(this, R.string.labs_page_key_tap_save_failed, Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                selectedPackages.clear()
+                selectedPackages.addAll(toggled)
+                itemCheck.visibility = if (selectedPackages.contains(option.packageName)) View.VISIBLE else View.INVISIBLE
+                if (itemCheck.visibility == View.VISIBLE) itemCheck.bringToFront()
+            }
+
+            itemContainer.addView(itemView)
+        }
+
+        dialog.show()
+        val widthPx = resources.getDimensionPixelSize(R.dimen.dialog_width)
+        dialog.window?.setLayout(widthPx, android.view.ViewGroup.LayoutParams.WRAP_CONTENT)
+    }
+
+    private fun getPageKeyTapTargetCandidates(): List<PageKeyTapTargetApp> {
+        val launcherIntent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
+        return packageManager.queryIntentActivities(launcherIntent, 0)
+            .mapNotNull { it.activityInfo?.packageName }
+            .filterNot { it.isBlank() || it == packageName || it == "android" || it == "com.android.systemui" }
+            .distinct()
+            .mapNotNull { targetPackageName ->
+                val appInfo = runCatching {
+                    packageManager.getApplicationInfo(targetPackageName, 0)
+                }.getOrNull() ?: return@mapNotNull null
+
+                val isSystemApp =
+                    (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0 ||
+                        (appInfo.flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0
+                if (isSystemApp) return@mapNotNull null
+
+                val label = packageManager.getApplicationLabel(appInfo)?.toString()
+                    .orEmpty()
+                    .ifBlank { targetPackageName }
+
+                PageKeyTapTargetApp(
+                    packageName = targetPackageName,
+                    label = label
+                )
+            }
+            .sortedBy { it.label.lowercase() }
+    }
+
     private fun showWarningIfNeeded() {
         if (prefs.getBoolean(PREF_KEY_SKIP_WARNING, false)) return
 
@@ -109,4 +213,9 @@ class LabsActivity : Activity() {
         private const val PREFS_NAME = "LabsPrefs"
         private const val PREF_KEY_SKIP_WARNING = "skip_labs_warning"
     }
+
+    private data class PageKeyTapTargetApp(
+        val packageName: String,
+        val label: String
+    )
 }

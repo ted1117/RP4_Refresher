@@ -1,6 +1,7 @@
 package com.hidsquid.refreshpaper.service
 
 import android.accessibilityservice.AccessibilityService
+import android.accessibilityservice.GestureDescription
 import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.ComponentName
@@ -8,13 +9,16 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.SystemClock
+import android.graphics.Path
 import android.util.Log
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
-import com.hidsquid.refreshpaper.BuildConfig
+import androidx.core.content.IntentCompat
 import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_BACK
 import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_BRIGHTNESS
+import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_HOME_LAUNCHER
 import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_MANUAL_REFRESH
+import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_NONE
 import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_QUICK_SETTINGS
 import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_SCREENSHOT
 import com.hidsquid.refreshpaper.SettingsRepository
@@ -45,6 +49,7 @@ class KeyInputDetectingService : AccessibilityService() {
     private var consumedPageDownDown = false
     private var skipNextF1Action = false
     private var lastHandledF1ActionTime = 0L
+    private var lastPageKeyTapTime = 0L
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onCreate() {
@@ -58,6 +63,7 @@ class KeyInputDetectingService : AccessibilityService() {
             IntentFilter().apply {
                 addAction(ACTION_REFRESH_SCREEN)
                 addAction(ACTION_SHOW_BRIGHTNESS_ACTIVITY)
+                addAction(ACTION_RP400_GLOBAL_BUTTON)
             }
         )
     }
@@ -183,6 +189,86 @@ class KeyInputDetectingService : AccessibilityService() {
         performGlobalAction(GLOBAL_ACTION_TAKE_SCREENSHOT)
     }
 
+    private fun handlePageKeyTapMapping(event: KeyEvent): Boolean {
+        if (!settingsRepository.isPageKeyTapEnabled()) return false
+        if (!settingsRepository.isPageKeyTapTargetPackage(currentPackageName)) return false
+
+        val keyCode = event.keyCode
+        if (keyCode != KeyEvent.KEYCODE_PAGE_UP && keyCode != KeyEvent.KEYCODE_PAGE_DOWN) return false
+
+        if (event.action == KeyEvent.ACTION_UP) {
+            return true
+        }
+        if (event.action != KeyEvent.ACTION_DOWN) return false
+        if (event.repeatCount > 0) return true
+
+        val now = SystemClock.uptimeMillis()
+        if (now - lastPageKeyTapTime < PAGE_KEY_TAP_DEBOUNCE_MS) {
+            return true
+        }
+        lastPageKeyTapTime = now
+
+        val width = resources.displayMetrics.widthPixels.toFloat()
+        val height = resources.displayMetrics.heightPixels.toFloat()
+        if (width <= 0f || height <= 0f) return false
+
+        val touchX = if (keyCode == KeyEvent.KEYCODE_PAGE_UP) width / 6f else width * 5f / 6f
+        val touchY = height / 2f
+
+        val dispatched = dispatchTapGesture(touchX, touchY)
+        if (dispatched) {
+            countAutoRefreshIfNeeded()
+        }
+        return dispatched
+    }
+
+    private fun dispatchTapGesture(x: Float, y: Float): Boolean {
+        val path = Path().apply { moveTo(x, y) }
+        val gesture = GestureDescription.Builder()
+            .addStroke(
+                GestureDescription.StrokeDescription(path, 0L, PAGE_KEY_TAP_DURATION_MS)
+            )
+            .build()
+        return dispatchGesture(gesture, null, null)
+    }
+
+    private fun countAutoRefreshIfNeeded(): Boolean {
+        if (!settingsRepository.isAutoRefreshEnabled()) return false
+        if (isBlockedForegroundApp()) return false
+
+        pageUpDownCount++
+        if (pageUpDownCount >= triggerCount) {
+            doFullRefresh()
+            pageUpDownCount = 0
+        }
+        return true
+    }
+
+    private fun isAutoRefreshTriggerKey(keyCode: Int): Boolean {
+        return when (keyCode) {
+            KeyEvent.KEYCODE_VOLUME_UP,
+            KeyEvent.KEYCODE_VOLUME_DOWN,
+            KeyEvent.KEYCODE_DPAD_RIGHT,
+            KeyEvent.KEYCODE_DPAD_LEFT,
+            KeyEvent.KEYCODE_PAGE_UP,
+            KeyEvent.KEYCODE_PAGE_DOWN -> true
+            else -> false
+        }
+    }
+
+    private fun runConfiguredF1Action(selectedAction: Int): Boolean {
+        return when (selectedAction) {
+            F1_ACTION_BACK -> performGlobalAction(GLOBAL_ACTION_BACK)
+            F1_ACTION_SCREENSHOT -> performGlobalAction(GLOBAL_ACTION_TAKE_SCREENSHOT)
+            F1_ACTION_QUICK_SETTINGS -> launchQuickSettingsDialog()
+            F1_ACTION_BRIGHTNESS -> launchBrightnessDialog()
+            F1_ACTION_MANUAL_REFRESH -> triggerManualRefresh()
+            F1_ACTION_HOME_LAUNCHER -> launchConfiguredHomeLauncher()
+            F1_ACTION_NONE -> true
+            else -> performGlobalAction(GLOBAL_ACTION_BACK)
+        }
+    }
+
     private fun handleF1ShortPress(): Boolean {
         val now = SystemClock.uptimeMillis()
 
@@ -201,14 +287,15 @@ class KeyInputDetectingService : AccessibilityService() {
         lastHandledF1ActionTime = now
 
         val selectedAction = settingsRepository.getF1Action()
-        return when (selectedAction) {
-            F1_ACTION_BACK -> performGlobalAction(GLOBAL_ACTION_BACK)
-            F1_ACTION_SCREENSHOT -> performGlobalAction(GLOBAL_ACTION_TAKE_SCREENSHOT)
-            F1_ACTION_QUICK_SETTINGS -> launchQuickSettingsDialog()
-            F1_ACTION_BRIGHTNESS -> launchBrightnessDialog()
-            F1_ACTION_MANUAL_REFRESH -> triggerManualRefresh()
-            else -> performGlobalAction(GLOBAL_ACTION_BACK)
+        return runConfiguredF1Action(selectedAction)
+    }
+
+    private fun handleF1LongPress(): Boolean {
+        if (isBlockedForegroundApp()) {
+            return false
         }
+        val selectedAction = settingsRepository.getF1LongPressAction(settingsRepository.getF1Action())
+        return runConfiguredF1Action(selectedAction)
     }
 
     private fun triggerManualRefresh(): Boolean {
@@ -217,9 +304,6 @@ class KeyInputDetectingService : AccessibilityService() {
     }
 
     private fun launchQuickSettingsDialog(): Boolean {
-        if (isTargetActivityOnTop(BuildConfig.APPLICATION_ID, CLASS_STATUS_BAR_SETTINGS_ACTIVITY)) {
-            return true
-        }
         return runCatching {
             startActivity(
                 Intent(this, StatusBarSettingsActivity::class.java).apply {
@@ -246,26 +330,51 @@ class KeyInputDetectingService : AccessibilityService() {
         }
     }
 
-    private fun isTargetActivityOnTop(packageName: String, className: String): Boolean {
-        return currentPackageName == packageName && currentClassName == className
-    }
-
     private fun isBlockedForegroundApp(): Boolean {
         return currentPackageName.isBlank() || currentPackageName == BLOCKED_APP_PACKAGE_NAME
+    }
+
+    private fun handleRp400GlobalButton(intent: Intent) {
+        val keyEvent = IntentCompat.getParcelableExtra(
+            intent,
+            Intent.EXTRA_KEY_EVENT,
+            KeyEvent::class.java
+        ) ?: return
+
+        if (keyEvent.keyCode != KeyEvent.KEYCODE_F1) return
+
+        val isLongPress = keyEvent.action == KeyEvent.ACTION_MULTIPLE ||
+            keyEvent.repeatCount > 0 ||
+            (keyEvent.flags and KeyEvent.FLAG_LONG_PRESS) != 0 ||
+            (keyEvent.flags and KeyEvent.FLAG_CANCELED_LONG_PRESS) != 0
+
+        Log.d(
+            TAG,
+            "[RP400] action=${keyEvent.action} repeat=${keyEvent.repeatCount} " +
+                "flags=0x${keyEvent.flags.toString(16)} long=$isLongPress"
+        )
+
+        if (isLongPress) {
+            handleF1LongPress()
+            return
+        }
+
+        if (keyEvent.action == KeyEvent.ACTION_UP) {
+            handleF1ShortPress()
+        }
     }
 
     override fun onKeyEvent(event: KeyEvent): Boolean {
         // 스크린샷
         if (handleScreenshotChord(event)) return true
 
+        if (handlePageKeyTapMapping(event)) {
+            return true
+        }
+
         val keyCode = event.keyCode
 
         if (event.action != KeyEvent.ACTION_UP) return super.onKeyEvent(event)
-
-        if (keyCode == KeyEvent.KEYCODE_F1) {
-            return if (handleF1ShortPress()) true else super.onKeyEvent(event)
-        }
-
 
         // HOME 키
         if (keyCode == KeyEvent.KEYCODE_HOME) {
@@ -273,31 +382,14 @@ class KeyInputDetectingService : AccessibilityService() {
         }
 
         // 자동 리프레시
-        val isAutoRefreshEnabled = settingsRepository.isAutoRefreshEnabled()
         val isManualRefreshEnabled = settingsRepository.isManualRefreshEnabled()
-        val isBlockedApp = isBlockedForegroundApp()
-
-        if (!isBlockedApp && isAutoRefreshEnabled) {
-            when (keyCode) {
-                KeyEvent.KEYCODE_VOLUME_UP,
-                KeyEvent.KEYCODE_VOLUME_DOWN,
-                KeyEvent.KEYCODE_DPAD_RIGHT,
-                KeyEvent.KEYCODE_DPAD_LEFT,
-                KeyEvent.KEYCODE_PAGE_UP,
-                KeyEvent.KEYCODE_PAGE_DOWN -> {
-                    pageUpDownCount++
-                    if (pageUpDownCount >= triggerCount) {
-                        doFullRefresh()
-                        pageUpDownCount = 0
-                    }
-                    return false
-                }
-            }
+        if (isAutoRefreshTriggerKey(keyCode) && countAutoRefreshIfNeeded()) {
+            return false
         }
 
         // 수동 리프레시
         if (isManualRefreshEnabled && keyCode == KeyEvent.KEYCODE_F4) {
-            doFullRefresh()
+            triggerManualRefresh()
         }
 
         return super.onKeyEvent(event)
@@ -327,6 +419,7 @@ class KeyInputDetectingService : AccessibilityService() {
             when (intent?.action) {
                 ACTION_REFRESH_SCREEN -> doFullRefresh()
                 ACTION_SHOW_BRIGHTNESS_ACTIVITY -> launchBrightnessDialog()
+                ACTION_RP400_GLOBAL_BUTTON -> handleRp400GlobalButton(intent)
             }
         }
     }
@@ -338,9 +431,10 @@ class KeyInputDetectingService : AccessibilityService() {
         const val ACTION_REFRESH_SCREEN: String = "com.hidsquid.refreshpaper.ACTION_REFRESH_SCREEN"
         const val ACTION_SHOW_BRIGHTNESS_ACTIVITY: String =
             "com.hidsquid.refreshpaper.ACTION_SHOW_BRIGHTNESS_ACTIVITY"
+        const val ACTION_RP400_GLOBAL_BUTTON: String = "ridi.intent.action.GLOBAL_BUTTON"
         private const val F1_ACTION_DEBOUNCE_MS = 120L
+        private const val PAGE_KEY_TAP_DEBOUNCE_MS = 40L
+        private const val PAGE_KEY_TAP_DURATION_MS = 1L
         private const val BLOCKED_APP_PACKAGE_NAME = "com.ridi.paper"
-        private const val CLASS_STATUS_BAR_SETTINGS_ACTIVITY =
-            "com.hidsquid.refreshpaper.StatusBarSettingsActivity"
     }
 }

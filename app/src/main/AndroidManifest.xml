@@ -48,6 +48,10 @@
             android:name=".brightness.BrightnessActivity"
             android:exported="true"
             android:excludeFromRecents="true"
+            android:finishOnTaskLaunch="true"
+            android:launchMode="singleTask"
+            android:noHistory="true"
+            android:taskAffinity="com.hidsquid.refreshpaper.quicksettings"
             android:theme="@style/Theme.RefreshPaper.StatusBarSettingsDialog" />
 
         <activity

@@ -64,6 +64,40 @@ class SettingsRepository(
             .commit()
     }
 
+    fun isPageKeyTapEnabled(): Boolean {
+        return prefs.getBoolean(ModulePrefs.KEY_PAGE_KEY_TAP_ENABLED, false)
+    }
+
+    fun setPageKeyTapEnabled(enabled: Boolean): Boolean {
+        return prefs.edit()
+            .putBoolean(ModulePrefs.KEY_PAGE_KEY_TAP_ENABLED, enabled)
+            .commit()
+    }
+
+    fun getPageKeyTapTargetPackages(): Set<String> {
+        return prefs.getStringSet(ModulePrefs.KEY_PAGE_KEY_TAP_TARGET_PACKAGES, emptySet())
+            ?.mapNotNull { value ->
+                value?.trim()?.takeIf { it.isNotEmpty() }
+            }
+            ?.toSet()
+            .orEmpty()
+    }
+
+    fun setPageKeyTapTargetPackages(packages: Set<String>): Boolean {
+        val sanitized = packages
+            .mapNotNull { value -> value.trim().takeIf { it.isNotEmpty() } }
+            .toSet()
+
+        return prefs.edit()
+            .putStringSet(ModulePrefs.KEY_PAGE_KEY_TAP_TARGET_PACKAGES, sanitized)
+            .commit()
+    }
+
+    fun isPageKeyTapTargetPackage(packageName: String): Boolean {
+        if (packageName.isBlank()) return false
+        return getPageKeyTapTargetPackages().contains(packageName)
+    }
+
     fun isManualRefreshEnabled(): Boolean =
         prefs.getBoolean(ModulePrefs.KEY_MANUAL_REFRESH_ENABLED, false)
 
@@ -135,7 +169,9 @@ class SettingsRepository(
             F1_ACTION_SCREENSHOT,
             F1_ACTION_QUICK_SETTINGS,
             F1_ACTION_BRIGHTNESS,
-            F1_ACTION_MANUAL_REFRESH -> value
+            F1_ACTION_MANUAL_REFRESH,
+            F1_ACTION_HOME_LAUNCHER,
+            F1_ACTION_NONE -> value
             else -> default
         }
     }
@@ -143,6 +179,16 @@ class SettingsRepository(
     fun setF1Action(action: Int): Boolean {
         if (action !in VALID_F1_ACTIONS) return false
         return prefs.edit().putInt(ModulePrefs.KEY_F1_ACTION, action).commit()
+    }
+
+    fun getF1LongPressAction(default: Int = F1_ACTION_BACK): Int {
+        val value = prefs.getInt(ModulePrefs.KEY_F1_LONG_PRESS_ACTION, default)
+        return if (value in VALID_F1_ACTIONS) value else default
+    }
+
+    fun setF1LongPressAction(action: Int): Boolean {
+        if (action !in VALID_F1_ACTIONS) return false
+        return prefs.edit().putInt(ModulePrefs.KEY_F1_LONG_PRESS_ACTION, action).commit()
     }
 
     fun getShutdownTimerHours(default: Int = DEFAULT_SHUTDOWN_TIMER_HOURS): Int {
@@ -184,6 +230,8 @@ class SettingsRepository(
         const val F1_ACTION_QUICK_SETTINGS = 2
         const val F1_ACTION_BRIGHTNESS = 3
         const val F1_ACTION_MANUAL_REFRESH = 4
+        const val F1_ACTION_HOME_LAUNCHER = 5
+        const val F1_ACTION_NONE = 6
 
         const val DEFAULT_SHUTDOWN_TIMER_HOURS = 1
         const val DEFAULT_SCREEN_OFF_TIMEOUT_MILLIS = 60_000
@@ -193,7 +241,9 @@ class SettingsRepository(
             F1_ACTION_SCREENSHOT,
             F1_ACTION_QUICK_SETTINGS,
             F1_ACTION_BRIGHTNESS,
-            F1_ACTION_MANUAL_REFRESH
+            F1_ACTION_MANUAL_REFRESH,
+            F1_ACTION_HOME_LAUNCHER,
+            F1_ACTION_NONE
         )
     }
 
