@@ -96,6 +96,7 @@
     <string name="labs_title">실험실</string>
     <string name="labs_description">실험적인 기능 및 설정</string>
     <string name="labs_section_refresh">리프레시</string>
+    <string name="labs_section_page_key_tap">페이지 키 터치</string>
     <string name="labs_section_screenshot">스크린샷</string>
     <string name="labs_touch_refresh_title">터치 기반 새로고침</string>
     <string name="labs_touch_refresh_description">화면을 탭하여 리프레시</string>

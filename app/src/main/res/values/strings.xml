@@ -95,6 +95,7 @@
     <string name="labs_title">Labs</string>
     <string name="labs_description">Experimental features and settings</string>
     <string name="labs_section_refresh">Refresh</string>
+    <string name="labs_section_page_key_tap">Page Key Touch</string>
     <string name="labs_section_screenshot">Screenshot</string>
     <string name="labs_touch_refresh_title">Touch-based Refresh</string>
     <string name="labs_touch_refresh_description">Refresh by tapping the screen</string>
