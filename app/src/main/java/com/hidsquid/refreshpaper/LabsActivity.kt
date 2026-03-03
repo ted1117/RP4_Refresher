@@ -15,6 +15,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.graphics.drawable.toDrawable
 import com.hidsquid.refreshpaper.databinding.ActivityLabsBinding
+import com.hidsquid.refreshpaper.service.KeyInputDetectingService
 
 class LabsActivity : Activity() {
 
@@ -146,6 +147,8 @@ class LabsActivity : Activity() {
                     return@setOnClickListener
                 }
 
+                notifyPageKeyRemapStateChanged()
+
                 selectedPackages.clear()
                 selectedPackages.addAll(toggled)
                 itemCheck.visibility = if (selectedPackages.contains(option.packageName)) View.VISIBLE else View.INVISIBLE
@@ -207,6 +210,10 @@ class LabsActivity : Activity() {
             }
             .setCancelable(false)
             .show()
+    }
+
+    private fun notifyPageKeyRemapStateChanged() {
+        sendBroadcast(Intent(KeyInputDetectingService.ACTION_PAGE_KEY_REMAP_STATE_CHANGED))
     }
 
     companion object {
