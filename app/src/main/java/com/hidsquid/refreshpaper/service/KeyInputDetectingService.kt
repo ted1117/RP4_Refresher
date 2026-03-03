@@ -1,15 +1,16 @@
 package com.hidsquid.refreshpaper.service
 
 import android.accessibilityservice.AccessibilityService
-import android.accessibilityservice.GestureDescription
 import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.os.SystemClock
-import android.graphics.Path
 import android.util.Log
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
@@ -26,7 +27,10 @@ import com.hidsquid.refreshpaper.StatusBarSettingsActivity
 import com.hidsquid.refreshpaper.brightness.BrightnessActivity
 import com.hidsquid.refreshpaper.epd.EPDRefreshController
 import com.hidsquid.refreshpaper.overlay.OverlayController
+import java.io.File
 import kotlin.math.abs
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 @SuppressLint("AccessibilityPolicy")
 class KeyInputDetectingService : AccessibilityService() {
@@ -41,6 +45,8 @@ class KeyInputDetectingService : AccessibilityService() {
 
     private lateinit var settingsRepository: SettingsRepository
     private lateinit var overlayController: OverlayController
+    private val daemonMainHandler by lazy { Handler(Looper.getMainLooper()) }
+    private val daemonExecutor = Executors.newSingleThreadExecutor()
 
     // 스크린샷 상태 추적 (개별 키의 DOWN 이벤트 소비 여부 기록)
     private var f1KeyTime = 0L
@@ -49,13 +55,23 @@ class KeyInputDetectingService : AccessibilityService() {
     private var consumedPageDownDown = false
     private var skipNextF1Action = false
     private var lastHandledF1ActionTime = 0L
-    private var lastPageKeyTapTime = 0L
+    @Volatile
+    private var remapDaemonRunning = false
+    @Volatile
+    private var desiredRemapDaemonRunning = false
+    @Volatile
+    private var desiredRemapEnabled = false
+    @Volatile
+    private var lastWrittenRemapEnabled: Boolean? = null
+    private lateinit var remapStateFile: File
+    private var remapStateDebounceRunnable: Runnable? = null
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onCreate() {
         super.onCreate()
         settingsRepository = SettingsRepository(applicationContext)
         overlayController = OverlayController(this)
+        remapStateFile = resolveRemapStateFile()
 
         serviceBroadcastReceiver = ServiceBroadcastReceiver()
         registerReceiver(
@@ -64,6 +80,7 @@ class KeyInputDetectingService : AccessibilityService() {
                 addAction(ACTION_REFRESH_SCREEN)
                 addAction(ACTION_SHOW_BRIGHTNESS_ACTIVITY)
                 addAction(ACTION_RP400_GLOBAL_BUTTON)
+                addAction(ACTION_PAGE_KEY_REMAP_STATE_CHANGED)
             }
         )
     }
@@ -72,12 +89,14 @@ class KeyInputDetectingService : AccessibilityService() {
         super.onServiceConnected()
         triggerCount = settingsRepository.getPagesPerRefresh()
         overlayController.attachOverlay()
+        scheduleRemapDaemonStateUpdate()
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event?.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             currentPackageName = event.packageName?.toString().orEmpty()
             currentClassName = event.className?.toString().orEmpty()
+            scheduleRemapDaemonStateUpdate()
         }
     }
 
@@ -187,49 +206,6 @@ class KeyInputDetectingService : AccessibilityService() {
 
     private fun triggerScreenshot() {
         performGlobalAction(GLOBAL_ACTION_TAKE_SCREENSHOT)
-    }
-
-    private fun handlePageKeyTapMapping(event: KeyEvent): Boolean {
-        if (!settingsRepository.isPageKeyTapEnabled()) return false
-        if (!settingsRepository.isPageKeyTapTargetPackage(currentPackageName)) return false
-
-        val keyCode = event.keyCode
-        if (keyCode != KeyEvent.KEYCODE_PAGE_UP && keyCode != KeyEvent.KEYCODE_PAGE_DOWN) return false
-
-        if (event.action == KeyEvent.ACTION_UP) {
-            return true
-        }
-        if (event.action != KeyEvent.ACTION_DOWN) return false
-        if (event.repeatCount > 0) return true
-
-        val now = SystemClock.uptimeMillis()
-        if (now - lastPageKeyTapTime < PAGE_KEY_TAP_DEBOUNCE_MS) {
-            return true
-        }
-        lastPageKeyTapTime = now
-
-        val width = resources.displayMetrics.widthPixels.toFloat()
-        val height = resources.displayMetrics.heightPixels.toFloat()
-        if (width <= 0f || height <= 0f) return false
-
-        val touchX = if (keyCode == KeyEvent.KEYCODE_PAGE_UP) width / 6f else width * 5f / 6f
-        val touchY = height / 2f
-
-        val dispatched = dispatchTapGesture(touchX, touchY)
-        if (dispatched) {
-            countAutoRefreshIfNeeded()
-        }
-        return dispatched
-    }
-
-    private fun dispatchTapGesture(x: Float, y: Float): Boolean {
-        val path = Path().apply { moveTo(x, y) }
-        val gesture = GestureDescription.Builder()
-            .addStroke(
-                GestureDescription.StrokeDescription(path, 0L, PAGE_KEY_TAP_DURATION_MS)
-            )
-            .build()
-        return dispatchGesture(gesture, null, null)
     }
 
     private fun countAutoRefreshIfNeeded(): Boolean {
@@ -368,10 +344,6 @@ class KeyInputDetectingService : AccessibilityService() {
         // 스크린샷
         if (handleScreenshotChord(event)) return true
 
-        if (handlePageKeyTapMapping(event)) {
-            return true
-        }
-
         val keyCode = event.keyCode
 
         if (event.action != KeyEvent.ACTION_UP) return super.onKeyEvent(event)
@@ -407,6 +379,8 @@ class KeyInputDetectingService : AccessibilityService() {
         super.onDestroy()
 
         overlayController.detachOverlay()
+        stopRemapDaemonSync()
+        daemonExecutor.shutdownNow()
 
         runCatching {
             serviceBroadcastReceiver?.let { unregisterReceiver(it) }
@@ -420,7 +394,193 @@ class KeyInputDetectingService : AccessibilityService() {
                 ACTION_REFRESH_SCREEN -> doFullRefresh()
                 ACTION_SHOW_BRIGHTNESS_ACTIVITY -> launchBrightnessDialog()
                 ACTION_RP400_GLOBAL_BUTTON -> handleRp400GlobalButton(intent)
+                ACTION_PAGE_KEY_REMAP_STATE_CHANGED -> scheduleRemapDaemonStateUpdate()
             }
+        }
+    }
+
+    private fun shouldKeepRemapDaemonAlive(): Boolean {
+        if (!settingsRepository.isPageKeyTapEnabled()) return false
+        if (settingsRepository.getPageKeyTapTargetPackages().isEmpty()) return false
+        return true
+    }
+
+    private fun shouldEnableRemapNow(): Boolean {
+        if (!shouldKeepRemapDaemonAlive()) return false
+        if (currentPackageName.isBlank()) return false
+        if (currentPackageName == BLOCKED_APP_PACKAGE_NAME) return false
+        if (!settingsRepository.isPageKeyTapTargetPackage(currentPackageName)) return false
+        return true
+    }
+
+    private fun scheduleRemapDaemonStateUpdate() {
+        remapStateDebounceRunnable?.let { daemonMainHandler.removeCallbacks(it) }
+        remapStateDebounceRunnable = Runnable {
+            desiredRemapDaemonRunning = shouldKeepRemapDaemonAlive()
+            desiredRemapEnabled = shouldEnableRemapNow()
+            daemonExecutor.execute { applyRemapDaemonState() }
+        }
+        remapStateDebounceRunnable?.let {
+            daemonMainHandler.postDelayed(it, REMAP_DAEMON_DEBOUNCE_MS)
+        }
+    }
+
+    private fun applyRemapDaemonState() {
+        val shouldRunDaemon = desiredRemapDaemonRunning
+        val shouldEnableRemap = desiredRemapEnabled
+
+        if (!shouldRunDaemon) {
+            writeRemapStateFile(false)
+            if (remapDaemonRunning) {
+                stopRemapDaemonSync()
+            }
+            return
+        }
+
+        writeRemapStateFile(shouldEnableRemap)
+
+        if (!remapDaemonRunning) {
+            val started = startRemapDaemon()
+            remapDaemonRunning = started
+            if (!started) {
+                Log.w(TAG, "Failed to start page key remap daemon")
+                return
+            }
+        }
+
+        writeRemapStateFile(shouldEnableRemap)
+    }
+
+    private fun startRemapDaemon(): Boolean {
+        if (!ensureRemapDaemonBinary()) {
+            Log.w(TAG, "Remap daemon binary not found or not executable: $PAGE_KEY_REMAP_DAEMON_PATH")
+            return false
+        }
+
+        val command = """
+            PID_FILE="$PAGE_KEY_REMAP_PID_PATH"
+            BIN_PATH="$PAGE_KEY_REMAP_DAEMON_PATH"
+            STATE_PATH="${remapStateFile.absolutePath}"
+            if [ -f "${'$'}PID_FILE" ]; then
+                OLD_PID="${'$'}(cat "${'$'}PID_FILE" 2>/dev/null || true)"
+                if [ -n "${'$'}OLD_PID" ] && kill -0 "${'$'}OLD_PID" 2>/dev/null; then
+                    kill "${'$'}OLD_PID" 2>/dev/null || true
+                    sleep 0.1
+                fi
+                rm -f "${'$'}PID_FILE"
+            fi
+            nohup "${'$'}BIN_PATH" --state-file "${'$'}STATE_PATH" >/dev/null 2>&1 &
+            echo ${'$'}! > "${'$'}PID_FILE"
+            sleep 0.1
+            NEW_PID="${'$'}(cat "${'$'}PID_FILE" 2>/dev/null || true)"
+            [ -n "${'$'}NEW_PID" ] && kill -0 "${'$'}NEW_PID" 2>/dev/null
+        """.trimIndent()
+        return runRootCommand(command, ROOT_CMD_TIMEOUT_MS)
+    }
+
+    private fun ensureRemapDaemonBinary(): Boolean {
+        val localBinary = File(filesDir, "page_key_remapd")
+        val copiedFromAssets = runCatching {
+            val assetPath = resolveRemapDaemonAssetPath() ?: return@runCatching false
+            assets.open(assetPath).use { input ->
+                localBinary.outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            }
+            localBinary.setExecutable(true, false)
+            true
+        }.getOrDefault(false)
+
+        if (!copiedFromAssets) return false
+
+        val installCommand = """
+            cp "${localBinary.absolutePath}" "$PAGE_KEY_REMAP_DAEMON_PATH"
+            chmod 755 "$PAGE_KEY_REMAP_DAEMON_PATH"
+            [ -x "$PAGE_KEY_REMAP_DAEMON_PATH" ]
+        """.trimIndent()
+        return runRootCommand(installCommand, ROOT_CMD_TIMEOUT_MS)
+    }
+
+    private fun resolveRemapDaemonAssetPath(): String? {
+        val candidatePaths = mutableListOf<String>()
+        Build.SUPPORTED_ABIS?.forEach { abi ->
+            candidatePaths.add("bin/$abi/page_key_remapd")
+        }
+        candidatePaths.add(ASSET_PAGE_KEY_REMAP_DAEMON)
+
+        for (path in candidatePaths) {
+            val exists = runCatching {
+                assets.open(path).use { true }
+            }.getOrDefault(false)
+            if (exists) return path
+        }
+
+        Log.w(
+            TAG,
+            "No remap daemon asset found. expected one of: ${candidatePaths.joinToString()}"
+        )
+        return null
+    }
+
+    private fun stopRemapDaemonSync() {
+        val command = """
+            PID_FILE="$PAGE_KEY_REMAP_PID_PATH"
+            if [ -f "${'$'}PID_FILE" ]; then
+                OLD_PID="${'$'}(cat "${'$'}PID_FILE" 2>/dev/null || true)"
+                if [ -n "${'$'}OLD_PID" ] && kill -0 "${'$'}OLD_PID" 2>/dev/null; then
+                    kill "${'$'}OLD_PID" 2>/dev/null || true
+                    sleep 0.1
+                fi
+                rm -f "${'$'}PID_FILE"
+            fi
+            pkill -f "$PAGE_KEY_REMAP_DAEMON_PATH" 2>/dev/null || true
+            exit 0
+        """.trimIndent()
+        runRootCommand(command, ROOT_CMD_TIMEOUT_MS)
+        remapDaemonRunning = false
+    }
+
+    private fun resolveRemapStateFile(): File {
+        val baseDir = getExternalFilesDir(null) ?: filesDir
+        val stateFile = File(baseDir, PAGE_KEY_REMAP_STATE_FILE_NAME)
+        stateFile.parentFile?.mkdirs()
+        return stateFile
+    }
+
+    private fun writeRemapStateFile(enabled: Boolean): Boolean {
+        if (::remapStateFile.isInitialized &&
+            remapStateFile.exists() &&
+            lastWrittenRemapEnabled == enabled
+        ) {
+            return true
+        }
+
+        return runCatching {
+            if (!::remapStateFile.isInitialized) {
+                remapStateFile = resolveRemapStateFile()
+            }
+            remapStateFile.parentFile?.mkdirs()
+            remapStateFile.writeText(if (enabled) "1\n" else "0\n")
+            lastWrittenRemapEnabled = enabled
+            true
+        }.getOrElse { throwable ->
+            Log.w(TAG, "Failed to write remap state file", throwable)
+            false
+        }
+    }
+
+    private fun runRootCommand(command: String, timeoutMs: Long): Boolean {
+        return runCatching {
+            val process = ProcessBuilder("su", "-c", command).start()
+            val finished = process.waitFor(timeoutMs, TimeUnit.MILLISECONDS)
+            if (!finished) {
+                process.destroyForcibly()
+                return@runCatching false
+            }
+            process.exitValue() == 0
+        }.getOrElse { throwable ->
+            Log.w(TAG, "runRootCommand failed", throwable)
+            false
         }
     }
 
@@ -432,9 +592,15 @@ class KeyInputDetectingService : AccessibilityService() {
         const val ACTION_SHOW_BRIGHTNESS_ACTIVITY: String =
             "com.hidsquid.refreshpaper.ACTION_SHOW_BRIGHTNESS_ACTIVITY"
         const val ACTION_RP400_GLOBAL_BUTTON: String = "ridi.intent.action.GLOBAL_BUTTON"
+        const val ACTION_PAGE_KEY_REMAP_STATE_CHANGED: String =
+            "com.hidsquid.refreshpaper.ACTION_PAGE_KEY_REMAP_STATE_CHANGED"
         private const val F1_ACTION_DEBOUNCE_MS = 120L
-        private const val PAGE_KEY_TAP_DEBOUNCE_MS = 40L
-        private const val PAGE_KEY_TAP_DURATION_MS = 1L
+        private const val REMAP_DAEMON_DEBOUNCE_MS = 200L
+        private const val ROOT_CMD_TIMEOUT_MS = 3_000L
+        private const val PAGE_KEY_REMAP_DAEMON_PATH = "/data/local/tmp/page_key_remapd"
+        private const val PAGE_KEY_REMAP_PID_PATH = "/data/local/tmp/page_key_remapd.pid"
+        private const val PAGE_KEY_REMAP_STATE_FILE_NAME = "page_key_remap_state"
+        private const val ASSET_PAGE_KEY_REMAP_DAEMON = "bin/page_key_remapd"
         private const val BLOCKED_APP_PACKAGE_NAME = "com.ridi.paper"
     }
 }
