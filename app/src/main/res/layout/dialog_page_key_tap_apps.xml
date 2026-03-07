@@ -1,22 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="@dimen/dialog_width"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingTop="?android:attr/dialogPreferredPadding"
-    android:paddingBottom="?android:attr/dialogPreferredPadding">
+    style="@style/DialogListRoot">
 
     <TextView
         android:id="@+id/dialogTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/title_margin_bottom"
-        android:paddingStart="?android:attr/dialogPreferredPadding"
-        android:paddingEnd="?android:attr/dialogPreferredPadding"
+        style="@style/DialogListTitle"
         android:text="@string/labs_page_key_tap_apps_dialog_title"
-        android:textColor="@color/text_primary"
-        android:textSize="@dimen/text_size_title"
-        android:textStyle="bold" />
+        />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -24,9 +14,7 @@
 
         <LinearLayout
             android:id="@+id/itemContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" />
+            style="@style/DialogListContainer" />
     </ScrollView>
 
 </LinearLayout>

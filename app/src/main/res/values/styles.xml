@@ -18,6 +18,74 @@
         <item name="android:titleMarginEnd">16dp</item>
     </style>
 
+    <style name="DialogListRoot">
+        <item name="android:layout_width">@dimen/dialog_width</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingTop">?android:attr/dialogPreferredPadding</item>
+        <item name="android:paddingBottom">?android:attr/dialogPreferredPadding</item>
+    </style>
+
+    <style name="DialogListTitle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">@dimen/title_margin_bottom</item>
+        <item name="android:paddingStart">?android:attr/dialogPreferredPadding</item>
+        <item name="android:paddingEnd">?android:attr/dialogPreferredPadding</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">@dimen/text_size_title</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="DialogListContainer">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="DialogListSelectableItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+        <item name="android:paddingStart">?android:attr/dialogPreferredPadding</item>
+        <item name="android:paddingEnd">?android:attr/dialogPreferredPadding</item>
+        <item name="android:paddingTop">@dimen/item_padding_vertical</item>
+        <item name="android:paddingBottom">@dimen/item_padding_vertical</item>
+    </style>
+
+    <style name="DialogListItemText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">@dimen/text_size_item</item>
+    </style>
+
+    <style name="DialogListDescription">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/description_margin_top</item>
+        <item name="android:textColor">@color/text_dialog_description</item>
+        <item name="android:textSize">@dimen/text_size_description</item>
+    </style>
+
+    <style name="DialogListCheckIcon">
+        <item name="android:layout_width">@dimen/icon_size</item>
+        <item name="android:layout_height">@dimen/icon_size</item>
+        <item name="android:layout_alignParentEnd">true</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:src">@drawable/ic_check</item>
+        <item name="android:visibility">invisible</item>
+    </style>
+
+    <style name="DialogListDivider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/divider_height</item>
+        <item name="android:layout_marginStart">?android:attr/dialogPreferredPadding</item>
+        <item name="android:layout_marginEnd">?android:attr/dialogPreferredPadding</item>
+        <item name="android:background">@color/dialog_divider_color</item>
+    </style>
+
     <style name="GroupContainer">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>

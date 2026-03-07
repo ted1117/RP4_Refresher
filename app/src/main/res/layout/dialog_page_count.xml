@@ -1,169 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="@dimen/dialog_width"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingTop="?android:attr/dialogPreferredPadding"
-    android:paddingBottom="?android:attr/dialogPreferredPadding">
+    style="@style/DialogListRoot">
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/dialog_title"
-        android:textSize="19dp"
-        android:textStyle="bold"
-        android:textColor="@color/text_primary"
-        android:paddingStart="?android:attr/dialogPreferredPadding"
-        android:paddingEnd="?android:attr/dialogPreferredPadding"
-        android:layout_marginBottom="@dimen/title_margin_bottom"/>
+        style="@style/DialogListTitle"
+        android:text="@string/dialog_title" />
 
     <RelativeLayout
         android:id="@+id/item1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackground"
-        android:paddingVertical="@dimen/item_padding_vertical"
-        android:paddingHorizontal="?android:attr/dialogPreferredPadding">
+        style="@style/DialogListSelectableItem">
+
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="1 페이지 마다"
-            android:textSize="@dimen/text_size_item"
-            android:textColor="@color/text_primary"
-            android:layout_centerVertical="true"/>
+            style="@style/DialogListItemText"
+            android:text="1 페이지 마다" />
+
         <ImageView
             android:id="@+id/check1"
-            android:layout_width="@dimen/icon_size"
-            android:layout_height="@dimen/icon_size"
-            android:src="@drawable/ic_check"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:visibility="invisible"/>
+            style="@style/DialogListCheckIcon" />
     </RelativeLayout>
-    <View android:layout_width="match_parent" android:layout_height="@dimen/divider_height" android:background="@color/dialog_divider_color" android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"/>
+
+    <View style="@style/DialogListDivider" />
 
     <RelativeLayout
         android:id="@+id/item3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackground"
-        android:paddingVertical="@dimen/item_padding_vertical"
-        android:paddingHorizontal="?android:attr/dialogPreferredPadding">
+        style="@style/DialogListSelectableItem">
+
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="3 페이지 마다"
-            android:textSize="@dimen/text_size_item"
-            android:textColor="@color/text_primary"
-            android:layout_centerVertical="true"/>
+            style="@style/DialogListItemText"
+            android:text="3 페이지 마다" />
+
         <ImageView
             android:id="@+id/check3"
-            android:layout_width="@dimen/icon_size"
-            android:layout_height="@dimen/icon_size"
-            android:src="@drawable/ic_check"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:visibility="invisible"/>
+            style="@style/DialogListCheckIcon" />
     </RelativeLayout>
-    <View android:layout_width="match_parent" android:layout_height="@dimen/divider_height" android:background="@color/dialog_divider_color" android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"/>
+
+    <View style="@style/DialogListDivider" />
 
     <RelativeLayout
         android:id="@+id/item5"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackground"
-        android:paddingVertical="@dimen/item_padding_vertical"
-        android:paddingHorizontal="?android:attr/dialogPreferredPadding">
+        style="@style/DialogListSelectableItem">
+
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="5 페이지 마다"
-            android:textSize="@dimen/text_size_item"
-            android:textColor="@color/text_primary"
-            android:layout_centerVertical="true"/>
+            style="@style/DialogListItemText"
+            android:text="5 페이지 마다" />
+
         <ImageView
             android:id="@+id/check5"
-            android:layout_width="@dimen/icon_size"
-            android:layout_height="@dimen/icon_size"
-            android:src="@drawable/ic_check"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:visibility="invisible"/>
+            style="@style/DialogListCheckIcon" />
     </RelativeLayout>
-    <View android:layout_width="match_parent" android:layout_height="@dimen/divider_height" android:background="@color/dialog_divider_color" android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"/>
+
+    <View style="@style/DialogListDivider" />
 
     <RelativeLayout
         android:id="@+id/item10"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackground"
-        android:paddingVertical="@dimen/item_padding_vertical"
-        android:paddingHorizontal="?android:attr/dialogPreferredPadding">
+        style="@style/DialogListSelectableItem">
+
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="10 페이지 마다"
-            android:textSize="@dimen/text_size_item"
-            android:textColor="@color/text_primary"
-            android:layout_centerVertical="true"/>
+            style="@style/DialogListItemText"
+            android:text="10 페이지 마다" />
+
         <ImageView
             android:id="@+id/check10"
-            android:layout_width="@dimen/icon_size"
-            android:layout_height="@dimen/icon_size"
-            android:src="@drawable/ic_check"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:visibility="invisible"/>
+            style="@style/DialogListCheckIcon" />
     </RelativeLayout>
-    <View android:layout_width="match_parent" android:layout_height="@dimen/divider_height" android:background="@color/dialog_divider_color" android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"/>
+
+    <View style="@style/DialogListDivider" />
 
     <RelativeLayout
         android:id="@+id/item20"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackground"
-        android:paddingVertical="@dimen/item_padding_vertical"
-        android:paddingHorizontal="?android:attr/dialogPreferredPadding">
+        style="@style/DialogListSelectableItem">
+
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="20 페이지 마다"
-            android:textSize="@dimen/text_size_item"
-            android:textColor="@color/text_primary"
-            android:layout_centerVertical="true"/>
+            style="@style/DialogListItemText"
+            android:text="20 페이지 마다" />
+
         <ImageView
             android:id="@+id/check20"
-            android:layout_width="@dimen/icon_size"
-            android:layout_height="@dimen/icon_size"
-            android:src="@drawable/ic_check"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:visibility="invisible"/>
+            style="@style/DialogListCheckIcon" />
     </RelativeLayout>
-    <View android:layout_width="match_parent" android:layout_height="@dimen/divider_height" android:background="@color/dialog_divider_color" android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"/>
+
+    <View style="@style/DialogListDivider" />
 
     <RelativeLayout
         android:id="@+id/itemOff"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackground"
-        android:paddingVertical="@dimen/item_padding_vertical"
-        android:paddingHorizontal="?android:attr/dialogPreferredPadding">
+        style="@style/DialogListSelectableItem">
+
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/dialog_page_count_item_off"
-            android:textSize="@dimen/text_size_item"
-            android:textColor="@color/text_primary"
-            android:layout_centerVertical="true"/>
+            style="@style/DialogListItemText"
+            android:text="@string/dialog_page_count_item_off" />
+
         <ImageView
             android:id="@+id/checkOff"
-            android:layout_width="@dimen/icon_size"
-            android:layout_height="@dimen/icon_size"
-            android:src="@drawable/ic_check"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:visibility="invisible"/>
+            style="@style/DialogListCheckIcon" />
     </RelativeLayout>
 
 </LinearLayout>

@@ -1,271 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="@dimen/dialog_width"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingTop="?android:attr/dialogPreferredPadding"
-    android:paddingBottom="?android:attr/dialogPreferredPadding">
+    style="@style/DialogListRoot">
 
     <TextView
         android:id="@+id/dialogTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/title_margin_bottom"
-        android:paddingStart="?android:attr/dialogPreferredPadding"
-        android:paddingEnd="?android:attr/dialogPreferredPadding"
-        android:text="@string/dialog_title_f1_action"
-        android:textColor="@color/text_primary"
-        android:textSize="19dp"
-        android:textStyle="bold" />
+        style="@style/DialogListTitle"
+        android:text="@string/dialog_title_f1_action" />
 
     <RelativeLayout
         android:id="@+id/itemBack"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackground"
-        android:paddingVertical="@dimen/item_padding_vertical"
-        android:paddingHorizontal="?android:attr/dialogPreferredPadding">
+        style="@style/DialogListSelectableItem">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:text="@string/setting_value_f1_action_back"
-            android:textColor="@color/text_primary"
-            android:textSize="@dimen/text_size_item" />
+            style="@style/DialogListItemText"
+            android:text="@string/setting_value_f1_action_back" />
 
         <ImageView
             android:id="@+id/checkBack"
-            android:layout_width="@dimen/icon_size"
-            android:layout_height="@dimen/icon_size"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/ic_check"
-            android:visibility="invisible" />
+            style="@style/DialogListCheckIcon" />
     </RelativeLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/divider_height"
-        android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"
-        android:background="@color/dialog_divider_color" />
+    <View style="@style/DialogListDivider" />
 
     <RelativeLayout
         android:id="@+id/itemScreenshot"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackground"
-        android:paddingVertical="@dimen/item_padding_vertical"
-        android:paddingHorizontal="?android:attr/dialogPreferredPadding">
+        style="@style/DialogListSelectableItem">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:text="@string/setting_value_f1_action_screenshot"
-            android:textColor="@color/text_primary"
-            android:textSize="@dimen/text_size_item" />
+            style="@style/DialogListItemText"
+            android:text="@string/setting_value_f1_action_screenshot" />
 
         <ImageView
             android:id="@+id/checkScreenshot"
-            android:layout_width="@dimen/icon_size"
-            android:layout_height="@dimen/icon_size"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/ic_check"
-            android:visibility="invisible" />
+            style="@style/DialogListCheckIcon" />
     </RelativeLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/divider_height"
-        android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"
-        android:background="@color/dialog_divider_color" />
+    <View style="@style/DialogListDivider" />
 
     <RelativeLayout
         android:id="@+id/itemQuickSettings"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackground"
-        android:paddingVertical="@dimen/item_padding_vertical"
-        android:paddingHorizontal="?android:attr/dialogPreferredPadding">
+        style="@style/DialogListSelectableItem">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:text="@string/setting_value_f1_action_quick_settings"
-            android:textColor="@color/text_primary"
-            android:textSize="@dimen/text_size_item" />
+            style="@style/DialogListItemText"
+            android:text="@string/setting_value_f1_action_quick_settings" />
 
         <ImageView
             android:id="@+id/checkQuickSettings"
-            android:layout_width="@dimen/icon_size"
-            android:layout_height="@dimen/icon_size"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/ic_check"
-            android:visibility="invisible" />
+            style="@style/DialogListCheckIcon" />
     </RelativeLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/divider_height"
-        android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"
-        android:background="@color/dialog_divider_color" />
+    <View style="@style/DialogListDivider" />
 
     <RelativeLayout
         android:id="@+id/itemBrightness"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackground"
-        android:paddingVertical="@dimen/item_padding_vertical"
-        android:paddingHorizontal="?android:attr/dialogPreferredPadding">
+        style="@style/DialogListSelectableItem">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:text="@string/setting_value_f1_action_brightness"
-            android:textColor="@color/text_primary"
-            android:textSize="@dimen/text_size_item" />
+            style="@style/DialogListItemText"
+            android:text="@string/setting_value_f1_action_brightness" />
 
         <ImageView
             android:id="@+id/checkBrightness"
-            android:layout_width="@dimen/icon_size"
-            android:layout_height="@dimen/icon_size"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/ic_check"
-            android:visibility="invisible" />
+            style="@style/DialogListCheckIcon" />
     </RelativeLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/divider_height"
-        android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"
-        android:background="@color/dialog_divider_color" />
+    <View style="@style/DialogListDivider" />
 
     <RelativeLayout
         android:id="@+id/itemManualRefresh"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackground"
-        android:paddingVertical="@dimen/item_padding_vertical"
-        android:paddingHorizontal="?android:attr/dialogPreferredPadding">
+        style="@style/DialogListSelectableItem">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:text="@string/setting_value_f1_action_manual_refresh"
-            android:textColor="@color/text_primary"
-            android:textSize="@dimen/text_size_item" />
+            style="@style/DialogListItemText"
+            android:text="@string/setting_value_f1_action_manual_refresh" />
 
         <ImageView
             android:id="@+id/checkManualRefresh"
-            android:layout_width="@dimen/icon_size"
-            android:layout_height="@dimen/icon_size"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/ic_check"
-            android:visibility="invisible" />
+            style="@style/DialogListCheckIcon" />
     </RelativeLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/divider_height"
-        android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"
-        android:background="@color/dialog_divider_color" />
+    <View style="@style/DialogListDivider" />
 
     <RelativeLayout
         android:id="@+id/itemPageKeySwap"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackground"
-        android:paddingVertical="@dimen/item_padding_vertical"
-        android:paddingHorizontal="?android:attr/dialogPreferredPadding">
+        style="@style/DialogListSelectableItem">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:text="@string/setting_value_f1_action_page_key_swap"
-            android:textColor="@color/text_primary"
-            android:textSize="@dimen/text_size_item" />
+            style="@style/DialogListItemText"
+            android:text="@string/setting_value_f1_action_page_key_swap" />
 
         <ImageView
             android:id="@+id/checkPageKeySwap"
-            android:layout_width="@dimen/icon_size"
-            android:layout_height="@dimen/icon_size"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/ic_check"
-            android:visibility="invisible" />
+            style="@style/DialogListCheckIcon" />
     </RelativeLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/divider_height"
-        android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"
-        android:background="@color/dialog_divider_color" />
+    <View style="@style/DialogListDivider" />
 
     <RelativeLayout
         android:id="@+id/itemHomeLauncher"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackground"
-        android:paddingVertical="@dimen/item_padding_vertical"
-        android:paddingHorizontal="?android:attr/dialogPreferredPadding">
+        style="@style/DialogListSelectableItem">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:text="@string/setting_value_f1_action_home_launcher"
-            android:textColor="@color/text_primary"
-            android:textSize="@dimen/text_size_item" />
+            style="@style/DialogListItemText"
+            android:text="@string/setting_value_f1_action_home_launcher" />
 
         <ImageView
             android:id="@+id/checkHomeLauncher"
-            android:layout_width="@dimen/icon_size"
-            android:layout_height="@dimen/icon_size"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/ic_check"
-            android:visibility="invisible" />
+            style="@style/DialogListCheckIcon" />
     </RelativeLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/divider_height"
-        android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"
-        android:background="@color/dialog_divider_color" />
+    <View style="@style/DialogListDivider" />
 
     <RelativeLayout
         android:id="@+id/itemNone"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackground"
-        android:paddingVertical="@dimen/item_padding_vertical"
-        android:paddingHorizontal="?android:attr/dialogPreferredPadding">
+        style="@style/DialogListSelectableItem">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:text="@string/setting_value_f1_action_none"
-            android:textColor="@color/text_primary"
-            android:textSize="@dimen/text_size_item" />
+            style="@style/DialogListItemText"
+            android:text="@string/setting_value_f1_action_none" />
 
         <ImageView
             android:id="@+id/checkNone"
-            android:layout_width="@dimen/icon_size"
-            android:layout_height="@dimen/icon_size"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/ic_check"
-            android:visibility="invisible" />
+            style="@style/DialogListCheckIcon" />
     </RelativeLayout>
 
 </LinearLayout>
