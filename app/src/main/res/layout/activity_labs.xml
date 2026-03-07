@@ -125,6 +125,43 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/divider_height"
+                    android:background="@color/divider_color" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/pageKeySwapCard"
+                    style="@style/ListItemContainer">
+
+                    <TextView
+                        android:id="@+id/pageKeySwapTitle"
+                        style="@style/ListItemTitle"
+                        android:text="@string/labs_page_key_swap_title"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/pageKeySwapAppsArrow"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/pageKeySwapDescription"
+                        style="@style/ListItemDesc"
+                        android:text="@string/labs_page_key_swap_description"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/pageKeySwapAppsArrow"
+                        app:layout_constraintTop_toBottomOf="@+id/pageKeySwapTitle"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/pageKeySwapAppsArrow"
+                        android:layout_width="@dimen/icon_size"
+                        android:layout_height="@dimen/icon_size"
+                        android:src="@drawable/ic_arrow_right"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
             </LinearLayout>
 
             <TextView

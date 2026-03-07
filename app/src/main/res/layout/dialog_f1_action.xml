@@ -179,6 +179,38 @@
         android:background="@color/dialog_divider_color" />
 
     <RelativeLayout
+        android:id="@+id/itemPageKeySwap"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingVertical="@dimen/item_padding_vertical"
+        android:paddingHorizontal="?android:attr/dialogPreferredPadding">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/setting_value_f1_action_page_key_swap"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/text_size_item" />
+
+        <ImageView
+            android:id="@+id/checkPageKeySwap"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_check"
+            android:visibility="invisible" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"
+        android:background="@color/dialog_divider_color" />
+
+    <RelativeLayout
         android:id="@+id/itemHomeLauncher"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -64,7 +64,7 @@
         android:background="@color/dialog_divider_color" />
 
     <RelativeLayout
-        android:id="@+id/manualRefreshCard"
+        android:id="@+id/pageKeyRemapCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?android:attr/selectableItemBackground"
@@ -72,20 +72,33 @@
         android:paddingHorizontal="?android:attr/dialogPreferredPadding">
 
         <TextView
-            android:id="@+id/quickManualRefreshTitle"
+            android:id="@+id/quickPageKeyRemapTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:text="@string/manual_refresh_cardview_headline"
+            android:text="@string/quick_setting_title_volume_key_remap"
             android:textColor="@color/text_primary"
             android:textSize="@dimen/text_size_item"
             android:textStyle="bold" />
 
-        <Switch
-            android:id="@+id/quickManualRefreshSwitch"
-            style="@style/ListItemSwitch"
+        <TextView
+            android:id="@+id/tvQuickPageKeyRemapSummary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="8dp"
+            android:layout_toStartOf="@+id/quickPageKeyRemapArrow"
+            android:text="@string/labs_page_key_tap_apps_none"
+            android:textColor="@color/text_secondary"
+            android:textSize="@dimen/text_size_item" />
+
+        <ImageView
+            android:id="@+id/quickPageKeyRemapArrow"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
             android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true" />
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_arrow_right" />
 
     </RelativeLayout>
 
@@ -186,7 +199,7 @@
         android:background="@color/dialog_divider_color" />
 
     <RelativeLayout
-        android:id="@+id/shutdownTimerCard"
+        android:id="@+id/pageKeySwapCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?android:attr/selectableItemBackground"
@@ -194,28 +207,28 @@
         android:paddingHorizontal="?android:attr/dialogPreferredPadding">
 
         <TextView
-            android:id="@+id/quickShutdownTimerTitle"
+            android:id="@+id/quickPageKeySwapTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:text="@string/setting_title_shutdown_timer"
+            android:text="@string/quick_setting_title_page_turn_direction"
             android:textColor="@color/text_primary"
             android:textSize="@dimen/text_size_item"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/tvQuickShutdownTimerSummary"
+            android:id="@+id/tvQuickPageKeySwapSummary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginEnd="8dp"
-            android:layout_toStartOf="@+id/shutdownTimerArrow"
-            android:text="@string/setting_value_shutdown_timer_1h"
+            android:layout_toStartOf="@+id/quickPageKeySwapArrow"
+            android:text="@string/labs_page_key_tap_apps_none"
             android:textColor="@color/text_secondary"
             android:textSize="@dimen/text_size_item" />
 
         <ImageView
-            android:id="@+id/shutdownTimerArrow"
+            android:id="@+id/quickPageKeySwapArrow"
             android:layout_width="@dimen/icon_size"
             android:layout_height="@dimen/icon_size"
             android:layout_alignParentEnd="true"

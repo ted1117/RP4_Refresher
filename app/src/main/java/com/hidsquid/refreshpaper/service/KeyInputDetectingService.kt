@@ -15,11 +15,13 @@ import android.util.Log
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import androidx.core.content.IntentCompat
+import com.hidsquid.refreshpaper.BuildConfig
 import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_BACK
 import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_BRIGHTNESS
 import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_HOME_LAUNCHER
 import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_MANUAL_REFRESH
 import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_NONE
+import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_PAGE_KEY_SWAP
 import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_QUICK_SETTINGS
 import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_SCREENSHOT
 import com.hidsquid.refreshpaper.SettingsRepository
@@ -39,6 +41,7 @@ class KeyInputDetectingService : AccessibilityService() {
     private var triggerCount = 5
 
     private var currentPackageName: String = ""
+    private var foregroundAppPackage: String = ""
     private var currentClassName: String = ""
 
     private var serviceBroadcastReceiver: ServiceBroadcastReceiver? = null
@@ -60,9 +63,9 @@ class KeyInputDetectingService : AccessibilityService() {
     @Volatile
     private var desiredRemapDaemonRunning = false
     @Volatile
-    private var desiredRemapEnabled = false
+    private var desiredRemapMode = REMAP_MODE_DISABLED
     @Volatile
-    private var lastWrittenRemapEnabled: Boolean? = null
+    private var lastWrittenRemapMode: Int? = null
     private lateinit var remapStateFile: File
     private var remapStateDebounceRunnable: Runnable? = null
 
@@ -81,6 +84,7 @@ class KeyInputDetectingService : AccessibilityService() {
                 addAction(ACTION_SHOW_BRIGHTNESS_ACTIVITY)
                 addAction(ACTION_RP400_GLOBAL_BUTTON)
                 addAction(ACTION_PAGE_KEY_REMAP_STATE_CHANGED)
+                addAction(ACTION_OPEN_QUICK_SETTINGS)
             }
         )
     }
@@ -94,7 +98,11 @@ class KeyInputDetectingService : AccessibilityService() {
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event?.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-            currentPackageName = event.packageName?.toString().orEmpty()
+            val packageName = event.packageName?.toString().orEmpty()
+            currentPackageName = packageName
+            if (isUserAppPackage(packageName)) {
+                foregroundAppPackage = packageName
+            }
             currentClassName = event.className?.toString().orEmpty()
             scheduleRemapDaemonStateUpdate()
         }
@@ -239,10 +247,39 @@ class KeyInputDetectingService : AccessibilityService() {
             F1_ACTION_QUICK_SETTINGS -> launchQuickSettingsDialog()
             F1_ACTION_BRIGHTNESS -> launchBrightnessDialog()
             F1_ACTION_MANUAL_REFRESH -> triggerManualRefresh()
+            F1_ACTION_PAGE_KEY_SWAP -> togglePageKeySwapForCurrentApp()
             F1_ACTION_HOME_LAUNCHER -> launchConfiguredHomeLauncher()
             F1_ACTION_NONE -> true
             else -> performGlobalAction(GLOBAL_ACTION_BACK)
         }
+    }
+
+    private fun togglePageKeySwapForCurrentApp(): Boolean {
+        val targetPackage = getEffectiveForegroundPackage()
+        if (targetPackage.isBlank() || targetPackage == BLOCKED_APP_PACKAGE_NAME) {
+            return false
+        }
+
+        val updatedTargets = settingsRepository.getPageKeySwapTargetPackages().toMutableSet().apply {
+            if (contains(targetPackage)) {
+                remove(targetPackage)
+            } else {
+                add(targetPackage)
+            }
+        }
+
+        if (!settingsRepository.setPageKeySwapTargetPackages(updatedTargets)) {
+            return false
+        }
+
+        val hasAnyTarget = updatedTargets.isNotEmpty() ||
+            settingsRepository.getPageKeyTapTargetPackages().isNotEmpty()
+        if (!settingsRepository.setPageKeyTapEnabled(hasAnyTarget)) {
+            return false
+        }
+
+        scheduleRemapDaemonStateUpdate()
+        return true
     }
 
     private fun handleF1ShortPress(): Boolean {
@@ -283,6 +320,7 @@ class KeyInputDetectingService : AccessibilityService() {
         return runCatching {
             startActivity(
                 Intent(this, StatusBarSettingsActivity::class.java).apply {
+                    putExtra(StatusBarSettingsActivity.EXTRA_TARGET_PACKAGE, getEffectiveForegroundPackage())
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
                     addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
@@ -307,7 +345,8 @@ class KeyInputDetectingService : AccessibilityService() {
     }
 
     private fun isBlockedForegroundApp(): Boolean {
-        return currentPackageName.isBlank() || currentPackageName == BLOCKED_APP_PACKAGE_NAME
+        val packageName = getEffectiveForegroundPackage()
+        return packageName.isBlank() || packageName == BLOCKED_APP_PACKAGE_NAME
     }
 
     private fun handleRp400GlobalButton(intent: Intent) {
@@ -395,29 +434,56 @@ class KeyInputDetectingService : AccessibilityService() {
                 ACTION_SHOW_BRIGHTNESS_ACTIVITY -> launchBrightnessDialog()
                 ACTION_RP400_GLOBAL_BUTTON -> handleRp400GlobalButton(intent)
                 ACTION_PAGE_KEY_REMAP_STATE_CHANGED -> scheduleRemapDaemonStateUpdate()
+                ACTION_OPEN_QUICK_SETTINGS -> launchQuickSettingsDialog()
             }
         }
     }
 
     private fun shouldKeepRemapDaemonAlive(): Boolean {
         if (!settingsRepository.isPageKeyTapEnabled()) return false
-        if (settingsRepository.getPageKeyTapTargetPackages().isEmpty()) return false
-        return true
+        val hasNormalTarget = settingsRepository.getPageKeyTapTargetPackages().isNotEmpty()
+        val hasSwapTarget = settingsRepository.getPageKeySwapTargetPackages().isNotEmpty()
+        return hasNormalTarget || hasSwapTarget
     }
 
-    private fun shouldEnableRemapNow(): Boolean {
-        if (!shouldKeepRemapDaemonAlive()) return false
-        if (currentPackageName.isBlank()) return false
-        if (currentPackageName == BLOCKED_APP_PACKAGE_NAME) return false
-        if (!settingsRepository.isPageKeyTapTargetPackage(currentPackageName)) return false
-        return true
+    private fun resolveCurrentRemapMode(): Int {
+        val packageName = getEffectiveForegroundPackage()
+        if (!shouldKeepRemapDaemonAlive()) return REMAP_MODE_DISABLED
+        if (packageName.isBlank()) return REMAP_MODE_DISABLED
+        if (packageName == BLOCKED_APP_PACKAGE_NAME) return REMAP_MODE_DISABLED
+
+        val isVolumeRemap = settingsRepository.isPageKeyTapTargetPackage(packageName)
+        val isSwap = settingsRepository.isPageKeySwapTargetPackage(packageName)
+
+        if (isVolumeRemap && isSwap) {
+            return REMAP_MODE_SWAPPED
+        }
+        if (isVolumeRemap) {
+            return REMAP_MODE_NORMAL
+        }
+        if (isSwap) {
+            return REMAP_MODE_SWAP_ONLY
+        }
+        return REMAP_MODE_DISABLED
+    }
+
+    private fun getEffectiveForegroundPackage(): String {
+        if (isUserAppPackage(currentPackageName)) return currentPackageName
+        return foregroundAppPackage
+    }
+
+    private fun isUserAppPackage(packageName: String): Boolean {
+        if (packageName.isBlank()) return false
+        return packageName != "android" &&
+            packageName != "com.android.systemui" &&
+            packageName != BuildConfig.APPLICATION_ID
     }
 
     private fun scheduleRemapDaemonStateUpdate() {
         remapStateDebounceRunnable?.let { daemonMainHandler.removeCallbacks(it) }
         remapStateDebounceRunnable = Runnable {
             desiredRemapDaemonRunning = shouldKeepRemapDaemonAlive()
-            desiredRemapEnabled = shouldEnableRemapNow()
+            desiredRemapMode = resolveCurrentRemapMode()
             daemonExecutor.execute { applyRemapDaemonState() }
         }
         remapStateDebounceRunnable?.let {
@@ -427,17 +493,17 @@ class KeyInputDetectingService : AccessibilityService() {
 
     private fun applyRemapDaemonState() {
         val shouldRunDaemon = desiredRemapDaemonRunning
-        val shouldEnableRemap = desiredRemapEnabled
+        val remapMode = desiredRemapMode
 
         if (!shouldRunDaemon) {
-            writeRemapStateFile(false)
+            writeRemapStateFile(REMAP_MODE_DISABLED)
             if (remapDaemonRunning) {
                 stopRemapDaemonSync()
             }
             return
         }
 
-        writeRemapStateFile(shouldEnableRemap)
+        writeRemapStateFile(remapMode)
 
         if (!remapDaemonRunning) {
             val started = startRemapDaemon()
@@ -448,7 +514,7 @@ class KeyInputDetectingService : AccessibilityService() {
             }
         }
 
-        writeRemapStateFile(shouldEnableRemap)
+        writeRemapStateFile(remapMode)
     }
 
     private fun startRemapDaemon(): Boolean {
@@ -547,10 +613,10 @@ class KeyInputDetectingService : AccessibilityService() {
         return stateFile
     }
 
-    private fun writeRemapStateFile(enabled: Boolean): Boolean {
+    private fun writeRemapStateFile(mode: Int): Boolean {
         if (::remapStateFile.isInitialized &&
             remapStateFile.exists() &&
-            lastWrittenRemapEnabled == enabled
+            lastWrittenRemapMode == mode
         ) {
             return true
         }
@@ -560,8 +626,8 @@ class KeyInputDetectingService : AccessibilityService() {
                 remapStateFile = resolveRemapStateFile()
             }
             remapStateFile.parentFile?.mkdirs()
-            remapStateFile.writeText(if (enabled) "1\n" else "0\n")
-            lastWrittenRemapEnabled = enabled
+            remapStateFile.writeText("$mode\n")
+            lastWrittenRemapMode = mode
             true
         }.getOrElse { throwable ->
             Log.w(TAG, "Failed to write remap state file", throwable)
@@ -594,12 +660,18 @@ class KeyInputDetectingService : AccessibilityService() {
         const val ACTION_RP400_GLOBAL_BUTTON: String = "ridi.intent.action.GLOBAL_BUTTON"
         const val ACTION_PAGE_KEY_REMAP_STATE_CHANGED: String =
             "com.hidsquid.refreshpaper.ACTION_PAGE_KEY_REMAP_STATE_CHANGED"
+        const val ACTION_OPEN_QUICK_SETTINGS: String =
+            "com.hidsquid.refreshpaper.ACTION_OPEN_QUICK_SETTINGS"
         private const val F1_ACTION_DEBOUNCE_MS = 120L
         private const val REMAP_DAEMON_DEBOUNCE_MS = 200L
         private const val ROOT_CMD_TIMEOUT_MS = 3_000L
         private const val PAGE_KEY_REMAP_DAEMON_PATH = "/data/local/tmp/page_key_remapd"
         private const val PAGE_KEY_REMAP_PID_PATH = "/data/local/tmp/page_key_remapd.pid"
         private const val PAGE_KEY_REMAP_STATE_FILE_NAME = "page_key_remap_state"
+        private const val REMAP_MODE_DISABLED = 0
+        private const val REMAP_MODE_NORMAL = 1
+        private const val REMAP_MODE_SWAPPED = 2
+        private const val REMAP_MODE_SWAP_ONLY = 3
         private const val ASSET_PAGE_KEY_REMAP_DAEMON = "bin/page_key_remapd"
         private const val BLOCKED_APP_PACKAGE_NAME = "com.ridi.paper"
     }

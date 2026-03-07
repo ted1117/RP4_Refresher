@@ -20,8 +20,8 @@ object SystemUIHook {
 
     private const val PACKAGE_REFRESH_PAPER = "com.hidsquid.refreshpaper"
     private const val PACKAGE_RIDI_PAPER = "com.ridi.paper"
-    private const val CLASS_STATUS_BAR_SETTINGS_ACTIVITY =
-        "com.hidsquid.refreshpaper.StatusBarSettingsActivity"
+    private const val ACTION_OPEN_QUICK_SETTINGS =
+        "com.hidsquid.refreshpaper.ACTION_OPEN_QUICK_SETTINGS"
     private const val CLASS_RIDI_SETTINGS_ACTIVITY =
         "com.ridi.books.viewer.main.activity.SettingsActivity"
     private const val CLASS_RIDI_BRIGHTNESS_ACTIVITY =
@@ -142,27 +142,15 @@ object SystemUIHook {
                             }
                         }
 
-                        fun launchStatusBarSettingsDialog() {
+                        fun requestQuickSettingsDialog() {
                             try {
-                                if (isTargetActivityOnTop(PACKAGE_REFRESH_PAPER, CLASS_STATUS_BAR_SETTINGS_ACTIVITY)) {
-                                    YLog.debug("Skip launch, quick settings already on top")
-                                    return
+                                val intent = Intent(ACTION_OPEN_QUICK_SETTINGS).apply {
+                                    setPackage(PACKAGE_REFRESH_PAPER)
                                 }
-
-                                val intent = Intent().apply {
-                                    component = ComponentName(
-                                        PACKAGE_REFRESH_PAPER,
-                                        CLASS_STATUS_BAR_SETTINGS_ACTIVITY
-                                    )
-                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                    addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-                                    addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
-                                    addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                                }
-                                appContext?.startActivity(intent)
-                                YLog.debug("Launched quick settings dialog")
+                                appContext?.sendBroadcast(intent)
+                                YLog.debug("Requested quick settings dialog via broadcast")
                             } catch (e: Exception) {
-                                YLog.error("Failed to launch quick settings dialog: ${e.message}")
+                                YLog.error("Failed to request quick settings dialog: ${e.message}")
                             }
                         }
 
@@ -211,7 +199,7 @@ object SystemUIHook {
                                     CLASS_RIDI_SETTINGS_ACTIVITY
                                 )
                             } else {
-                                launchStatusBarSettingsDialog()
+                                requestQuickSettingsDialog()
                             }
                         }
 

@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.RelativeLayout
-import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -17,7 +16,6 @@ import androidx.lifecycle.lifecycleScope
 import com.hidsquid.refreshpaper.epd.EPDDisplayModeController
 import com.hidsquid.refreshpaper.service.KeyInputDetectingService
 import com.hidsquid.refreshpaper.shutdown.SleepModeTimerDialogController
-import com.hidsquid.refreshpaper.shutdown.ShutdownTimerDialogController
 import kotlinx.coroutines.launch
 
 class StatusBarSettingsActivity : ComponentActivity() {
@@ -25,13 +23,16 @@ class StatusBarSettingsActivity : ComponentActivity() {
     private lateinit var settingsRepository: SettingsRepository
     private lateinit var epdController: EPDDisplayModeController
     private lateinit var sleepModeTimerDialogController: SleepModeTimerDialogController
-    private lateinit var shutdownTimerDialogController: ShutdownTimerDialogController
 
     private lateinit var autoRefreshSummary: TextView
-    private lateinit var manualRefreshSwitch: Switch
     private lateinit var epdModeSummary: TextView
     private lateinit var sleepModeTimerSummary: TextView
-    private lateinit var shutdownTimerSummary: TextView
+    private lateinit var pageKeyRemapSummary: TextView
+    private lateinit var pageKeySwapSummary: TextView
+    private lateinit var pageKeyRemapCard: View
+    private lateinit var pageKeySwapCard: View
+
+    private var currentTargetPackage: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,19 +42,25 @@ class StatusBarSettingsActivity : ComponentActivity() {
         settingsRepository = SettingsRepository(this)
         epdController = EPDDisplayModeController(this)
         sleepModeTimerDialogController = SleepModeTimerDialogController(this, settingsRepository)
-        shutdownTimerDialogController = ShutdownTimerDialogController(this, settingsRepository)
 
         autoRefreshSummary = findViewById(R.id.tvQuickAutoRefreshSummary)
-        manualRefreshSwitch = findViewById(R.id.quickManualRefreshSwitch)
         epdModeSummary = findViewById(R.id.tvQuickEpdModeSummary)
         sleepModeTimerSummary = findViewById(R.id.tvQuickSleepModeTimerSummary)
-        shutdownTimerSummary = findViewById(R.id.tvQuickShutdownTimerSummary)
+        pageKeyRemapSummary = findViewById(R.id.tvQuickPageKeyRemapSummary)
+        pageKeySwapSummary = findViewById(R.id.tvQuickPageKeySwapSummary)
+        pageKeyRemapCard = findViewById(R.id.pageKeyRemapCard)
+        pageKeySwapCard = findViewById(R.id.pageKeySwapCard)
 
         setupListeners()
         loadSettings()
 
         val widthPx = resources.getDimensionPixelSize(R.dimen.dialog_width)
         window?.setLayout(widthPx, android.view.ViewGroup.LayoutParams.WRAP_CONTENT)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
     }
 
     override fun onResume() {
@@ -66,14 +73,6 @@ class StatusBarSettingsActivity : ComponentActivity() {
             showPageCountDialog()
         }
 
-        manualRefreshSwitch.setOnCheckedChangeListener { _, isChecked ->
-            settingsRepository.setManualRefreshEnabled(isChecked)
-        }
-
-        findViewById<View>(R.id.manualRefreshCard).setOnClickListener {
-            manualRefreshSwitch.isChecked = !manualRefreshSwitch.isChecked
-        }
-
         findViewById<View>(R.id.epdModeCard).setOnClickListener {
             showEpdDisplayModeDialog()
         }
@@ -84,24 +83,210 @@ class StatusBarSettingsActivity : ComponentActivity() {
             }
         }
 
-        findViewById<View>(R.id.shutdownTimerCard).setOnClickListener {
-            shutdownTimerDialogController.show {
-                updateShutdownTimerSummary()
-            }
+        pageKeyRemapCard.setOnClickListener {
+            showPageKeyRemapDialog()
+        }
+
+        pageKeySwapCard.setOnClickListener {
+            showPageKeySwapDialog()
         }
     }
 
     private fun loadSettings() {
-        manualRefreshSwitch.setOnCheckedChangeListener(null)
-        manualRefreshSwitch.isChecked = settingsRepository.isManualRefreshEnabled()
-        manualRefreshSwitch.setOnCheckedChangeListener { _, isChecked ->
-            settingsRepository.setManualRefreshEnabled(isChecked)
-        }
-
         updateAutoRefreshSummary()
         updateEpdModeSummary()
         updateSleepModeTimerSummary()
-        updateShutdownTimerSummary()
+        resolveCurrentTargetPackage()
+        bindCurrentAppToggles()
+    }
+
+    private fun resolveCurrentTargetPackage() {
+        val candidate = intent?.getStringExtra(EXTRA_TARGET_PACKAGE)
+            ?.trim()
+            ?.takeIf { it.isNotEmpty() }
+
+        currentTargetPackage = when (candidate) {
+            null -> null
+            packageName,
+            "android",
+            "com.android.systemui" -> null
+            else -> candidate
+        }
+    }
+
+    private fun bindCurrentAppToggles() {
+        val targetPackage = currentTargetPackage
+        when {
+            targetPackage.isNullOrBlank() -> {
+                val unavailableText = getString(R.string.quick_setting_summary_unavailable)
+                pageKeyRemapSummary.text = unavailableText
+                pageKeySwapSummary.text = unavailableText
+
+                setPageKeyCardsEnabled(false)
+            }
+
+            targetPackage == BLOCKED_APP_PACKAGE_NAME -> {
+                val blockedText = getString(R.string.quick_setting_summary_current_app_blocked)
+                pageKeyRemapSummary.text = blockedText
+                pageKeySwapSummary.text = blockedText
+
+                setPageKeyCardsEnabled(false)
+            }
+
+            else -> {
+                val remapEnabled = settingsRepository.isPageKeyTapTargetPackage(targetPackage)
+                val swapEnabled = settingsRepository.isPageKeySwapTargetPackage(targetPackage)
+
+                pageKeyRemapSummary.text = getString(
+                    if (remapEnabled) {
+                        R.string.quick_setting_value_volume_key
+                    } else {
+                        R.string.quick_setting_value_page_key
+                    }
+                )
+                pageKeySwapSummary.text = getString(
+                    if (swapEnabled) {
+                        R.string.quick_setting_value_next_prev
+                    } else {
+                        R.string.quick_setting_value_prev_next
+                    }
+                )
+
+                setPageKeyCardsEnabled(true)
+            }
+        }
+    }
+
+    private fun setPageKeyCardsEnabled(enabled: Boolean) {
+        pageKeyRemapCard.isEnabled = enabled
+        pageKeySwapCard.isEnabled = enabled
+        pageKeyRemapCard.alpha = if (enabled) 1f else 0.5f
+        pageKeySwapCard.alpha = if (enabled) 1f else 0.5f
+    }
+
+    private fun showPageKeyRemapDialog() {
+        val targetPackage = currentTargetPackage ?: return
+        showPageKeyToggleDialog(
+            layoutResId = R.layout.dialog_page_key_remap_toggle,
+            currentlyEnabled = settingsRepository.isPageKeyTapTargetPackage(targetPackage),
+            onApply = ::applyPageKeyRemapToggle
+        )
+    }
+
+    private fun showPageKeySwapDialog() {
+        val targetPackage = currentTargetPackage ?: return
+        showPageKeyToggleDialog(
+            layoutResId = R.layout.dialog_page_key_swap_toggle,
+            currentlyEnabled = settingsRepository.isPageKeySwapTargetPackage(targetPackage),
+            onApply = ::applyPageKeySwapToggle
+        )
+    }
+
+    private fun showPageKeyToggleDialog(
+        layoutResId: Int,
+        currentlyEnabled: Boolean,
+        onApply: (Boolean) -> Boolean,
+    ) {
+        val targetPackage = currentTargetPackage ?: return
+        if (targetPackage == BLOCKED_APP_PACKAGE_NAME) return
+
+        val dialogView = LayoutInflater.from(this).inflate(layoutResId, null)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(true)
+            .create()
+
+        dialog.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
+
+        val itemOn = dialogView.findViewById<RelativeLayout>(R.id.itemOn)
+        val itemOff = dialogView.findViewById<RelativeLayout>(R.id.itemOff)
+        val checkOn = dialogView.findViewById<ImageView>(R.id.checkOn)
+        val checkOff = dialogView.findViewById<ImageView>(R.id.checkOff)
+
+        fun setChecked(enabled: Boolean) {
+            checkOn.visibility = if (enabled) View.VISIBLE else View.INVISIBLE
+            checkOff.visibility = if (enabled) View.INVISIBLE else View.VISIBLE
+            if (enabled) {
+                checkOn.bringToFront()
+            } else {
+                checkOff.bringToFront()
+            }
+        }
+
+        val onClick = View.OnClickListener { view ->
+            val selectedEnabled = when (view.id) {
+                R.id.itemOn -> true
+                R.id.itemOff -> false
+                else -> return@OnClickListener
+            }
+
+            if (selectedEnabled != currentlyEnabled) {
+                if (!onApply(selectedEnabled)) {
+                    bindCurrentAppToggles()
+                    setChecked(currentlyEnabled)
+                    return@OnClickListener
+                }
+            }
+
+            bindCurrentAppToggles()
+            dialog.dismiss()
+        }
+
+        itemOn.setOnClickListener(onClick)
+        itemOff.setOnClickListener(onClick)
+        setChecked(currentlyEnabled)
+
+        dialog.show()
+        val widthPx = resources.getDimensionPixelSize(R.dimen.dialog_width)
+        dialog.window?.setLayout(widthPx, android.view.ViewGroup.LayoutParams.WRAP_CONTENT)
+    }
+
+    private fun applyPageKeyRemapToggle(enabled: Boolean): Boolean {
+        val targetPackage = currentTargetPackage ?: return false
+        if (targetPackage == BLOCKED_APP_PACKAGE_NAME) return false
+
+        val updatedTargets = settingsRepository.getPageKeyTapTargetPackages().toMutableSet().apply {
+            if (enabled) add(targetPackage) else remove(targetPackage)
+        }
+
+        if (!settingsRepository.setPageKeyTapTargetPackages(updatedTargets)) {
+            Toast.makeText(this, R.string.labs_page_key_tap_apps_save_failed, Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        val hasAnyTarget = updatedTargets.isNotEmpty() ||
+            settingsRepository.getPageKeySwapTargetPackages().isNotEmpty()
+        if (!settingsRepository.setPageKeyTapEnabled(hasAnyTarget)) {
+            Toast.makeText(this, R.string.labs_page_key_tap_save_failed, Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        notifyPageKeyRemapStateChanged()
+        return true
+    }
+
+    private fun applyPageKeySwapToggle(enabled: Boolean): Boolean {
+        val targetPackage = currentTargetPackage ?: return false
+        if (targetPackage == BLOCKED_APP_PACKAGE_NAME) return false
+
+        val updatedTargets = settingsRepository.getPageKeySwapTargetPackages().toMutableSet().apply {
+            if (enabled) add(targetPackage) else remove(targetPackage)
+        }
+
+        if (!settingsRepository.setPageKeySwapTargetPackages(updatedTargets)) {
+            Toast.makeText(this, R.string.labs_page_key_tap_apps_save_failed, Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        val hasAnyTarget = updatedTargets.isNotEmpty() ||
+            settingsRepository.getPageKeyTapTargetPackages().isNotEmpty()
+        if (!settingsRepository.setPageKeyTapEnabled(hasAnyTarget)) {
+            Toast.makeText(this, R.string.labs_page_key_swap_save_failed, Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        notifyPageKeyRemapStateChanged()
+        return true
     }
 
     private fun updateAutoRefreshSummary() {
@@ -263,24 +448,31 @@ class StatusBarSettingsActivity : ComponentActivity() {
         dialog.window?.setLayout(widthPx, android.view.ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
+    private fun notifyPageKeyRemapStateChanged() {
+        sendBroadcast(Intent(KeyInputDetectingService.ACTION_PAGE_KEY_REMAP_STATE_CHANGED))
+    }
+
     private fun updateEpdModeSummary() {
         lifecycleScope.launch {
             val raw = epdController.getDisplayMode()
             val mode = epdController.normalize(raw)
             epdModeSummary.text = getString(
-                if (mode == EPDDisplayModeController.MODE_MINIMIZE_AFTERIMAGE)
+                if (mode == EPDDisplayModeController.MODE_MINIMIZE_AFTERIMAGE) {
                     R.string.setting_value_display_mode_minimize_afterimage
-                else
+                } else {
                     R.string.setting_value_display_mode_normal
+                }
             )
         }
     }
 
-    private fun updateShutdownTimerSummary() {
-        shutdownTimerSummary.text = shutdownTimerDialogController.getSelectedTimerLabel()
-    }
-
     private fun updateSleepModeTimerSummary() {
         sleepModeTimerSummary.text = sleepModeTimerDialogController.getSelectedTimerLabel()
+    }
+
+    companion object {
+        const val EXTRA_TARGET_PACKAGE =
+            "com.hidsquid.refreshpaper.extra.QUICK_SETTINGS_TARGET_PACKAGE"
+        private const val BLOCKED_APP_PACKAGE_NAME = "com.ridi.paper"
     }
 }
