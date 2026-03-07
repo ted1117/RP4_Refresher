@@ -98,6 +98,30 @@ class SettingsRepository(
         return getPageKeyTapTargetPackages().contains(packageName)
     }
 
+    fun getPageKeySwapTargetPackages(): Set<String> {
+        return prefs.getStringSet(ModulePrefs.KEY_PAGE_KEY_SWAP_TARGET_PACKAGES, emptySet())
+            ?.mapNotNull { value ->
+                value?.trim()?.takeIf { it.isNotEmpty() }
+            }
+            ?.toSet()
+            .orEmpty()
+    }
+
+    fun setPageKeySwapTargetPackages(packages: Set<String>): Boolean {
+        val sanitized = packages
+            .mapNotNull { value -> value.trim().takeIf { it.isNotEmpty() } }
+            .toSet()
+
+        return prefs.edit()
+            .putStringSet(ModulePrefs.KEY_PAGE_KEY_SWAP_TARGET_PACKAGES, sanitized)
+            .commit()
+    }
+
+    fun isPageKeySwapTargetPackage(packageName: String): Boolean {
+        if (packageName.isBlank()) return false
+        return getPageKeySwapTargetPackages().contains(packageName)
+    }
+
     fun isManualRefreshEnabled(): Boolean =
         prefs.getBoolean(ModulePrefs.KEY_MANUAL_REFRESH_ENABLED, false)
 
@@ -170,6 +194,7 @@ class SettingsRepository(
             F1_ACTION_QUICK_SETTINGS,
             F1_ACTION_BRIGHTNESS,
             F1_ACTION_MANUAL_REFRESH,
+            F1_ACTION_PAGE_KEY_SWAP,
             F1_ACTION_HOME_LAUNCHER,
             F1_ACTION_NONE -> value
             else -> default
@@ -232,6 +257,7 @@ class SettingsRepository(
         const val F1_ACTION_MANUAL_REFRESH = 4
         const val F1_ACTION_HOME_LAUNCHER = 5
         const val F1_ACTION_NONE = 6
+        const val F1_ACTION_PAGE_KEY_SWAP = 7
 
         const val DEFAULT_SHUTDOWN_TIMER_HOURS = 1
         const val DEFAULT_SCREEN_OFF_TIMEOUT_MILLIS = 60_000
@@ -242,6 +268,7 @@ class SettingsRepository(
             F1_ACTION_QUICK_SETTINGS,
             F1_ACTION_BRIGHTNESS,
             F1_ACTION_MANUAL_REFRESH,
+            F1_ACTION_PAGE_KEY_SWAP,
             F1_ACTION_HOME_LAUNCHER,
             F1_ACTION_NONE
         )

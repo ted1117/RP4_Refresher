@@ -69,7 +69,31 @@ class LabsActivity : Activity() {
         }
 
         binding.pageKeyTapCard.setOnClickListener {
-            showPageKeyTapAppsDialog()
+            showPageKeyAppsDialog(
+                selectedPackagesProvider = { settingsRepository.getPageKeyTapTargetPackages() },
+                saveTargets = { settingsRepository.setPageKeyTapTargetPackages(it) },
+                saveEnabled = { selectedNormal ->
+                    val hasAnyTarget = selectedNormal.isNotEmpty() ||
+                        settingsRepository.getPageKeySwapTargetPackages().isNotEmpty()
+                    settingsRepository.setPageKeyTapEnabled(hasAnyTarget)
+                },
+                titleResId = R.string.labs_page_key_tap_apps_dialog_title,
+                saveFailedResId = R.string.labs_page_key_tap_save_failed
+            )
+        }
+
+        binding.pageKeySwapCard.setOnClickListener {
+            showPageKeyAppsDialog(
+                selectedPackagesProvider = { settingsRepository.getPageKeySwapTargetPackages() },
+                saveTargets = { settingsRepository.setPageKeySwapTargetPackages(it) },
+                saveEnabled = { selectedSwap ->
+                    val hasAnyTarget = selectedSwap.isNotEmpty() ||
+                        settingsRepository.getPageKeyTapTargetPackages().isNotEmpty()
+                    settingsRepository.setPageKeyTapEnabled(hasAnyTarget)
+                },
+                titleResId = R.string.labs_page_key_swap_apps_dialog_title,
+                saveFailedResId = R.string.labs_page_key_swap_save_failed
+            )
         }
 
         binding.powerPageScreenshotCard.setOnClickListener {
@@ -99,18 +123,24 @@ class LabsActivity : Activity() {
         }
     }
 
-    private fun showPageKeyTapAppsDialog() {
+    private fun showPageKeyAppsDialog(
+        selectedPackagesProvider: () -> Set<String>,
+        saveTargets: (Set<String>) -> Boolean,
+        saveEnabled: (Set<String>) -> Boolean,
+        titleResId: Int,
+        saveFailedResId: Int
+    ) {
         val options = getPageKeyTapTargetCandidates()
         if (options.isEmpty()) {
             Toast.makeText(this, R.string.labs_page_key_tap_apps_empty, Toast.LENGTH_SHORT).show()
             return
         }
 
-        val selectedPackages = settingsRepository.getPageKeyTapTargetPackages().toMutableSet()
+        val selectedPackages = selectedPackagesProvider().toMutableSet()
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_page_key_tap_apps, null)
         val titleView = dialogView.findViewById<TextView>(R.id.dialogTitle)
         val itemContainer = dialogView.findViewById<LinearLayout>(R.id.itemContainer)
-        titleView.setText(R.string.labs_page_key_tap_apps_dialog_title)
+        titleView.setText(titleResId)
 
         val dialog = AlertDialog.Builder(this)
             .setView(dialogView)
@@ -135,15 +165,15 @@ class LabsActivity : Activity() {
                     if (contains(option.packageName)) remove(option.packageName) else add(option.packageName)
                 }
 
-                val savedTargets = settingsRepository.setPageKeyTapTargetPackages(toggled)
-                val savedEnabled = settingsRepository.setPageKeyTapEnabled(toggled.isNotEmpty())
+                val savedTargets = saveTargets(toggled)
+                val savedEnabled = saveEnabled(toggled)
 
                 if (!savedTargets) {
                     Toast.makeText(this, R.string.labs_page_key_tap_apps_save_failed, Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
                 if (!savedEnabled) {
-                    Toast.makeText(this, R.string.labs_page_key_tap_save_failed, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, saveFailedResId, Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
 
