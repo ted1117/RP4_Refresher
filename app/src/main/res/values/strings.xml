@@ -36,6 +36,7 @@
     <string name="setting_value_display_mode_minimize_afterimage">잔상 최소화</string>
     <string name="setting_summary_auto_refresh_on">%d 페이지 마다</string>
     <string name="setting_summary_auto_refresh_off">사용 안 함</string>
+    <string name="quick_setting_title_page_refresh">페이지 새로고침</string>
     <string name="quick_setting_title_volume_key_remap">Volume Key Remap</string>
     <string name="quick_setting_title_page_turn_direction">Page Turn Direction</string>
     <string name="quick_setting_summary_current_app">Current app: %1$s</string>

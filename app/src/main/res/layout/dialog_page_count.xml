@@ -12,7 +12,7 @@
 
         <TextView
             style="@style/DialogListItemText"
-            android:text="1 페이지 마다" />
+            android:text="1 페이지" />
 
         <ImageView
             android:id="@+id/check1"
@@ -27,7 +27,7 @@
 
         <TextView
             style="@style/DialogListItemText"
-            android:text="3 페이지 마다" />
+            android:text="3 페이지" />
 
         <ImageView
             android:id="@+id/check3"
@@ -42,7 +42,7 @@
 
         <TextView
             style="@style/DialogListItemText"
-            android:text="5 페이지 마다" />
+            android:text="5 페이지" />
 
         <ImageView
             android:id="@+id/check5"
@@ -57,7 +57,7 @@
 
         <TextView
             style="@style/DialogListItemText"
-            android:text="10 페이지 마다" />
+            android:text="10 페이지" />
 
         <ImageView
             android:id="@+id/check10"
@@ -72,7 +72,7 @@
 
         <TextView
             style="@style/DialogListItemText"
-            android:text="20 페이지 마다" />
+            android:text="20 페이지" />
 
         <ImageView
             android:id="@+id/check20"

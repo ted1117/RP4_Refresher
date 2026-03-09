@@ -24,9 +24,9 @@
     <string name="epd_mode_normal_description">전자 잉크 디스플레이의 일반적인 잔상을\n허용합니다.</string>
 
     <!-- Settings Screen -->
-    <string name="settings_tab_refresh_display">리프레시 · 디스플레이 · 퀵 버튼</string>
-    <string name="settings_tab_security_system_advanced">보안 · 시스템 · 고급</string>
-    <string name="settings_section_refresh">리프레시</string>
+    <string name="settings_tab_refresh_display">새로고침 · 디스플레이 · 퀵 버튼</string>
+    <string name="settings_tab_security_system_advanced">스크린샷 · 시스템 · 고급</string>
+    <string name="settings_section_refresh">새로고침</string>
     <string name="settings_section_display">디스플레이</string>
     <string name="settings_section_quick_button">퀵 버튼</string>
     <string name="settings_section_security">스크린샷</string>
@@ -37,8 +37,9 @@
     <string name="setting_value_display_mode_minimize_afterimage">잔상 최소화</string>
     <string name="setting_summary_auto_refresh_on">%d 페이지 마다</string>
     <string name="setting_summary_auto_refresh_off">사용 안 함</string>
-    <string name="quick_setting_title_volume_key_remap">볼륨키 치환</string>
-    <string name="quick_setting_title_page_turn_direction">페이지 넘김 방향 변경</string>
+    <string name="quick_setting_title_page_refresh">페이지 새로고침</string>
+    <string name="quick_setting_title_volume_key_remap">페이지 넘김 버튼 동작</string>
+    <string name="quick_setting_title_page_turn_direction">페이지 넘김 방향</string>
     <string name="quick_setting_summary_current_app">현재 앱: %1$s</string>
     <string name="quick_setting_summary_current_app_blocked">리디 앱에서는 사용 안 함</string>
     <string name="quick_setting_summary_unavailable">사용 불가</string>
@@ -64,19 +65,19 @@
     <string name="dialog_title_home_launcher">런처 앱 선택</string>
     <string name="toast_home_launcher_no_apps">설치된 런처 앱이 없습니다</string>
     <string name="toast_home_launcher_save_failed">런처 설정 저장에 실패했습니다</string>
-    <string name="setting_title_f1_action">퀵 버튼 짧게 누름 동작</string>
-    <string name="setting_title_f1_long_action">퀵 버튼 길게 누름 동작</string>
+    <string name="setting_title_f1_action">짧게 눌렀을 때</string>
+    <string name="setting_title_f1_long_action">길게 눌렀을 때</string>
     <string name="setting_value_f1_action_back">뒤로가기</string>
     <string name="setting_value_f1_action_screenshot">스크린샷</string>
     <string name="setting_value_f1_action_quick_settings">간단 설정</string>
-    <string name="setting_value_f1_action_brightness">밝기 설정 창</string>
-    <string name="setting_value_f1_action_manual_refresh">수동 리프레시</string>
-    <string name="setting_value_f1_action_page_key_swap">업다운 치환</string>
+    <string name="setting_value_f1_action_brightness">밝기 설정</string>
+    <string name="setting_value_f1_action_manual_refresh">페이지 새로고침</string>
+    <string name="setting_value_f1_action_page_key_swap">페이지 넘김 방향 변경</string>
     <string name="setting_value_f1_action_home_launcher">홈으로 이동</string>
     <string name="setting_value_f1_action_none">설정 안 함</string>
     <string name="dialog_title_f1_action">퀵 버튼 동작 선택</string>
-    <string name="dialog_title_f1_short_action">퀵 버튼 짧게 누름 동작 선택</string>
-    <string name="dialog_title_f1_long_action">퀵 버튼 길게 누름 동작 선택</string>
+    <string name="dialog_title_f1_short_action">퀵 버튼 짧게 누름 동작</string>
+    <string name="dialog_title_f1_long_action">퀵 버튼 길게 누름 동작</string>
     <string name="setting_title_sleep_mode_timer">슬립 모드 타이머</string>
     <string name="setting_value_sleep_mode_timer_default">1분</string>
     <string name="dialog_title_sleep_mode_timer">슬립 모드 타이머 설정</string>
@@ -105,16 +106,16 @@
     <!-- Labs -->
     <string name="labs_title">실험실</string>
     <string name="labs_description">실험적인 기능 및 설정</string>
-    <string name="labs_section_refresh">리프레시</string>
-    <string name="labs_section_page_key_tap">페이지 키 치환</string>
+    <string name="labs_section_refresh">새로고침</string>
+    <string name="labs_section_page_key_tap">페이지 넘김 버튼</string>
     <string name="labs_section_screenshot">스크린샷</string>
     <string name="labs_touch_refresh_title">터치 기반 새로고침</string>
-    <string name="labs_touch_refresh_description">화면을 탭하여 리프레시</string>
+    <string name="labs_touch_refresh_description">터치로 페이지를 넘길 때 페이지 새로고침 동작</string>
     <string name="labs_touch_refresh_requires_auto">먼저 자동 새로고침을 켜주세요</string>
-    <string name="labs_page_key_tap_title">페이지 넘김 버튼</string>
-    <string name="labs_page_key_tap_description">선택한 앱에서 페이지 넘김 버튼을 볼륨 버튼으로 치환</string>
-    <string name="labs_page_key_swap_title">업/다운 반전 앱</string>
-    <string name="labs_page_key_swap_description">선택한 앱에서 페이지 업/다운 방향을 서로 바꿔 치환</string>
+    <string name="labs_page_key_tap_title">페이지 넘김 버튼 동작</string>
+    <string name="labs_page_key_tap_description">선택한 앱에서 페이지 넘김 버튼을 볼륨 버튼으로 변환</string>
+    <string name="labs_page_key_swap_title">페이지 넘김 방향 전환 앱 지정</string>
+    <string name="labs_page_key_swap_description">선택한 앱에서 페이지 넘김 방향을 전환</string>
     <string name="labs_page_key_tap_save_failed">페이지 키 치환 설정 저장에 실패했습니다</string>
     <string name="labs_page_key_swap_save_failed">업/다운 반전 설정 저장에 실패했습니다</string>
     <string name="labs_page_key_tap_apps_title">적용 앱</string>
