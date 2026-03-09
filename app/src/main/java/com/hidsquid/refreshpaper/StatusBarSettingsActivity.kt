@@ -119,6 +119,7 @@ class StatusBarSettingsActivity : ComponentActivity() {
                 val unavailableText = getString(R.string.quick_setting_summary_unavailable)
                 pageKeyRemapSummary.text = unavailableText
                 pageKeySwapSummary.text = unavailableText
+                pageKeySwapSummary.visibility = View.VISIBLE
 
                 setPageKeyCardsEnabled(false)
             }
@@ -127,6 +128,7 @@ class StatusBarSettingsActivity : ComponentActivity() {
                 val blockedText = getString(R.string.quick_setting_summary_current_app_blocked)
                 pageKeyRemapSummary.text = blockedText
                 pageKeySwapSummary.text = blockedText
+                pageKeySwapSummary.visibility = View.VISIBLE
 
                 setPageKeyCardsEnabled(false)
             }
@@ -149,6 +151,7 @@ class StatusBarSettingsActivity : ComponentActivity() {
                         R.string.quick_setting_value_prev_next
                     }
                 )
+                pageKeySwapSummary.visibility = View.VISIBLE
 
                 setPageKeyCardsEnabled(true)
             }

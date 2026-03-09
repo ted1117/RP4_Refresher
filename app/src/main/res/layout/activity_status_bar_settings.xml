@@ -218,14 +218,16 @@
 
         <TextView
             android:id="@+id/tvQuickPageKeySwapSummary"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/quick_setting_summary_width"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginEnd="8dp"
             android:layout_toStartOf="@+id/quickPageKeySwapArrow"
+            android:gravity="end"
             android:text="@string/labs_page_key_tap_apps_none"
             android:textColor="@color/text_secondary"
-            android:textSize="@dimen/text_size_item" />
+            android:textSize="@dimen/text_size_item"
+            android:visibility="invisible" />
 
         <ImageView
             android:id="@+id/quickPageKeySwapArrow"

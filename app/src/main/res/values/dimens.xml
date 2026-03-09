@@ -37,4 +37,5 @@
     <dimen name="row_body_text_size">13sp</dimen>
     <dimen name="row_body_margin_top">6dp</dimen>
     <dimen name="text_size_setting_value">15sp</dimen>
+    <dimen name="quick_setting_summary_width">96dp</dimen>
 </resources>
