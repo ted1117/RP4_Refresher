@@ -2,7 +2,6 @@ package com.hidsquid.refreshpaper
 
 import android.app.AlertDialog
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +10,6 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.core.graphics.drawable.toDrawable
 import androidx.lifecycle.lifecycleScope
 import com.hidsquid.refreshpaper.epd.EPDDisplayModeController
 import com.hidsquid.refreshpaper.service.KeyInputDetectingService
@@ -196,8 +194,6 @@ class StatusBarSettingsActivity : ComponentActivity() {
             .setCancelable(true)
             .create()
 
-        dialog.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
-
         val itemOn = dialogView.findViewById<RelativeLayout>(R.id.itemOn)
         val itemOff = dialogView.findViewById<RelativeLayout>(R.id.itemOff)
         val checkOn = dialogView.findViewById<ImageView>(R.id.checkOn)
@@ -237,8 +233,6 @@ class StatusBarSettingsActivity : ComponentActivity() {
         setChecked(currentlyEnabled)
 
         dialog.show()
-        val widthPx = resources.getDimensionPixelSize(R.dimen.dialog_width)
-        dialog.window?.setLayout(widthPx, android.view.ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
     private fun applyPageKeyRemapToggle(enabled: Boolean): Boolean {
@@ -312,8 +306,6 @@ class StatusBarSettingsActivity : ComponentActivity() {
             .setCancelable(true)
             .create()
 
-        dialog.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
-
         val item1 = dialogView.findViewById<RelativeLayout>(R.id.item1)
         val item3 = dialogView.findViewById<RelativeLayout>(R.id.item3)
         val item5 = dialogView.findViewById<RelativeLayout>(R.id.item5)
@@ -378,8 +370,6 @@ class StatusBarSettingsActivity : ComponentActivity() {
         itemOff.setOnClickListener(onClick)
 
         dialog.show()
-        val widthPx = resources.getDimensionPixelSize(R.dimen.dialog_width)
-        dialog.window?.setLayout(widthPx, android.view.ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
     private fun showEpdDisplayModeDialog() {
@@ -389,8 +379,6 @@ class StatusBarSettingsActivity : ComponentActivity() {
             .setView(dialogView)
             .setCancelable(true)
             .create()
-
-        dialog.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
 
         val itemMin = dialogView.findViewById<RelativeLayout>(R.id.item1)
         val itemNormal = dialogView.findViewById<RelativeLayout>(R.id.item3)
@@ -444,8 +432,6 @@ class StatusBarSettingsActivity : ComponentActivity() {
         itemNormal.setOnClickListener(onClick)
 
         dialog.show()
-        val widthPx = resources.getDimensionPixelSize(R.dimen.dialog_width)
-        dialog.window?.setLayout(widthPx, android.view.ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
     private fun notifyPageKeyRemapStateChanged() {

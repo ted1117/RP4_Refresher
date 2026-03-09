@@ -5,7 +5,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ResolveInfo
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
@@ -13,7 +12,6 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.graphics.drawable.toDrawable
 import com.hidsquid.refreshpaper.R
 import com.hidsquid.refreshpaper.SettingsRepository
 
@@ -59,8 +57,6 @@ class HomeLauncherDialogController(
             .setCancelable(true)
             .create()
 
-        dialog.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
-
         options.forEachIndexed { index, option ->
             val itemView =
                 LayoutInflater.from(context).inflate(R.layout.dialog_home_launcher_item, itemContainer, false)
@@ -96,8 +92,6 @@ class HomeLauncherDialogController(
 
         setChecked(selectedIndex)
         dialog.show()
-        val widthPx = context.resources.getDimensionPixelSize(R.dimen.dialog_width)
-        dialog.window?.setLayout(widthPx, android.view.ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
     fun getSelectedLauncherLabel(): String {

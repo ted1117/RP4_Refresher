@@ -2,13 +2,11 @@ package com.hidsquid.refreshpaper.shutdown
 
 import android.app.AlertDialog
 import android.content.Context
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.Toast
-import androidx.core.graphics.drawable.toDrawable
 import com.hidsquid.refreshpaper.R
 import com.hidsquid.refreshpaper.SettingsRepository
 
@@ -40,8 +38,6 @@ class SleepModeTimerDialogController(
             .setView(dialogView)
             .setCancelable(true)
             .create()
-
-        dialog.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
 
         val checkViews = timerItems.map { (_, ids) ->
             dialogView.findViewById<ImageView>(ids.second)
@@ -96,8 +92,6 @@ class SleepModeTimerDialogController(
         setChecked(checkedMinutes)
 
         dialog.show()
-        val widthPx = context.resources.getDimensionPixelSize(R.dimen.dialog_width)
-        dialog.window?.setLayout(widthPx, android.view.ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
     fun getSelectedTimerLabel(): String {

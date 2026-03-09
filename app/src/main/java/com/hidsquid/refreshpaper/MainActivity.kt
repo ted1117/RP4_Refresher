@@ -1,8 +1,8 @@
 package com.hidsquid.refreshpaper
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
@@ -13,7 +13,6 @@ import android.widget.RelativeLayout
 import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
-import android.app.AlertDialog
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.lifecycleScope
 import com.hidsquid.refreshpaper.databinding.ActivityMainBinding
@@ -26,7 +25,6 @@ import com.hidsquid.refreshpaper.shutdown.ShutdownTimerDialogController
 import com.hidsquid.refreshpaper.service.KeyInputDetectingService
 import com.hidsquid.refreshpaper.utils.AccessibilityUtils
 import kotlinx.coroutines.launch
-import androidx.core.graphics.drawable.toDrawable
 
 class MainActivity : ComponentActivity() {
 
@@ -227,8 +225,6 @@ class MainActivity : ComponentActivity() {
             .setCancelable(true)
             .create()
 
-        dialog.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
-
         val itemMin = dialogView.findViewById<RelativeLayout>(R.id.item1)
         val itemNormal = dialogView.findViewById<RelativeLayout>(R.id.item3)
         val checkMin = dialogView.findViewById<ImageView>(R.id.check1)
@@ -279,8 +275,6 @@ class MainActivity : ComponentActivity() {
         itemNormal.setOnClickListener(onClick)
 
         dialog.show()
-        val widthPx = resources.getDimensionPixelSize(R.dimen.dialog_width)
-        dialog.window?.setLayout(widthPx, android.view.ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
     private fun updateEpdModeSummary() {
@@ -309,8 +303,6 @@ class MainActivity : ComponentActivity() {
             .setView(dialogView)
             .setCancelable(true)
             .create()
-
-        dialog.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
 
         val item1 = dialogView.findViewById<RelativeLayout>(R.id.item1)
         val item3 = dialogView.findViewById<RelativeLayout>(R.id.item3)
@@ -376,8 +368,6 @@ class MainActivity : ComponentActivity() {
         itemOff.setOnClickListener(onClick)
 
         dialog.show()
-        val widthPx = resources.getDimensionPixelSize(R.dimen.dialog_width)
-        dialog.window?.setLayout(widthPx, android.view.ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
     private fun updateHomeLauncherSummary() {
@@ -396,7 +386,6 @@ class MainActivity : ComponentActivity() {
             .setCancelable(true)
             .create()
 
-        dialog.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
         dialogView.findViewById<TextView>(R.id.dialogTitle).setText(titleRes)
 
         val itemBack = dialogView.findViewById<RelativeLayout>(R.id.itemBack)
@@ -465,8 +454,6 @@ class MainActivity : ComponentActivity() {
         itemNone.setOnClickListener(onClick)
 
         dialog.show()
-        val widthPx = resources.getDimensionPixelSize(R.dimen.dialog_width)
-        dialog.window?.setLayout(widthPx, android.view.ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
     private fun updateF1ActionSummary() {
