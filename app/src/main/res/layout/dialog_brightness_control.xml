@@ -9,8 +9,6 @@
         android:id="@+id/overlayCard"
         android:layout_width="@dimen/dialog_width"
         android:layout_height="wrap_content"
-        android:paddingStart="@dimen/dialog_padding_horizontal"
-        android:paddingEnd="@dimen/dialog_padding_horizontal"
         android:paddingTop="@dimen/dialog_padding_top"
         android:paddingBottom="@dimen/dialog_padding_bottom">
 

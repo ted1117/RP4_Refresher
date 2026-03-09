@@ -23,9 +23,8 @@ class BrightnessActivity : ComponentActivity() {
         binder.bind(findViewById(android.R.id.content))
 
         window.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
-        val widthPx = resources.getDimensionPixelSize(R.dimen.dialog_width)
         window.setLayout(
-            widthPx,
+            WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT
         )
         window.setGravity(Gravity.CENTER)
