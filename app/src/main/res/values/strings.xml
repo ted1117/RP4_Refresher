@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">RP4 Refresh</string>
     <string name="accessibility_permission_request">Before using this app, allow Accessibility Service and root access.</string>
-    <string name="permission_setup_complete">Permission setup is complete. Only the LSPosed step remains.</string>
     <string name="open_accessibility_settings">Open Accessibility Service</string>
     <string name="request_root_access">Grant Root Access</string>
     <string name="permission_button_with_status">%1$s (%2$s)</string>
