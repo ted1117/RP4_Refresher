@@ -54,9 +54,11 @@
     <string name="quick_setting_title_page_refresh">페이지 새로고침</string>
     <string name="quick_setting_title_volume_key_remap">페이지 넘김 버튼 동작</string>
     <string name="quick_setting_title_page_turn_direction">페이지 넘김 방향</string>
+    <string name="quick_setting_title_screenshot">스크린샷</string>
     <string name="quick_setting_summary_current_app">현재 앱: %1$s</string>
     <string name="quick_setting_summary_current_app_blocked">리디 앱에서는 사용 안 함</string>
     <string name="quick_setting_summary_unavailable">사용 불가</string>
+    <string name="quick_setting_value_capture_now">지금 촬영</string>
     <string name="quick_setting_value_page_key">페이지 키</string>
     <string name="quick_setting_value_volume_key">볼륨 키</string>
     <string name="quick_setting_value_prev_next">이전\n다음</string>

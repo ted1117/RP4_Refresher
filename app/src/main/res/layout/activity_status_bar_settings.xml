@@ -199,6 +199,51 @@
         android:background="@color/dialog_divider_color" />
 
     <RelativeLayout
+        android:id="@+id/screenshotCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingVertical="@dimen/item_padding_vertical"
+        android:paddingHorizontal="?android:attr/dialogPreferredPadding">
+
+        <TextView
+            android:id="@+id/quickScreenshotTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/quick_setting_title_screenshot"
+            android:textColor="@color/text_primary"
+            android:textSize="@dimen/text_size_item"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvQuickScreenshotSummary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="8dp"
+            android:layout_toStartOf="@+id/quickScreenshotArrow"
+            android:text="@string/quick_setting_value_capture_now"
+            android:textColor="@color/text_secondary"
+            android:textSize="@dimen/text_size_item" />
+
+        <ImageView
+            android:id="@+id/quickScreenshotArrow"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_arrow_right" />
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:layout_marginHorizontal="?android:attr/dialogPreferredPadding"
+        android:background="@color/dialog_divider_color" />
+
+    <RelativeLayout
         android:id="@+id/pageKeySwapCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -3,6 +3,8 @@ package com.hidsquid.refreshpaper
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
@@ -79,6 +81,10 @@ class StatusBarSettingsActivity : ComponentActivity() {
             sleepModeTimerDialogController.show {
                 updateSleepModeTimerSummary()
             }
+        }
+
+        findViewById<View>(R.id.screenshotCard).setOnClickListener {
+            requestQuickSettingsScreenshot()
         }
 
         pageKeyRemapCard.setOnClickListener {
@@ -459,9 +465,28 @@ class StatusBarSettingsActivity : ComponentActivity() {
         sleepModeTimerSummary.text = sleepModeTimerDialogController.getSelectedTimerLabel()
     }
 
+    private fun requestQuickSettingsScreenshot() {
+        val appContext = applicationContext
+        window?.decorView?.alpha = 0f
+        finish()
+        overridePendingTransition(0, 0)
+
+        Handler(Looper.getMainLooper()).postDelayed(
+            {
+                appContext.sendBroadcast(
+                    Intent(KeyInputDetectingService.ACTION_TAKE_SCREENSHOT).apply {
+                        setPackage(appContext.packageName)
+                    }
+                )
+            },
+            QUICK_SETTINGS_SCREENSHOT_DELAY_MS
+        )
+    }
+
     companion object {
         const val EXTRA_TARGET_PACKAGE =
             "com.hidsquid.refreshpaper.extra.QUICK_SETTINGS_TARGET_PACKAGE"
         private const val BLOCKED_APP_PACKAGE_NAME = "com.ridi.paper"
+        private const val QUICK_SETTINGS_SCREENSHOT_DELAY_MS = 200L
     }
 }

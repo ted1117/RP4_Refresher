@@ -68,7 +68,8 @@ class KeyInputDetectingService : AccessibilityService() {
             onShowBrightness = actionLauncher::launchBrightnessDialog,
             onRp400GlobalButton = ::handleRp400GlobalButton,
             onRemapStateChanged = remapDaemonController::scheduleStateUpdate,
-            onOpenQuickSettings = actionLauncher::launchQuickSettingsDialog
+            onOpenQuickSettings = actionLauncher::launchQuickSettingsDialog,
+            onTakeScreenshot = ::triggerScreenshot
         )
         registerReceiver(
             serviceBroadcastReceiver,
@@ -78,6 +79,7 @@ class KeyInputDetectingService : AccessibilityService() {
                 addAction(ACTION_RP400_GLOBAL_BUTTON)
                 addAction(ACTION_PAGE_KEY_REMAP_STATE_CHANGED)
                 addAction(ACTION_OPEN_QUICK_SETTINGS)
+                addAction(ACTION_TAKE_SCREENSHOT)
             }
         )
     }
@@ -175,6 +177,8 @@ class KeyInputDetectingService : AccessibilityService() {
             "com.hidsquid.refreshpaper.ACTION_PAGE_KEY_REMAP_STATE_CHANGED"
         const val ACTION_OPEN_QUICK_SETTINGS: String =
             "com.hidsquid.refreshpaper.ACTION_OPEN_QUICK_SETTINGS"
+        const val ACTION_TAKE_SCREENSHOT: String =
+            "com.hidsquid.refreshpaper.ACTION_TAKE_SCREENSHOT"
         private const val BLOCKED_APP_PACKAGE_NAME = "com.ridi.paper"
     }
 }
