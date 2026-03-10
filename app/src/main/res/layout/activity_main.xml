@@ -26,6 +26,13 @@
                 android:visibility="gone"
                 tools:visibility="visible" />
             <include
+                android:id="@+id/layoutLsposedGuide"
+                layout="@layout/layout_lsposed_guide_state"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                tools:visibility="gone" />
+            <include
                 android:id="@+id/layoutSettings"
                 layout="@layout/layout_settings_state"
                 android:layout_width="match_parent"

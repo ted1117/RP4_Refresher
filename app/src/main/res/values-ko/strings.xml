@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="accessibility_permission_request">키 입력을 감지하기 위해 접근성 권한이 필요합니다.</string>
+    <string name="accessibility_permission_request">키 입력을 감지하기 위해 루트 권한과 접근성 권한이 필요합니다.\n루트 권한 대화창이 뜨면 \'모두 허용\'을 눌러주세요.</string>
     <string name="open_accessibility_settings">접근성</string>
+    <string name="request_root_access">루트 권한</string>
+    <string name="permission_button_with_status">%1$s (%2$s)</string>
+    <string name="permission_status_checking">확인 중</string>
+    <string name="permission_status_done">완료</string>
+    <string name="permission_status_needed">필요</string>
+    <string name="root_access_granted">루트 권한이 확인되었습니다.</string>
+    <string name="root_access_denied">루트 권한 요청에 실패했습니다.</string>
+    <string name="accessibility_enabled_by_root">루트로 접근성 권한을 활성화했습니다.</string>
+    <string name="accessibility_enable_failed">루트로 접근성 권한 활성화에 실패했습니다.</string>
+    <string name="lsposed_not_found">LSPosed 매니저를 찾을 수 없습니다.</string>
+    <string name="lsposed_ready_title">다음 단계</string>
+    <string name="lsposed_ready_message">LSPosed 매니저에서 아래 4가지를 순서대로 진행해 주세요.\n\n1. 리페4 새로고침 모듈을 활성화\n2. \'시스템 프레임워크\'와 \'시스템 UI\'를 체크\n3. RP4Posed 모듈을 비활성화\n4. 재부팅</string>
+    <string name="open_lsposed_manager">LSPosed 매니저 열기</string>
+    <string name="later">나중에</string>
     <string name="app_name">리페4 새로고침</string>
     <string name="accessibility_service_description">리페4 새로고침을 사용하려면 접근성 권한을 부여해야 합니다</string>
     <string name="open_package_usage_stats_settings">사용 기록 액세스</string>
