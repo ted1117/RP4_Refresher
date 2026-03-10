@@ -139,6 +139,8 @@
     <string name="labs_page_key_swap_apps_dialog_title">반전 적용 앱 선택</string>
     <string name="labs_page_key_tap_apps_empty">선택 가능한 앱이 없습니다</string>
     <string name="labs_page_key_tap_apps_save_failed">적용 앱 저장에 실패했습니다</string>
+    <string name="labs_touch_refresh_lsposed_notice_title">LSPosed 설정 안내</string>
+    <string name="labs_touch_refresh_lsposed_notice_message">터치 기반 리프레시를 사용하려면 LSPosed에서 이 기능을 적용할 앱을 체크해야 합니다.</string>
     <string name="labs_power_page_screenshot_title">스크린샷 단축키</string>
     <string name="labs_power_page_screenshot_description">전원 + 페이지 넘김 하단키로 스크린샷 촬영</string>
     <string name="labs_power_page_screenshot_save_failed">스크린샷 후크 설정 저장에 실패했습니다</string>

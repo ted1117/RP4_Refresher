@@ -139,6 +139,8 @@
     <string name="labs_page_key_swap_apps_dialog_title">Select swap target apps</string>
     <string name="labs_page_key_tap_apps_empty">No selectable apps found</string>
     <string name="labs_page_key_tap_apps_save_failed">Failed to save target apps</string>
+    <string name="labs_touch_refresh_lsposed_notice_title">LSPosed Setup</string>
+    <string name="labs_touch_refresh_lsposed_notice_message">To use touch-based refresh, check the target apps for this feature in LSPosed.</string>
     <string name="labs_power_page_screenshot_title">Power + Page Down Screenshot</string>
     <string name="labs_power_page_screenshot_description">Enable screenshot hook for Power + Page Down chord</string>
     <string name="labs_power_page_screenshot_save_failed">Failed to save screenshot hook setting</string>

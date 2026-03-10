@@ -45,7 +45,7 @@ class SettingsRepository(
     }
 
     fun isPowerPageScreenshotEnabled(): Boolean {
-        return prefs.getBoolean(ModulePrefs.KEY_POWER_PAGE_SCREENSHOT_ENABLED, true)
+        return prefs.getBoolean(ModulePrefs.KEY_POWER_PAGE_SCREENSHOT_ENABLED, false)
     }
 
     fun setPowerPageScreenshotEnabled(enabled: Boolean): Boolean {

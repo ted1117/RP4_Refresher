@@ -45,9 +45,11 @@ class LabsActivity : Activity() {
 
     private fun loadSettings() {
         val autoEnabled = settingsRepository.isAutoRefreshEnabled()
+        binding.touchRefreshSwitch.setOnCheckedChangeListener(null)
         binding.touchRefreshSwitch.isChecked = settingsRepository.isTouchRefreshEnabled()
         binding.touchRefreshSwitch.isEnabled = autoEnabled
         binding.touchRefreshSwitch.alpha = if (autoEnabled) 1f else 0.5f
+        attachTouchRefreshListener()
         binding.powerPageScreenshotSwitch.isChecked = settingsRepository.isPowerPageScreenshotEnabled()
         binding.screenshotToastSwitch.isChecked = settingsRepository.isScreenshotToastEnabled()
     }
@@ -60,10 +62,6 @@ class LabsActivity : Activity() {
                 return@setOnClickListener
             }
             binding.touchRefreshSwitch.toggle()
-        }
-
-        binding.touchRefreshSwitch.setOnCheckedChangeListener { _, isChecked ->
-            settingsRepository.setTouchRefreshEnabled(isChecked)
         }
 
         binding.pageKeyTapCard.setOnClickListener {
@@ -119,6 +117,99 @@ class LabsActivity : Activity() {
                 loadSettings()
             }
         }
+    }
+
+    private fun attachTouchRefreshListener() {
+        binding.touchRefreshSwitch.setOnCheckedChangeListener { _, isChecked ->
+            if (!isChecked) {
+                settingsRepository.setTouchRefreshEnabled(false)
+                return@setOnCheckedChangeListener
+            }
+
+            if (isTouchRefreshLsposedAcknowledged()) {
+                settingsRepository.setTouchRefreshEnabled(true)
+                return@setOnCheckedChangeListener
+            }
+
+            binding.touchRefreshSwitch.setOnCheckedChangeListener(null)
+            binding.touchRefreshSwitch.isChecked = false
+            attachTouchRefreshListener()
+            showTouchRefreshLsposedNoticeDialog()
+        }
+    }
+
+    private fun showTouchRefreshLsposedNoticeDialog() {
+        AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Light_Dialog_Alert)
+            .setTitle(R.string.labs_touch_refresh_lsposed_notice_title)
+            .setMessage(R.string.labs_touch_refresh_lsposed_notice_message)
+            .setPositiveButton(R.string.open_lsposed_manager) { dialog, _ ->
+                setTouchRefreshLsposedAcknowledged(true)
+                settingsRepository.setTouchRefreshEnabled(true)
+                binding.touchRefreshSwitch.setOnCheckedChangeListener(null)
+                binding.touchRefreshSwitch.isChecked = true
+                attachTouchRefreshListener()
+                openLsposedManager()
+                dialog.dismiss()
+            }
+            .setNegativeButton(android.R.string.cancel) { dialog, _ ->
+                settingsRepository.setTouchRefreshEnabled(false)
+                binding.touchRefreshSwitch.setOnCheckedChangeListener(null)
+                binding.touchRefreshSwitch.isChecked = false
+                attachTouchRefreshListener()
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun isTouchRefreshLsposedAcknowledged(): Boolean {
+        return prefs.getBoolean(PREF_KEY_TOUCH_REFRESH_LSPOSED_ACKNOWLEDGED, false) ||
+            prefs.getBoolean(PREF_KEY_SKIP_TOUCH_REFRESH_LSPOSED_NOTICE_LEGACY, false)
+    }
+
+    private fun setTouchRefreshLsposedAcknowledged(acknowledged: Boolean) {
+        prefs.edit()
+            .putBoolean(PREF_KEY_TOUCH_REFRESH_LSPOSED_ACKNOWLEDGED, acknowledged)
+            .putBoolean(PREF_KEY_SKIP_TOUCH_REFRESH_LSPOSED_NOTICE_LEGACY, acknowledged)
+            .apply()
+    }
+
+    private fun openLsposedManager() {
+        Thread {
+            val openedByRoot = runRootCommand(
+                "am start -c $LSPOSED_MANAGER_LAUNCH_CATEGORY $LSPOSED_MANAGER_SHELL_COMPONENT"
+            )
+
+            runOnUiThread {
+                if (openedByRoot) {
+                    return@runOnUiThread
+                }
+
+                val intent = packageManager.getLaunchIntentForPackage(LSPOSED_MANAGER_PACKAGE)
+                if (intent == null) {
+                    Toast.makeText(this, R.string.lsposed_not_found, Toast.LENGTH_SHORT).show()
+                    return@runOnUiThread
+                }
+
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                runCatching {
+                    startActivity(intent)
+                }.onFailure {
+                    Toast.makeText(this, R.string.lsposed_not_found, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }.start()
+    }
+
+    private fun runRootCommand(command: String): Boolean {
+        return runCatching {
+            val process = ProcessBuilder("su", "-c", command).start()
+            val finished = process.waitFor(ROOT_COMMAND_TIMEOUT_MS, java.util.concurrent.TimeUnit.MILLISECONDS)
+            if (!finished) {
+                process.destroyForcibly()
+                return@runCatching false
+            }
+            process.exitValue() == 0
+        }.getOrDefault(false)
     }
 
     private fun showPageKeyAppsDialog(
@@ -243,6 +334,15 @@ class LabsActivity : Activity() {
     companion object {
         private const val PREFS_NAME = "LabsPrefs"
         private const val PREF_KEY_SKIP_WARNING = "skip_labs_warning"
+        private const val PREF_KEY_TOUCH_REFRESH_LSPOSED_ACKNOWLEDGED =
+            "touch_refresh_lsposed_acknowledged"
+        private const val PREF_KEY_SKIP_TOUCH_REFRESH_LSPOSED_NOTICE_LEGACY =
+            "skip_touch_refresh_lsposed_notice"
+        private const val ROOT_COMMAND_TIMEOUT_MS = 2_500L
+        private const val LSPOSED_MANAGER_PACKAGE = "org.lsposed.manager"
+        private const val LSPOSED_MANAGER_LAUNCH_CATEGORY = "org.lsposed.manager.LAUNCH_MANAGER"
+        private const val LSPOSED_MANAGER_SHELL_COMPONENT =
+            "com.android.shell/.BugreportWarningActivity"
     }
 
     private data class PageKeyTapTargetApp(
