@@ -44,16 +44,6 @@ class SettingsRepository(
             .commit()
     }
 
-    fun isPowerPageScreenshotEnabled(): Boolean {
-        return prefs.getBoolean(ModulePrefs.KEY_POWER_PAGE_SCREENSHOT_ENABLED, false)
-    }
-
-    fun setPowerPageScreenshotEnabled(enabled: Boolean): Boolean {
-        return prefs.edit()
-            .putBoolean(ModulePrefs.KEY_POWER_PAGE_SCREENSHOT_ENABLED, enabled)
-            .commit()
-    }
-
     fun isScreenshotToastEnabled(): Boolean {
         return prefs.getBoolean(ModulePrefs.KEY_SCREENSHOT_TOAST_ENABLED, true)
     }

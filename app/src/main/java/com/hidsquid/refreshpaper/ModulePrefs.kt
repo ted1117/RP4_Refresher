@@ -8,7 +8,6 @@ object ModulePrefs {
     const val KEY_PAGES_PER_REFRESH = "rp_pages_per_refresh"
     const val KEY_TOUCH_REFRESH_ENABLED = "rp_touch_refresh_enabled"
     const val KEY_SCREENSHOT_CHORD_ENABLED = "rp_f1_page_screenshot_chord_enabled"
-    const val KEY_POWER_PAGE_SCREENSHOT_ENABLED = "rp_power_page_screenshot_chord_enabled"
     const val KEY_SCREENSHOT_TOAST_ENABLED = "rp_screenshot_toast_enabled"
     const val KEY_PAGE_KEY_TAP_ENABLED = "rp_page_key_tap_enabled"
     const val KEY_PAGE_KEY_TAP_TARGET_PACKAGES = "rp_page_key_tap_target_packages"
