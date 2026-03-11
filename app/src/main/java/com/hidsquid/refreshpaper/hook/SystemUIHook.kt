@@ -1,12 +1,12 @@
 package com.hidsquid.refreshpaper.hook
 
-import android.app.ActivityManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.UserHandle
 import android.view.View
 import android.widget.ImageButton
 import android.widget.Toast
@@ -20,12 +20,12 @@ object SystemUIHook {
 
     private const val PACKAGE_REFRESH_PAPER = "com.hidsquid.refreshpaper"
     private const val PACKAGE_RIDI_PAPER = "com.ridi.paper"
-    private const val ACTION_OPEN_QUICK_SETTINGS =
-        "com.hidsquid.refreshpaper.ACTION_OPEN_QUICK_SETTINGS"
-    private const val CLASS_RIDI_SETTINGS_ACTIVITY =
-        "com.ridi.books.viewer.main.activity.SettingsActivity"
-    private const val CLASS_RIDI_BRIGHTNESS_ACTIVITY =
-        "com.ridi.books.viewer.common.activity.ExtraBrightnessActivity"
+    private const val CLASS_STATUS_BAR_SETTINGS_ACTIVITY =
+        "com.hidsquid.refreshpaper.StatusBarSettingsActivity"
+    private const val CLASS_BRIGHTNESS_ACTIVITY =
+        "com.hidsquid.refreshpaper.brightness.BrightnessActivity"
+    private const val ACTION_RIDI_SHOW_SETTINGS = "com.ridi.paper.ACTION.SHOW_SETTINGS"
+    private const val ACTION_RIDI_SHOW_BRIGHTNESS = "com.ridi.paper.ACTION.SHOW_BRIGHTNESS"
 
     private val DEFAULT_HOME_COMPONENT = ComponentName(
         "cn.modificator.launcher",
@@ -72,19 +72,6 @@ object SystemUIHook {
                 .field { name = "ridi_status_bar_button_brightness" }.get().int()
 
             "com.android.systemui.statusbar.ridi.RidiStatusBarFragment".toClass().apply {
-
-                method { name = "updateSetupcomplete" }.hook {
-                    after {
-                        val homeButton = this.instanceClass!!.field { name = "mImageButtonHome" }.get().any() as ImageButton
-                        val backButton = this.instanceClass!!.field { name = "mImageButtonBack" }.get().any() as ImageButton
-                        val settingsButton = this.instanceClass!!.field { name = "mImageButtonSettings" }.get().any() as ImageButton
-
-                        homeButton.isEnabled = true
-                        backButton.isEnabled = true
-                        settingsButton.isEnabled = true
-                    }
-                }
-
                 method {
                     name = "onViewCreated"
                     param(View::class.java, Bundle::class.java)
@@ -94,40 +81,29 @@ object SystemUIHook {
                         val homeBtn = view.findViewById<ImageButton>(ridiHomeButtonId)
                         val settingsBtn = view.findViewById<ImageButton>(ridiSettingsButtonId)
                         val brightnessBtn = view.findViewById<ImageButton>(ridiBrightnessButtonId)
+                        val userHandleAll = "android.os.UserHandle".toClass().field {
+                            name = "ALL"
+                        }.get().any() as UserHandle
+                        val isRidiForeground = {
+                            val isForegroundApp =
+                                "com.android.systemui.bubbles.BubbleController".toClass()
+                                    .getMethod(
+                                        "isForegroundApp",
+                                        Context::class.java,
+                                        String::class.java
+                                    )
 
-                        val getTopActivityComponent = {
-                            try {
-                                val am = appContext?.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
-                                am?.getRunningTasks(1)?.firstOrNull()?.topActivity
-                            } catch (e: Throwable) {
-                                YLog.error("Failed to inspect top activity: ${e.message}")
-                                null
-                            }
+                            runCatching {
+                                isForegroundApp.invoke(
+                                    null,
+                                    appContext,
+                                    PACKAGE_RIDI_PAPER
+                                ) as? Boolean ?: false
+                            }.getOrDefault(false)
                         }
 
-                        val isTargetActivityOnTop = { pkg: String, cls: String ->
-                            getTopActivityComponent() == ComponentName(pkg, cls)
-                        }
-
-                        val getTopTaskPackages = {
+                        fun launchModuleFeature(pkg: String, cls: String) {
                             try {
-                                val am = appContext?.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager
-                                am?.getRunningTasks(2)
-                                    ?.mapNotNull { it.topActivity?.packageName }
-                                    ?: emptyList()
-                            } catch (e: Throwable) {
-                                YLog.error("Failed to inspect running tasks: ${e.message}")
-                                emptyList()
-                            }
-                        }
-
-                        fun launchIsolatedActivity(pkg: String, cls: String) {
-                            try {
-                                if (isTargetActivityOnTop(pkg, cls)) {
-                                    YLog.debug("Skip launch, already on top: $cls")
-                                    return
-                                }
-
                                 val intent = Intent().apply {
                                     component = ComponentName(pkg, cls)
                                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -142,24 +118,8 @@ object SystemUIHook {
                             }
                         }
 
-                        fun requestQuickSettingsDialog() {
-                            try {
-                                val intent = Intent(ACTION_OPEN_QUICK_SETTINGS).apply {
-                                    setPackage(PACKAGE_REFRESH_PAPER)
-                                }
-                                appContext?.sendBroadcast(intent)
-                                YLog.debug("Requested quick settings dialog via broadcast")
-                            } catch (e: Exception) {
-                                YLog.error("Failed to request quick settings dialog: ${e.message}")
-                            }
-                        }
-
-                        val isRidiForeground = {
-                            val topPackages = getTopTaskPackages()
-                            val topPackage = topPackages.firstOrNull()
-                            val secondPackage = topPackages.getOrNull(1)
-                            topPackage == PACKAGE_RIDI_PAPER ||
-                                (topPackage == "com.android.systemui" && secondPackage == PACKAGE_RIDI_PAPER)
+                        fun launchRidiFeature(intentString: String) {
+                            appContext?.sendBroadcastAsUser(Intent(intentString), userHandleAll)
                         }
 
                         homeBtn.setOnClickListener {
@@ -194,20 +154,25 @@ object SystemUIHook {
                         settingsBtn.setOnClickListener {
                             if (isRidiForeground()) {
                                 YLog.debug("Ridi foreground detected, fallback to Ridi settings")
-                                launchIsolatedActivity(
-                                    PACKAGE_RIDI_PAPER,
-                                    CLASS_RIDI_SETTINGS_ACTIVITY
-                                )
+                                launchRidiFeature(ACTION_RIDI_SHOW_SETTINGS)
                             } else {
-                                requestQuickSettingsDialog()
+                                launchModuleFeature(
+                                    PACKAGE_REFRESH_PAPER,
+                                    CLASS_STATUS_BAR_SETTINGS_ACTIVITY
+                                )
                             }
                         }
 
                         brightnessBtn.setOnClickListener {
-                            launchIsolatedActivity(
-                                PACKAGE_RIDI_PAPER,
-                                CLASS_RIDI_BRIGHTNESS_ACTIVITY
-                            )
+                            if (isRidiForeground()) {
+                                YLog.debug("Ridi foreground detected, fallback to Ridi brightness")
+                                launchRidiFeature(ACTION_RIDI_SHOW_BRIGHTNESS)
+                            } else {
+                                launchModuleFeature(
+                                    PACKAGE_REFRESH_PAPER,
+                                    CLASS_BRIGHTNESS_ACTIVITY
+                                )
+                            }
                         }
                     }
                 }
