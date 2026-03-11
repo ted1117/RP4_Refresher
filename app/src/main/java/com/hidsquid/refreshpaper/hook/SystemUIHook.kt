@@ -14,16 +14,15 @@ import com.highcapable.yukihookapi.hook.factory.field
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
+import com.hidsquid.refreshpaper.BuildConfig
 import com.hidsquid.refreshpaper.ModulePrefs
 
 object SystemUIHook {
 
-    private const val PACKAGE_REFRESH_PAPER = "com.hidsquid.refreshpaper"
+    private val PACKAGE_REFRESH_PAPER = BuildConfig.APPLICATION_ID
     private const val PACKAGE_RIDI_PAPER = "com.ridi.paper"
-    private const val CLASS_STATUS_BAR_SETTINGS_ACTIVITY =
-        "com.hidsquid.refreshpaper.StatusBarSettingsActivity"
-    private const val CLASS_BRIGHTNESS_ACTIVITY =
-        "com.hidsquid.refreshpaper.brightness.BrightnessActivity"
+    private val CLASS_BRIGHTNESS_ACTIVITY = "$PACKAGE_REFRESH_PAPER.brightness.BrightnessActivity"
+    private val ACTION_OPEN_QUICK_SETTINGS = "$PACKAGE_REFRESH_PAPER.ACTION_OPEN_QUICK_SETTINGS"
     private const val ACTION_RIDI_SHOW_SETTINGS = "com.ridi.paper.ACTION.SHOW_SETTINGS"
     private const val ACTION_RIDI_SHOW_BRIGHTNESS = "com.ridi.paper.ACTION.SHOW_BRIGHTNESS"
 
@@ -122,6 +121,13 @@ object SystemUIHook {
                             appContext?.sendBroadcastAsUser(Intent(intentString), userHandleAll)
                         }
 
+                        fun requestQuickSettingsDialog() {
+                            val intent = Intent(ACTION_OPEN_QUICK_SETTINGS).apply {
+                                `package` = PACKAGE_REFRESH_PAPER
+                            }
+                            appContext?.sendBroadcastAsUser(intent, userHandleAll)
+                        }
+
                         homeBtn.setOnClickListener {
                             try {
                                 val configuredHome = HookPrefs.getString(
@@ -156,10 +162,7 @@ object SystemUIHook {
                                 YLog.debug("Ridi foreground detected, fallback to Ridi settings")
                                 launchRidiFeature(ACTION_RIDI_SHOW_SETTINGS)
                             } else {
-                                launchModuleFeature(
-                                    PACKAGE_REFRESH_PAPER,
-                                    CLASS_STATUS_BAR_SETTINGS_ACTIVITY
-                                )
+                                requestQuickSettingsDialog()
                             }
                         }
 

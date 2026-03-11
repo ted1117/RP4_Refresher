@@ -211,7 +211,8 @@ class KeyInputServiceBroadcastReceiver(
     private val onShowBrightness: () -> Unit,
     private val onRp400GlobalButton: (Intent) -> Unit,
     private val onRemapStateChanged: () -> Unit,
-    private val onTakeScreenshot: () -> Unit
+    private val onTakeScreenshot: () -> Unit,
+    private val onOpenQuickSettings: () -> Unit
 ) : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         when (intent?.action) {
@@ -220,6 +221,7 @@ class KeyInputServiceBroadcastReceiver(
             KeyInputDetectingService.ACTION_RP400_GLOBAL_BUTTON -> onRp400GlobalButton(intent)
             KeyInputDetectingService.ACTION_PAGE_KEY_REMAP_STATE_CHANGED -> onRemapStateChanged()
             KeyInputDetectingService.ACTION_TAKE_SCREENSHOT -> onTakeScreenshot()
+            KeyInputDetectingService.ACTION_OPEN_QUICK_SETTINGS -> onOpenQuickSettings()
         }
     }
 }
