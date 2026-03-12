@@ -72,8 +72,6 @@
     <!-- Screenshot Feature -->
     <string name="setting_title_screenshot_feature">Enable Screenshot</string>
     <string name="setting_desc_screenshot_feature">Allow taking screenshots</string>
-    <string name="setting_title_screenshot_chord">Screenshot Shortcut</string>
-    <string name="setting_desc_screenshot_chord">Take screenshot with accessibility key combo</string>
     <string name="toast_screenshot_captured">Screenshot captured</string>
 
     <!-- Home Launcher -->
