@@ -42,7 +42,9 @@
     <string name="settings_tab_security_system_advanced">스크린샷 · 시스템 · 고급</string>
     <string name="settings_section_refresh">새로고침</string>
     <string name="settings_section_display">디스플레이</string>
+    <string name="settings_section_button_action">버튼 동작</string>
     <string name="settings_section_quick_button">퀵 버튼</string>
+    <string name="button_action_section_page_buttons">페이지 버튼</string>
     <string name="settings_section_security">스크린샷</string>
     <string name="settings_section_system">시스템</string>
     <string name="settings_section_advanced">고급</string>
@@ -83,6 +85,10 @@
     <string name="toast_home_launcher_save_failed">런처 설정 저장에 실패했습니다</string>
     <string name="setting_title_f1_action">짧게 눌렀을 때</string>
     <string name="setting_title_f1_long_action">길게 눌렀을 때</string>
+    <string name="setting_title_page_up_long_action">페이지 업 길게 눌렀을 때</string>
+    <string name="setting_title_page_down_long_action">페이지 다운 길게 눌렀을 때</string>
+    <string name="setting_title_button_action_assignment">버튼 동작 할당</string>
+    <string name="setting_desc_button_action_assignment">퀵/페이지 버튼 동작을 설정합니다</string>
     <string name="setting_value_f1_action_back">뒤로가기</string>
     <string name="setting_value_f1_action_screenshot">스크린샷</string>
     <string name="setting_value_f1_action_quick_settings">간단 설정</string>
@@ -94,6 +100,10 @@
     <string name="dialog_title_f1_action">퀵 버튼 동작 선택</string>
     <string name="dialog_title_f1_short_action">퀵 버튼 짧게 누름 동작</string>
     <string name="dialog_title_f1_long_action">퀵 버튼 길게 누름 동작</string>
+    <string name="dialog_title_page_up_long_action">페이지 업 길게 누름 동작</string>
+    <string name="dialog_title_page_down_long_action">페이지 다운 길게 누름 동작</string>
+    <string name="button_action_settings_title">버튼 동작 할당</string>
+    <string name="button_action_save_failed">버튼 동작 설정 저장에 실패했습니다</string>
     <string name="setting_title_sleep_mode_timer">슬립 모드 타이머</string>
     <string name="setting_value_sleep_mode_timer_default">1분</string>
     <string name="dialog_title_sleep_mode_timer">슬립 모드 타이머 설정</string>

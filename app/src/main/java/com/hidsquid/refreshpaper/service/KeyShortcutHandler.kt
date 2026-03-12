@@ -17,6 +17,7 @@ class KeyShortcutHandler(
 
     private var f1KeyTime = 0L
     private var pageDownKeyTime = 0L
+    private var pageDownChordWindowMs = SCREENSHOT_CHORD_DELAY_MS
     private var consumedF1Down = false
     private var consumedPageDownDown = false
     private var skipNextF1Action = false
@@ -26,18 +27,24 @@ class KeyShortcutHandler(
         triggerCount = count.coerceAtLeast(1)
     }
 
-    fun handleScreenshotChord(event: KeyEvent): Boolean {
+    fun handleScreenshotChord(
+        event: KeyEvent,
+        canonicalKeyCode: Int = event.keyCode,
+        customChordWindowMs: Long? = null
+    ): Boolean {
         if (!settingsRepository.isScreenshotChordEnabled()) {
             return false
         }
 
-        when (event.keyCode) {
+        when (canonicalKeyCode) {
             KeyEvent.KEYCODE_F1 -> {
                 when (event.action) {
                     KeyEvent.ACTION_DOWN -> {
                         f1KeyTime = event.eventTime
-                        if (pageDownKeyTime > 0L && abs(f1KeyTime - pageDownKeyTime) <= SCREENSHOT_CHORD_DELAY_MS) {
+                        if (pageDownKeyTime > 0L &&
+                            abs(f1KeyTime - pageDownKeyTime) <= pageDownChordWindowMs) {
                             consumedF1Down = true
+                            consumedPageDownDown = true
                             skipNextF1Action = true
                             triggerScreenshot()
                             return true
@@ -58,7 +65,10 @@ class KeyShortcutHandler(
                 when (event.action) {
                     KeyEvent.ACTION_DOWN -> {
                         pageDownKeyTime = event.eventTime
-                        if (f1KeyTime > 0L && abs(pageDownKeyTime - f1KeyTime) <= SCREENSHOT_CHORD_DELAY_MS) {
+                        pageDownChordWindowMs = customChordWindowMs ?: SCREENSHOT_CHORD_DELAY_MS
+                        if (f1KeyTime > 0L &&
+                            abs(pageDownKeyTime - f1KeyTime) <= pageDownChordWindowMs) {
+                            consumedF1Down = true
                             consumedPageDownDown = true
                             skipNextF1Action = true
                             triggerScreenshot()
@@ -69,6 +79,7 @@ class KeyShortcutHandler(
                     }
                     KeyEvent.ACTION_UP -> {
                         pageDownKeyTime = 0L
+                        pageDownChordWindowMs = SCREENSHOT_CHORD_DELAY_MS
                         val consume = consumedPageDownDown
                         consumedPageDownDown = false
                         return consume
@@ -109,6 +120,10 @@ class KeyShortcutHandler(
         )
 
         if (isLongPress) {
+            if (skipNextF1Action) {
+                skipNextF1Action = false
+                return
+            }
             handleF1LongPress()
             return
         }
