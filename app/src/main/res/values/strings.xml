@@ -95,10 +95,8 @@
     <string name="setting_value_f1_action_home_launcher">Home Launcher</string>
     <string name="setting_value_f1_action_none">None</string>
     <string name="dialog_title_f1_action">Choose Quick Button action</string>
-    <string name="dialog_title_f1_short_action">Choose short press action</string>
-    <string name="dialog_title_f1_long_action">Choose long press action</string>
-    <string name="dialog_title_page_up_long_action">Choose Page Up long press action</string>
-    <string name="dialog_title_page_down_long_action">Choose Page Down long press action</string>
+    <string name="dialog_title_page_up_long_action">Choose Page Up action</string>
+    <string name="dialog_title_page_down_long_action">Choose Page Down action</string>
     <string name="button_action_settings_title">Button Actions</string>
     <string name="button_action_save_failed">Failed to save button action setting</string>
     <string name="setting_title_sleep_mode_timer">Sleep mode timer</string>

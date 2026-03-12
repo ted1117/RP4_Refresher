@@ -41,7 +41,7 @@ class ButtonActionSettingsActivity : Activity() {
         binding.quickButtonShortCard.setOnClickListener {
             showF1ActionDialog(
                 currentAction = settingsRepository.getF1Action(),
-                titleRes = R.string.dialog_title_f1_short_action
+                titleRes = R.string.dialog_title_f1_action
             ) { selectedAction ->
                 if (!settingsRepository.setF1Action(selectedAction)) {
                     showSaveFailedToast()
@@ -54,7 +54,7 @@ class ButtonActionSettingsActivity : Activity() {
         binding.quickButtonLongCard.setOnClickListener {
             showF1ActionDialog(
                 currentAction = settingsRepository.getF1LongPressAction(settingsRepository.getF1Action()),
-                titleRes = R.string.dialog_title_f1_long_action
+                titleRes = R.string.dialog_title_f1_action
             ) { selectedAction ->
                 if (!settingsRepository.setF1LongPressAction(selectedAction)) {
                     showSaveFailedToast()
