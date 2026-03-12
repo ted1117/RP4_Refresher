@@ -73,8 +73,6 @@
     <!-- Screenshot Feature -->
     <string name="setting_title_screenshot_feature">스크린샷</string>
     <string name="setting_desc_screenshot_feature">스크린샷 방지 우회</string>
-    <string name="setting_title_screenshot_chord">스크린샷 단축키</string>
-    <string name="setting_desc_screenshot_chord">퀵 버튼 + 페이지 넘김 하단 키 조합으로 스크린샷 촬영</string>
     <string name="toast_screenshot_captured">스크린샷 촬영</string>
 
     <!-- Home Launcher -->

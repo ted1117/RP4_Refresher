@@ -34,16 +34,6 @@ class SettingsRepository(
             .commit()
     }
 
-    fun isScreenshotChordEnabled(): Boolean {
-        return prefs.getBoolean(ModulePrefs.KEY_SCREENSHOT_CHORD_ENABLED, true)
-    }
-
-    fun setScreenshotChordEnabled(enabled: Boolean) {
-        prefs.edit()
-            .putBoolean(ModulePrefs.KEY_SCREENSHOT_CHORD_ENABLED, enabled)
-            .commit()
-    }
-
     fun isScreenshotToastEnabled(): Boolean {
         return prefs.getBoolean(ModulePrefs.KEY_SCREENSHOT_TOAST_ENABLED, true)
     }
