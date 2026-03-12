@@ -102,8 +102,6 @@ class MainActivity : ComponentActivity() {
         updateSummaryText()
         updateEpdModeSummary()
         updateHomeLauncherSummary()
-        updateF1ActionSummary()
-        updateF1LongActionSummary()
         updateSleepModeTimerSummary()
         updateShutdownTimerSummary()
     }
@@ -175,24 +173,8 @@ class MainActivity : ComponentActivity() {
             homeLauncherDialogController.show { updateHomeLauncherSummary() }
         }
 
-        layout.f1ActionCard.setOnClickListener {
-            showF1ActionDialog(
-                currentAction = settingsRepository.getF1Action(),
-                titleRes = R.string.dialog_title_f1_short_action
-            ) { selectedAction ->
-                settingsRepository.setF1Action(selectedAction)
-                updateF1ActionSummary()
-            }
-        }
-
-        layout.f1LongActionCard.setOnClickListener {
-            showF1ActionDialog(
-                currentAction = settingsRepository.getF1LongPressAction(settingsRepository.getF1Action()),
-                titleRes = R.string.dialog_title_f1_long_action
-            ) { selectedAction ->
-                settingsRepository.setF1LongPressAction(selectedAction)
-                updateF1LongActionSummary()
-            }
+        layout.buttonActionAssignmentCard.setOnClickListener {
+            startActivity(Intent(this, ButtonActionSettingsActivity::class.java))
         }
 
         layout.sleepModeTimerCard.setOnClickListener {
@@ -533,115 +515,6 @@ class MainActivity : ComponentActivity() {
     private fun updateHomeLauncherSummary() {
         val selectedLabel = homeLauncherDialogController.getSelectedLauncherLabel()
         binding.layoutSettings.tvHomeLauncherSetting.text = selectedLabel
-    }
-
-    private fun showF1ActionDialog(
-        currentAction: Int,
-        titleRes: Int,
-        onSelected: (Int) -> Unit
-    ) {
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_f1_action, null)
-        val dialog = AlertDialog.Builder(this)
-            .setView(dialogView)
-            .setCancelable(true)
-            .create()
-
-        dialogView.findViewById<TextView>(R.id.dialogTitle).setText(titleRes)
-
-        val itemBack = dialogView.findViewById<RelativeLayout>(R.id.itemBack)
-        val itemScreenshot = dialogView.findViewById<RelativeLayout>(R.id.itemScreenshot)
-        val itemQuickSettings = dialogView.findViewById<RelativeLayout>(R.id.itemQuickSettings)
-        val itemBrightness = dialogView.findViewById<RelativeLayout>(R.id.itemBrightness)
-        val itemManualRefresh = dialogView.findViewById<RelativeLayout>(R.id.itemManualRefresh)
-        val itemPageKeySwap = dialogView.findViewById<RelativeLayout>(R.id.itemPageKeySwap)
-        val itemHomeLauncher = dialogView.findViewById<RelativeLayout>(R.id.itemHomeLauncher)
-        val itemNone = dialogView.findViewById<RelativeLayout>(R.id.itemNone)
-
-        val checkBack = dialogView.findViewById<ImageView>(R.id.checkBack)
-        val checkScreenshot = dialogView.findViewById<ImageView>(R.id.checkScreenshot)
-        val checkQuickSettings = dialogView.findViewById<ImageView>(R.id.checkQuickSettings)
-        val checkBrightness = dialogView.findViewById<ImageView>(R.id.checkBrightness)
-        val checkManualRefresh = dialogView.findViewById<ImageView>(R.id.checkManualRefresh)
-        val checkPageKeySwap = dialogView.findViewById<ImageView>(R.id.checkPageKeySwap)
-        val checkHomeLauncher = dialogView.findViewById<ImageView>(R.id.checkHomeLauncher)
-        val checkNone = dialogView.findViewById<ImageView>(R.id.checkNone)
-
-        fun setChecked(selectedAction: Int) {
-            checkBack.visibility =
-                if (selectedAction == SettingsRepository.F1_ACTION_BACK) View.VISIBLE else View.GONE
-            checkScreenshot.visibility =
-                if (selectedAction == SettingsRepository.F1_ACTION_SCREENSHOT) View.VISIBLE else View.GONE
-            checkQuickSettings.visibility =
-                if (selectedAction == SettingsRepository.F1_ACTION_QUICK_SETTINGS) View.VISIBLE else View.GONE
-            checkBrightness.visibility =
-                if (selectedAction == SettingsRepository.F1_ACTION_BRIGHTNESS) View.VISIBLE else View.GONE
-            checkManualRefresh.visibility =
-                if (selectedAction == SettingsRepository.F1_ACTION_MANUAL_REFRESH) View.VISIBLE else View.GONE
-            checkPageKeySwap.visibility =
-                if (selectedAction == SettingsRepository.F1_ACTION_PAGE_KEY_SWAP) View.VISIBLE else View.GONE
-            checkHomeLauncher.visibility =
-                if (selectedAction == SettingsRepository.F1_ACTION_HOME_LAUNCHER) View.VISIBLE else View.GONE
-            checkNone.visibility =
-                if (selectedAction == SettingsRepository.F1_ACTION_NONE) View.VISIBLE else View.GONE
-        }
-
-        setChecked(currentAction)
-
-        val onClick = View.OnClickListener { view ->
-            val selectedAction = when (view.id) {
-                R.id.itemBack -> SettingsRepository.F1_ACTION_BACK
-                R.id.itemScreenshot -> SettingsRepository.F1_ACTION_SCREENSHOT
-                R.id.itemQuickSettings -> SettingsRepository.F1_ACTION_QUICK_SETTINGS
-                R.id.itemBrightness -> SettingsRepository.F1_ACTION_BRIGHTNESS
-                R.id.itemManualRefresh -> SettingsRepository.F1_ACTION_MANUAL_REFRESH
-                R.id.itemPageKeySwap -> SettingsRepository.F1_ACTION_PAGE_KEY_SWAP
-                R.id.itemHomeLauncher -> SettingsRepository.F1_ACTION_HOME_LAUNCHER
-                R.id.itemNone -> SettingsRepository.F1_ACTION_NONE
-                else -> SettingsRepository.F1_ACTION_BACK
-            }
-
-            onSelected(selectedAction)
-            dialog.dismiss()
-        }
-
-        itemBack.setOnClickListener(onClick)
-        itemScreenshot.setOnClickListener(onClick)
-        itemQuickSettings.setOnClickListener(onClick)
-        itemBrightness.setOnClickListener(onClick)
-        itemManualRefresh.setOnClickListener(onClick)
-        itemPageKeySwap.setOnClickListener(onClick)
-        itemHomeLauncher.setOnClickListener(onClick)
-        itemNone.setOnClickListener(onClick)
-
-        dialog.show()
-    }
-
-    private fun updateF1ActionSummary() {
-        val selectedAction = settingsRepository.getF1Action()
-        binding.layoutSettings.tvF1ActionSetting.text = getString(
-            getF1ActionLabelRes(selectedAction)
-        )
-    }
-
-    private fun updateF1LongActionSummary() {
-        val selectedAction = settingsRepository.getF1LongPressAction(settingsRepository.getF1Action())
-        binding.layoutSettings.tvF1LongActionSetting.text = getString(
-            getF1ActionLabelRes(selectedAction)
-        )
-    }
-
-    private fun getF1ActionLabelRes(action: Int): Int {
-        return when (action) {
-            SettingsRepository.F1_ACTION_BACK -> R.string.setting_value_f1_action_back
-            SettingsRepository.F1_ACTION_SCREENSHOT -> R.string.setting_value_f1_action_screenshot
-            SettingsRepository.F1_ACTION_QUICK_SETTINGS -> R.string.setting_value_f1_action_quick_settings
-            SettingsRepository.F1_ACTION_BRIGHTNESS -> R.string.setting_value_f1_action_brightness
-            SettingsRepository.F1_ACTION_MANUAL_REFRESH -> R.string.setting_value_f1_action_manual_refresh
-            SettingsRepository.F1_ACTION_PAGE_KEY_SWAP -> R.string.setting_value_f1_action_page_key_swap
-            SettingsRepository.F1_ACTION_HOME_LAUNCHER -> R.string.setting_value_f1_action_home_launcher
-            SettingsRepository.F1_ACTION_NONE -> R.string.setting_value_f1_action_none
-            else -> R.string.setting_value_f1_action_back
-        }
     }
 
     private fun updateSleepModeTimerSummary() {

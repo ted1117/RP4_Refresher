@@ -4,10 +4,13 @@ import android.accessibilityservice.AccessibilityService
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.IntentFilter
+import android.view.InputDevice
 import android.view.KeyEvent
+import android.view.ViewConfiguration
 import android.view.accessibility.AccessibilityEvent
 import androidx.core.content.IntentCompat
 import com.hidsquid.refreshpaper.SettingsRepository
+import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_NONE
 import com.hidsquid.refreshpaper.overlay.OverlayController
 
 @SuppressLint("AccessibilityPolicy")
@@ -120,11 +123,21 @@ class KeyInputDetectingService : AccessibilityService() {
     }
 
     override fun onKeyEvent(event: KeyEvent): Boolean {
+        if (handlePageKeyLongPressSignal(event)) {
+            return true
+        }
+
+        val screenshotChordMatch = resolveScreenshotChordMatch(event)
         // 스크린샷
-        if (shortcutHandler.handleScreenshotChord(event)) return true
+        if (shortcutHandler.handleScreenshotChord(
+                event = event,
+                canonicalKeyCode = screenshotChordMatch?.canonicalKeyCode ?: event.keyCode,
+                customChordWindowMs = screenshotChordMatch?.chordWindowMs
+            )) {
+            return true
+        }
 
         val keyCode = event.keyCode
-
         if (event.action != KeyEvent.ACTION_UP) return super.onKeyEvent(event)
 
         // HOME 키
@@ -167,6 +180,89 @@ class KeyInputDetectingService : AccessibilityService() {
         serviceBroadcastReceiver = null
     }
 
+    private fun dispatchPageKeyLongPressAction(keyCode: Int): Boolean {
+        if (isBlockedForegroundApp()) return false
+
+        val selectedAction = when (keyCode) {
+            KeyEvent.KEYCODE_PAGE_UP -> settingsRepository.getPageUpLongPressAction()
+            KeyEvent.KEYCODE_PAGE_DOWN -> settingsRepository.getPageDownLongPressAction()
+            else -> F1_ACTION_NONE
+        }
+        if (selectedAction == F1_ACTION_NONE) return false
+
+        return f1ActionDispatcher.dispatch(selectedAction)
+    }
+
+    private fun resolveScreenshotChordMatch(event: KeyEvent): ScreenshotChordMatch? {
+        if (!isRemapDaemonEvent(event)) return null
+
+        val canonicalKeyCode = when (resolveCurrentRemapMode()) {
+            REMAP_MODE_DISABLED -> when (event.keyCode) {
+                KeyEvent.KEYCODE_PAGE_DOWN -> KeyEvent.KEYCODE_PAGE_DOWN
+                else -> return null
+            }
+
+            REMAP_MODE_NORMAL -> when (event.keyCode) {
+                KeyEvent.KEYCODE_VOLUME_DOWN -> KeyEvent.KEYCODE_PAGE_DOWN
+                else -> return null
+            }
+
+            REMAP_MODE_SWAPPED -> when (event.keyCode) {
+                KeyEvent.KEYCODE_VOLUME_UP -> KeyEvent.KEYCODE_PAGE_DOWN
+                else -> return null
+            }
+
+            REMAP_MODE_SWAP_ONLY -> when (event.keyCode) {
+                KeyEvent.KEYCODE_PAGE_UP -> KeyEvent.KEYCODE_PAGE_DOWN
+                else -> return null
+            }
+
+            else -> return null
+        }
+
+        return ScreenshotChordMatch(
+            canonicalKeyCode = canonicalKeyCode,
+            chordWindowMs = ViewConfiguration.getLongPressTimeout().toLong()
+        )
+    }
+
+    private fun handlePageKeyLongPressSignal(event: KeyEvent): Boolean {
+        if (!isRemapDaemonEvent(event)) return false
+
+        val pageKeyCode = when (event.keyCode) {
+            PAGE_UP_LONG_PRESS_SIGNAL_KEY -> KeyEvent.KEYCODE_PAGE_UP
+            PAGE_DOWN_LONG_PRESS_SIGNAL_KEY -> KeyEvent.KEYCODE_PAGE_DOWN
+            else -> return false
+        }
+
+        if (event.action == KeyEvent.ACTION_DOWN) {
+            dispatchPageKeyLongPressAction(pageKeyCode)
+        }
+        return true
+    }
+
+    private fun isRemapDaemonEvent(event: KeyEvent): Boolean {
+        val inputDevice = InputDevice.getDevice(event.deviceId) ?: return false
+        return inputDevice.name == REMAP_DAEMON_DEVICE_NAME
+    }
+
+    private fun resolveCurrentRemapMode(): Int {
+        if (!settingsRepository.isPageKeyTapEnabled()) return REMAP_MODE_DISABLED
+
+        val packageName = foregroundAppTracker.getEffectivePackageName()
+        if (packageName.isBlank()) return REMAP_MODE_DISABLED
+        if (packageName == BLOCKED_APP_PACKAGE_NAME) return REMAP_MODE_DISABLED
+
+        val isVolumeRemap = settingsRepository.isPageKeyTapTargetPackage(packageName)
+        val isSwap = settingsRepository.isPageKeySwapTargetPackage(packageName)
+        return when {
+            isVolumeRemap && isSwap -> REMAP_MODE_SWAPPED
+            isVolumeRemap -> REMAP_MODE_NORMAL
+            isSwap -> REMAP_MODE_SWAP_ONLY
+            else -> REMAP_MODE_DISABLED
+        }
+    }
+
     companion object {
         const val EXTRA_NUMBER: String = "EXTRA_NUMBER"
         const val ACTION_REFRESH_SCREEN: String = "com.hidsquid.refreshpaper.ACTION_REFRESH_SCREEN"
@@ -180,5 +276,17 @@ class KeyInputDetectingService : AccessibilityService() {
         const val ACTION_OPEN_QUICK_SETTINGS: String =
             "com.hidsquid.refreshpaper.ACTION_OPEN_QUICK_SETTINGS"
         private const val BLOCKED_APP_PACKAGE_NAME = "com.ridi.paper"
+        private const val REMAP_DAEMON_DEVICE_NAME = "rp_page_key_remap"
+        private const val PAGE_UP_LONG_PRESS_SIGNAL_KEY = KeyEvent.KEYCODE_F11
+        private const val PAGE_DOWN_LONG_PRESS_SIGNAL_KEY = KeyEvent.KEYCODE_F12
+        private const val REMAP_MODE_DISABLED = 0
+        private const val REMAP_MODE_NORMAL = 1
+        private const val REMAP_MODE_SWAPPED = 2
+        private const val REMAP_MODE_SWAP_ONLY = 3
     }
+
+    private data class ScreenshotChordMatch(
+        val canonicalKeyCode: Int,
+        val chordWindowMs: Long
+    )
 }

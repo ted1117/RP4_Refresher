@@ -5,6 +5,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.ViewConfiguration
 import com.hidsquid.refreshpaper.SettingsRepository
 import java.io.File
 import java.util.concurrent.Executors
@@ -29,7 +30,16 @@ class PageKeyRemapDaemonController(
     private var desiredMode = REMAP_MODE_DISABLED
 
     @Volatile
-    private var lastWrittenMode: Int? = null
+    private var desiredPageUpLongPressEnabled = false
+
+    @Volatile
+    private var desiredPageDownLongPressEnabled = false
+
+    @Volatile
+    private var desiredLongPressTimeoutMs = ViewConfiguration.getLongPressTimeout()
+
+    @Volatile
+    private var lastWrittenState: String? = null
 
     @Volatile
     private var isClosed = false
@@ -45,6 +55,13 @@ class PageKeyRemapDaemonController(
             if (isClosed) return@Runnable
             desiredDaemonRunning = shouldKeepDaemonAlive()
             desiredMode = resolveCurrentMode()
+            desiredPageUpLongPressEnabled = resolvePageLongPressEnabled(
+                settingsRepository.getPageUpLongPressAction()
+            )
+            desiredPageDownLongPressEnabled = resolvePageLongPressEnabled(
+                settingsRepository.getPageDownLongPressAction()
+            )
+            desiredLongPressTimeoutMs = ViewConfiguration.getLongPressTimeout()
             executor.execute {
                 if (!isClosed) {
                     applyDaemonState()
@@ -64,15 +81,20 @@ class PageKeyRemapDaemonController(
     }
 
     private fun shouldKeepDaemonAlive(): Boolean {
-        if (!settingsRepository.isPageKeyTapEnabled()) return false
-        val hasNormalTarget = settingsRepository.getPageKeyTapTargetPackages().isNotEmpty()
-        val hasSwapTarget = settingsRepository.getPageKeySwapTargetPackages().isNotEmpty()
-        return hasNormalTarget || hasSwapTarget
+        val hasRemapTargets = settingsRepository.isPageKeyTapEnabled() && (
+            settingsRepository.getPageKeyTapTargetPackages().isNotEmpty() ||
+                settingsRepository.getPageKeySwapTargetPackages().isNotEmpty()
+            )
+        val hasPageLongPressAction =
+            settingsRepository.getPageUpLongPressAction() != SettingsRepository.F1_ACTION_NONE ||
+                settingsRepository.getPageDownLongPressAction() != SettingsRepository.F1_ACTION_NONE
+        return hasRemapTargets || hasPageLongPressAction
     }
 
     private fun resolveCurrentMode(): Int {
         val packageName = foregroundPackageProvider()
         if (!shouldKeepDaemonAlive()) return REMAP_MODE_DISABLED
+        if (!settingsRepository.isPageKeyTapEnabled()) return REMAP_MODE_DISABLED
         if (packageName.isBlank()) return REMAP_MODE_DISABLED
         if (packageName == blockedPackageName) return REMAP_MODE_DISABLED
 
@@ -87,19 +109,41 @@ class PageKeyRemapDaemonController(
         }
     }
 
+    private fun resolvePageLongPressEnabled(selectedAction: Int): Boolean {
+        if (selectedAction == SettingsRepository.F1_ACTION_NONE) return false
+
+        val packageName = foregroundPackageProvider()
+        if (packageName.isBlank()) return false
+        if (packageName == blockedPackageName) return false
+        return true
+    }
+
     private fun applyDaemonState() {
         val shouldRunDaemon = desiredDaemonRunning
         val remapMode = desiredMode
+        val pageUpLongPressEnabled = desiredPageUpLongPressEnabled
+        val pageDownLongPressEnabled = desiredPageDownLongPressEnabled
+        val longPressTimeoutMs = desiredLongPressTimeoutMs
 
         if (!shouldRunDaemon) {
-            writeStateFile(REMAP_MODE_DISABLED)
+            writeStateFile(
+                remapMode = REMAP_MODE_DISABLED,
+                pageUpLongPressEnabled = false,
+                pageDownLongPressEnabled = false,
+                longPressTimeoutMs = longPressTimeoutMs
+            )
             if (daemonRunning) {
                 stopDaemonSync()
             }
             return
         }
 
-        writeStateFile(remapMode)
+        writeStateFile(
+            remapMode = remapMode,
+            pageUpLongPressEnabled = pageUpLongPressEnabled,
+            pageDownLongPressEnabled = pageDownLongPressEnabled,
+            longPressTimeoutMs = longPressTimeoutMs
+        )
 
         if (!daemonRunning) {
             val started = startDaemon()
@@ -110,7 +154,12 @@ class PageKeyRemapDaemonController(
             }
         }
 
-        writeStateFile(remapMode)
+        writeStateFile(
+            remapMode = remapMode,
+            pageUpLongPressEnabled = pageUpLongPressEnabled,
+            pageDownLongPressEnabled = pageDownLongPressEnabled,
+            longPressTimeoutMs = longPressTimeoutMs
+        )
     }
 
     private fun startDaemon(): Boolean {
@@ -209,15 +258,31 @@ class PageKeyRemapDaemonController(
         return file
     }
 
-    private fun writeStateFile(mode: Int): Boolean {
-        if (stateFile.exists() && lastWrittenMode == mode) {
+    private fun writeStateFile(
+        remapMode: Int,
+        pageUpLongPressEnabled: Boolean,
+        pageDownLongPressEnabled: Boolean,
+        longPressTimeoutMs: Int
+    ): Boolean {
+        val stateText = buildString {
+            append(remapMode)
+            append(' ')
+            append(if (pageUpLongPressEnabled) 1 else 0)
+            append(' ')
+            append(if (pageDownLongPressEnabled) 1 else 0)
+            append(' ')
+            append(longPressTimeoutMs)
+            append('\n')
+        }
+
+        if (stateFile.exists() && lastWrittenState == stateText) {
             return true
         }
 
         return runCatching {
             stateFile.parentFile?.mkdirs()
-            stateFile.writeText("$mode\n")
-            lastWrittenMode = mode
+            stateFile.writeText(stateText)
+            lastWrittenState = stateText
             true
         }.getOrElse { throwable ->
             Log.w(TAG, "Failed to write remap state file", throwable)

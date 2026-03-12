@@ -42,6 +42,10 @@
             android:exported="false" />
 
         <activity
+            android:name=".ButtonActionSettingsActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".RefreshScreen"
             android:exported="true"
             android:launchMode="singleInstance" />
