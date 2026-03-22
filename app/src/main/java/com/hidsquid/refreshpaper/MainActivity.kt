@@ -43,6 +43,7 @@ class MainActivity : ComponentActivity() {
     private var shouldOpenLsposedWhenReady = false
     private var isRefreshingRootAccess = false
     private var hasVerifiedRootAccessThisSession = false
+    private var hasSkippedPermissionGate = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +56,8 @@ class MainActivity : ComponentActivity() {
         homeLauncherDialogController = HomeLauncherDialogController(this, settingsRepository)
         sleepModeTimerDialogController = SleepModeTimerDialogController(this, settingsRepository)
         shutdownTimerDialogController = ShutdownTimerDialogController(this, settingsRepository)
+        hasSkippedPermissionGate = getPreferences(MODE_PRIVATE)
+            .getBoolean(KEY_PERMISSION_GATE_SKIPPED, false)
 
         checkPermissionAndShowUI()
         loadSettings()
@@ -71,9 +74,13 @@ class MainActivity : ComponentActivity() {
 
     private fun checkPermissionAndShowUI() {
         val accessibilityEnabled = AccessibilityUtils.isAccessibilityServiceEnabled(this)
+        if (accessibilityEnabled && hasSkippedPermissionGate) {
+            setPermissionGateSkipped(false)
+        }
         val showLsposedGuide = shouldOpenLsposedWhenReady &&
             accessibilityEnabled &&
             hasVerifiedRootAccessThisSession
+        val showSettings = accessibilityEnabled || hasSkippedPermissionGate
 
         updatePermissionState(accessibilityEnabled)
 
@@ -81,7 +88,7 @@ class MainActivity : ComponentActivity() {
             binding.layoutPermission.root.visibility = View.GONE
             binding.layoutLsposedGuide.root.visibility = View.VISIBLE
             binding.layoutSettings.root.visibility = View.GONE
-        } else if (accessibilityEnabled) {
+        } else if (showSettings) {
             binding.layoutPermission.root.visibility = View.GONE
             binding.layoutLsposedGuide.root.visibility = View.GONE
             binding.layoutSettings.root.visibility = View.VISIBLE
@@ -184,7 +191,14 @@ class MainActivity : ComponentActivity() {
     private fun setupPermissionState() {
         binding.layoutPermission.accessibilityButton.setOnClickListener {
             shouldOpenLsposedWhenReady = true
+            setPermissionGateSkipped(false)
             requestAccessibilityWithRoot()
+        }
+
+        binding.layoutPermission.laterButton.setOnClickListener {
+            shouldOpenLsposedWhenReady = false
+            setPermissionGateSkipped(true)
+            checkPermissionAndShowUI()
         }
 
         binding.layoutLsposedGuide.openLsposedManagerButton.setOnClickListener {
@@ -535,7 +549,16 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun setPermissionGateSkipped(skipped: Boolean) {
+        hasSkippedPermissionGate = skipped
+        getPreferences(MODE_PRIVATE)
+            .edit()
+            .putBoolean(KEY_PERMISSION_GATE_SKIPPED, skipped)
+            .apply()
+    }
+
     companion object {
+        private const val KEY_PERMISSION_GATE_SKIPPED = "permission_gate_skipped"
         private const val ROOT_COMMAND_TIMEOUT_MS = 2_500L
         private const val ROOT_PERMISSION_REQUEST_TIMEOUT_MS = 20_000L
         private const val LSPOSED_MANAGER_PACKAGE = "org.lsposed.manager"
