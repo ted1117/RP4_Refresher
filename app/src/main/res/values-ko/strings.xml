@@ -104,7 +104,7 @@
     <string name="setting_value_f1_action_screenshot">스크린샷</string>
     <string name="setting_value_f1_action_quick_settings">간단 설정</string>
     <string name="setting_value_f1_action_brightness">밝기 설정</string>
-    <string name="setting_value_f1_action_manual_refresh">페이지 새로고침</string>
+    <string name="setting_value_f1_action_manual_refresh">새로고침</string>
     <string name="setting_value_f1_action_page_key_swap">페이지 넘김 방향 전환</string>
     <string name="setting_value_f1_action_home_launcher">홈으로 이동</string>
     <string name="setting_value_f1_action_none">설정 안 함</string>
@@ -147,9 +147,9 @@
     <string name="labs_touch_refresh_title">터치 기반 새로고침</string>
     <string name="labs_touch_refresh_description">터치로 페이지를 넘길 때 페이지 새로고침 동작</string>
     <string name="labs_touch_refresh_requires_auto">먼저 자동 새로고침을 켜주세요</string>
-    <string name="labs_page_key_tap_title">페이지 넘김 버튼 동작</string>
+    <string name="labs_page_key_tap_title">볼륨 버튼으로 변환</string>
     <string name="labs_page_key_tap_description">선택한 앱에서 페이지 넘김 버튼을 볼륨 버튼으로 변환</string>
-    <string name="labs_page_key_swap_title">페이지 넘김 방향 전환 앱 지정</string>
+    <string name="labs_page_key_swap_title">페이지 넘김 방향 전환</string>
     <string name="labs_page_key_swap_description">선택한 앱에서 페이지 넘김 방향을 전환</string>
     <string name="labs_page_key_tap_save_failed">페이지 키 치환 설정 저장에 실패했습니다</string>
     <string name="labs_page_key_swap_save_failed">업/다운 반전 설정 저장에 실패했습니다</string>
