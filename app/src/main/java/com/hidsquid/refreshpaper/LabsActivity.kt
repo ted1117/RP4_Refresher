@@ -50,7 +50,6 @@ class LabsActivity : Activity() {
         binding.touchRefreshSwitch.isEnabled = autoEnabled
         binding.touchRefreshSwitch.alpha = if (autoEnabled) 1f else 0.5f
         attachTouchRefreshListener()
-        binding.screenshotToastSwitch.isChecked = settingsRepository.isScreenshotToastEnabled()
     }
 
     private fun setupListeners() {
@@ -91,18 +90,6 @@ class LabsActivity : Activity() {
             )
         }
 
-        binding.screenshotToastCard.setOnClickListener {
-            binding.screenshotToastSwitch.toggle()
-        }
-
-        binding.screenshotToastSwitch.setOnCheckedChangeListener { _, isChecked ->
-            val saved = settingsRepository.setScreenshotToastEnabled(isChecked)
-            if (!saved) {
-                Toast.makeText(this, R.string.labs_screenshot_toast_save_failed, Toast.LENGTH_SHORT)
-                    .show()
-                loadSettings()
-            }
-        }
     }
 
     private fun attachTouchRefreshListener() {

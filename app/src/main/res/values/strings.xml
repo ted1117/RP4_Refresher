@@ -85,6 +85,9 @@
     <!-- Screenshot Feature -->
     <string name="setting_title_screenshot_feature">Enable Screenshot</string>
     <string name="setting_desc_screenshot_feature">Allow taking screenshots</string>
+    <string name="setting_title_screenshot_toast">Screenshot Completion Notice</string>
+    <string name="setting_desc_screenshot_toast">Show a notice when screenshot is saved</string>
+    <string name="setting_screenshot_toast_save_failed">Failed to save screenshot notice setting</string>
     <string name="toast_screenshot_captured">Screenshot captured</string>
 
     <!-- Home Launcher -->
@@ -142,7 +145,6 @@
     <string name="labs_description">Experimental features and settings</string>
     <string name="labs_section_refresh">Refresh</string>
     <string name="labs_section_page_key_tap">Page Key Remap</string>
-    <string name="labs_section_screenshot">Screenshot</string>
     <string name="labs_touch_refresh_title">Touch-based Refresh</string>
     <string name="labs_touch_refresh_description">Refresh by tapping the screen</string>
     <string name="labs_touch_refresh_requires_auto">Enable Auto Refresh first</string>
@@ -161,9 +163,6 @@
     <string name="labs_page_key_tap_apps_save_failed">Failed to save target apps</string>
     <string name="labs_touch_refresh_lsposed_notice_title">LSPosed Setup</string>
     <string name="labs_touch_refresh_lsposed_notice_message">To use touch-based refresh, check the target apps for this feature in LSPosed.</string>
-    <string name="labs_screenshot_toast_title">Screenshot Completion Notice</string>
-    <string name="labs_screenshot_toast_description">Show a notice when screenshot is saved</string>
-    <string name="labs_screenshot_toast_save_failed">Failed to save screenshot notice setting</string>
     <string name="labs_warning_title">Labs Warning</string>
     <string name="labs_warning_message">Entering Labs may cause performance degradation or increased battery usage.</string>
     <string name="labs_warning_dont_show_again">Don’t show again</string>

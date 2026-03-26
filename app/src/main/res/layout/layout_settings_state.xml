@@ -350,6 +350,41 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/divider_height"
+                    android:background="@color/divider_color" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/screenshotToastCard"
+                    style="@style/ListItemContainer">
+
+                    <TextView
+                        android:id="@+id/screenshotToastTitle"
+                        style="@style/ListItemTitle"
+                        android:text="@string/setting_title_screenshot_toast"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/screenshotToastSwitch"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/screenshotToastDesc"
+                        style="@style/ListItemDesc"
+                        android:text="@string/setting_desc_screenshot_toast"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/screenshotToastSwitch"
+                        app:layout_constraintTop_toBottomOf="@+id/screenshotToastTitle"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <Switch
+                        android:id="@+id/screenshotToastSwitch"
+                        style="@style/ListItemSwitch"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
             </LinearLayout>
 
             <TextView

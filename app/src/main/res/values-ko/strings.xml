@@ -86,6 +86,9 @@
     <!-- Screenshot Feature -->
     <string name="setting_title_screenshot_feature">스크린샷</string>
     <string name="setting_desc_screenshot_feature">스크린샷 방지 우회</string>
+    <string name="setting_title_screenshot_toast">스크린샷 완료 알림</string>
+    <string name="setting_desc_screenshot_toast">스크린샷이 저장되면 알림을 표시합니다</string>
+    <string name="setting_screenshot_toast_save_failed">스크린샷 완료 알림 설정 저장에 실패했습니다</string>
     <string name="toast_screenshot_captured">스크린샷 촬영</string>
 
     <!-- Home Launcher -->
@@ -143,7 +146,6 @@
     <string name="labs_description">실험적인 기능 및 설정</string>
     <string name="labs_section_refresh">새로고침</string>
     <string name="labs_section_page_key_tap">페이지 넘김 버튼</string>
-    <string name="labs_section_screenshot">스크린샷</string>
     <string name="labs_touch_refresh_title">터치 기반 새로고침</string>
     <string name="labs_touch_refresh_description">터치로 페이지를 넘길 때 페이지 새로고침 동작</string>
     <string name="labs_touch_refresh_requires_auto">먼저 자동 새로고침을 켜주세요</string>
@@ -162,9 +164,6 @@
     <string name="labs_page_key_tap_apps_save_failed">적용 앱 저장에 실패했습니다</string>
     <string name="labs_touch_refresh_lsposed_notice_title">LSPosed 설정 안내</string>
     <string name="labs_touch_refresh_lsposed_notice_message">터치 기반 리프레시를 사용하려면 LSPosed에서 이 기능을 적용할 앱을 체크해야 합니다.</string>
-    <string name="labs_screenshot_toast_title">스크린샷 완료 알림</string>
-    <string name="labs_screenshot_toast_description">스크린샷이 저장되면 알림을 표시합니다</string>
-    <string name="labs_screenshot_toast_save_failed">스크린샷 완료 알림 설정 저장에 실패했습니다</string>
     <string name="labs_warning_title">⚠ 경고</string>
     <string name="labs_warning_message">실험실 기능은 성능 저하나 배터리 소모를 유발할 수 있으며 정상 동작을 보장하지 않습니다.</string>
     <string name="labs_warning_dont_show_again">다시 보지 않기</string>

@@ -66,6 +66,7 @@ class MainActivity : ComponentActivity() {
         layout.autoRefreshSwitch.isChecked = settingsRepository.isAutoRefreshEnabled()
         layout.manualRefreshSwitch.isChecked = settingsRepository.isManualRefreshEnabled()
         layout.screenshotSwitch.isChecked = deviceSecurityController.isSecureBypassEnabled()
+        layout.screenshotToastSwitch.isChecked = settingsRepository.isScreenshotToastEnabled()
 
         updateSummaryText()
         updateEpdModeSummary()
@@ -129,6 +130,19 @@ class MainActivity : ComponentActivity() {
 
         layout.screenshotCard.setOnClickListener {
             layout.screenshotSwitch.isChecked = !layout.screenshotSwitch.isChecked
+        }
+
+        layout.screenshotToastCard.setOnClickListener {
+            layout.screenshotToastSwitch.isChecked = !layout.screenshotToastSwitch.isChecked
+        }
+
+        layout.screenshotToastSwitch.setOnCheckedChangeListener { _, isChecked ->
+            val saved = settingsRepository.setScreenshotToastEnabled(isChecked)
+            if (!saved) {
+                Toast.makeText(this, R.string.setting_screenshot_toast_save_failed, Toast.LENGTH_SHORT)
+                    .show()
+                loadSettings()
+            }
         }
 
         layout.homeLauncherCard.setOnClickListener {
