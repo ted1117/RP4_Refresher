@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/DialogListRoot">
+
+    <TextView
+        style="@style/DialogListTitle"
+        android:text="@string/quick_setting_title_volume_key_remap"
+        />
+
+    <RelativeLayout
+        android:id="@+id/itemOn"
+        style="@style/DialogListSelectableItem">
+
+        <TextView
+            style="@style/DialogListItemText"
+            android:text="@string/quick_setting_value_volume_key"
+            />
+
+        <ImageView
+            android:id="@+id/checkOn"
+            style="@style/DialogListCheckIcon" />
+    </RelativeLayout>
+
+    <View style="@style/DialogListDivider" />
+
+    <RelativeLayout
+        android:id="@+id/itemOff"
+        style="@style/DialogListSelectableItem">
+
+        <TextView
+            style="@style/DialogListItemText"
+            android:text="@string/quick_setting_value_page_key"
+            />
+
+        <ImageView
+            android:id="@+id/checkOff"
+            style="@style/DialogListCheckIcon" />
+    </RelativeLayout>
+
+</LinearLayout>

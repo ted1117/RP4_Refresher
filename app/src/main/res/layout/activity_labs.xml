@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar">
+
+    <android.widget.Toolbar
+        android:id="@+id/topAppBar"
+        style="@style/ToolbarBase"
+        android:title="@string/labs_title"
+        android:navigationIcon="@drawable/ic_arrow_back"
+        tools:title="Labs" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="?android:attr/listPreferredItemPaddingLeft"
+            android:paddingEnd="?android:attr/listPreferredItemPaddingRight"
+            android:paddingTop="@dimen/screen_padding_top">
+
+            <TextView
+                android:id="@+id/refreshSectionTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:paddingStart="4dp"
+                android:text="@string/labs_section_refresh"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/text_secondary"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/touchRefreshGroupContainer"
+                style="@style/GroupContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/touchRefreshCard"
+                    style="@style/ListItemContainer">
+
+                    <TextView
+                        android:id="@+id/touchRefreshTitle"
+                        style="@style/ListItemTitle"
+                        android:text="@string/labs_touch_refresh_title"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/touchRefreshSwitch"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        style="@style/ListItemDesc"
+                        android:text="@string/labs_touch_refresh_description"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/touchRefreshSwitch"
+                        app:layout_constraintTop_toBottomOf="@+id/touchRefreshTitle"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <Switch
+                        android:id="@+id/touchRefreshSwitch"
+                        style="@style/ListItemSwitch"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/pageKeyTapSectionTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/screen_padding_horizontal"
+                android:layout_marginBottom="6dp"
+                android:paddingStart="4dp"
+                android:text="@string/labs_section_page_key_tap"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/text_secondary"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/pageKeyTapGroupContainer"
+                style="@style/GroupContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/pageKeyTapCard"
+                    style="@style/ListItemContainer">
+
+                    <TextView
+                        android:id="@+id/pageKeyTapTitle"
+                        style="@style/ListItemTitle"
+                        android:text="@string/labs_page_key_tap_title"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/pageKeyTapAppsArrow"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/pageKeyTapDescription"
+                        style="@style/ListItemDesc"
+                        android:text="@string/labs_page_key_tap_description"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/pageKeyTapAppsArrow"
+                        app:layout_constraintTop_toBottomOf="@+id/pageKeyTapTitle"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/pageKeyTapAppsArrow"
+                        android:layout_width="@dimen/icon_size"
+                        android:layout_height="@dimen/icon_size"
+                        android:src="@drawable/ic_arrow_right"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/divider_height"
+                    android:background="@color/divider_color" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/pageKeySwapCard"
+                    style="@style/ListItemContainer">
+
+                    <TextView
+                        android:id="@+id/pageKeySwapTitle"
+                        style="@style/ListItemTitle"
+                        android:text="@string/labs_page_key_swap_title"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/pageKeySwapAppsArrow"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/pageKeySwapDescription"
+                        style="@style/ListItemDesc"
+                        android:text="@string/labs_page_key_swap_description"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/pageKeySwapAppsArrow"
+                        app:layout_constraintTop_toBottomOf="@+id/pageKeySwapTitle"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/pageKeySwapAppsArrow"
+                        android:layout_width="@dimen/icon_size"
+                        android:layout_height="@dimen/icon_size"
+                        android:src="@drawable/ic_arrow_right"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

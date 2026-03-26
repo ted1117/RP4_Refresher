@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/DialogListRoot">
+
+    <TextView
+        style="@style/DialogListTitle"
+        android:text="@string/dialog_title_shutdown_timer" />
+
+    <RelativeLayout
+        android:id="@+id/item1h"
+        style="@style/DialogListSelectableItem">
+
+        <TextView
+            style="@style/DialogListItemText"
+            android:text="@string/shutdown_timer_option_1h" />
+
+        <ImageView
+            android:id="@+id/check1h"
+            style="@style/DialogListCheckIcon" />
+    </RelativeLayout>
+
+    <View style="@style/DialogListDivider" />
+
+    <RelativeLayout
+        android:id="@+id/item3h"
+        style="@style/DialogListSelectableItem">
+
+        <TextView
+            style="@style/DialogListItemText"
+            android:text="@string/shutdown_timer_option_3h" />
+
+        <ImageView
+            android:id="@+id/check3h"
+            style="@style/DialogListCheckIcon" />
+    </RelativeLayout>
+
+    <View style="@style/DialogListDivider" />
+
+    <RelativeLayout
+        android:id="@+id/item6h"
+        style="@style/DialogListSelectableItem">
+
+        <TextView
+            style="@style/DialogListItemText"
+            android:text="@string/shutdown_timer_option_6h" />
+
+        <ImageView
+            android:id="@+id/check6h"
+            style="@style/DialogListCheckIcon" />
+    </RelativeLayout>
+
+    <View style="@style/DialogListDivider" />
+
+    <RelativeLayout
+        android:id="@+id/item12h"
+        style="@style/DialogListSelectableItem">
+
+        <TextView
+            style="@style/DialogListItemText"
+            android:text="@string/shutdown_timer_option_12h" />
+
+        <ImageView
+            android:id="@+id/check12h"
+            style="@style/DialogListCheckIcon" />
+    </RelativeLayout>
+
+    <View style="@style/DialogListDivider" />
+
+    <RelativeLayout
+        android:id="@+id/item24h"
+        style="@style/DialogListSelectableItem">
+
+        <TextView
+            style="@style/DialogListItemText"
+            android:text="@string/shutdown_timer_option_24h" />
+
+        <ImageView
+            android:id="@+id/check24h"
+            style="@style/DialogListCheckIcon" />
+    </RelativeLayout>
+
+    <View style="@style/DialogListDivider" />
+
+    <RelativeLayout
+        android:id="@+id/item48h"
+        style="@style/DialogListSelectableItem">
+
+        <TextView
+            style="@style/DialogListItemText"
+            android:text="@string/shutdown_timer_option_48h" />
+
+        <ImageView
+            android:id="@+id/check48h"
+            style="@style/DialogListCheckIcon" />
+    </RelativeLayout>
+
+    <View style="@style/DialogListDivider" />
+
+    <RelativeLayout
+        android:id="@+id/item72h"
+        style="@style/DialogListSelectableItem">
+
+        <TextView
+            style="@style/DialogListItemText"
+            android:text="@string/shutdown_timer_option_72h" />
+
+        <ImageView
+            android:id="@+id/check72h"
+            style="@style/DialogListCheckIcon" />
+    </RelativeLayout>
+
+    <View style="@style/DialogListDivider" />
+
+    <RelativeLayout
+        android:id="@+id/itemOff"
+        style="@style/DialogListSelectableItem">
+
+        <TextView
+            style="@style/DialogListItemText"
+            android:text="@string/shutdown_timer_option_off" />
+
+        <ImageView
+            android:id="@+id/checkOff"
+            style="@style/DialogListCheckIcon" />
+    </RelativeLayout>
+
+</LinearLayout>

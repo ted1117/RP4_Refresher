@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/DialogListRoot">
+
+    <TextView
+        style="@style/DialogListTitle"
+        android:text="@string/dialog_title_sleep_mode_timer" />
+
+    <RelativeLayout
+        android:id="@+id/item3m"
+        style="@style/DialogListSelectableItem">
+
+        <TextView
+            style="@style/DialogListItemText"
+            android:text="@string/sleep_mode_timer_option_3m" />
+
+        <ImageView
+            android:id="@+id/check3m"
+            style="@style/DialogListCheckIcon" />
+    </RelativeLayout>
+
+    <View style="@style/DialogListDivider" />
+
+    <RelativeLayout
+        android:id="@+id/item5m"
+        style="@style/DialogListSelectableItem">
+
+        <TextView
+            style="@style/DialogListItemText"
+            android:text="@string/sleep_mode_timer_option_5m" />
+
+        <ImageView
+            android:id="@+id/check5m"
+            style="@style/DialogListCheckIcon" />
+    </RelativeLayout>
+
+    <View style="@style/DialogListDivider" />
+
+    <RelativeLayout
+        android:id="@+id/item10m"
+        style="@style/DialogListSelectableItem">
+
+        <TextView
+            style="@style/DialogListItemText"
+            android:text="@string/sleep_mode_timer_option_10m" />
+
+        <ImageView
+            android:id="@+id/check10m"
+            style="@style/DialogListCheckIcon" />
+    </RelativeLayout>
+
+    <View style="@style/DialogListDivider" />
+
+    <RelativeLayout
+        android:id="@+id/item15m"
+        style="@style/DialogListSelectableItem">
+
+        <TextView
+            style="@style/DialogListItemText"
+            android:text="@string/sleep_mode_timer_option_15m" />
+
+        <ImageView
+            android:id="@+id/check15m"
+            style="@style/DialogListCheckIcon" />
+    </RelativeLayout>
+
+    <View style="@style/DialogListDivider" />
+
+    <RelativeLayout
+        android:id="@+id/item30m"
+        style="@style/DialogListSelectableItem">
+
+        <TextView
+            style="@style/DialogListItemText"
+            android:text="@string/sleep_mode_timer_option_30m" />
+
+        <ImageView
+            android:id="@+id/check30m"
+            style="@style/DialogListCheckIcon" />
+    </RelativeLayout>
+
+    <View style="@style/DialogListDivider" />
+
+    <RelativeLayout
+        android:id="@+id/item45m"
+        style="@style/DialogListSelectableItem">
+
+        <TextView
+            style="@style/DialogListItemText"
+            android:text="@string/sleep_mode_timer_option_45m" />
+
+        <ImageView
+            android:id="@+id/check45m"
+            style="@style/DialogListCheckIcon" />
+    </RelativeLayout>
+
+    <View style="@style/DialogListDivider" />
+
+    <RelativeLayout
+        android:id="@+id/item60m"
+        style="@style/DialogListSelectableItem">
+
+        <TextView
+            style="@style/DialogListItemText"
+            android:text="@string/sleep_mode_timer_option_60m" />
+
+        <ImageView
+            android:id="@+id/check60m"
+            style="@style/DialogListCheckIcon" />
+    </RelativeLayout>
+
+    <View style="@style/DialogListDivider" />
+
+    <RelativeLayout
+        android:id="@+id/itemOff"
+        style="@style/DialogListSelectableItem">
+
+        <TextView
+            style="@style/DialogListItemText"
+            android:text="@string/sleep_mode_timer_option_off" />
+
+        <ImageView
+            android:id="@+id/checkOff"
+            style="@style/DialogListCheckIcon" />
+    </RelativeLayout>
+
+</LinearLayout>

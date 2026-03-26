@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/DialogListRoot">
+
+    <TextView
+        android:id="@+id/dialogTitle"
+        style="@style/DialogListTitle"
+        android:text="@string/dialog_title_f1_action" />
+
+    <RelativeLayout
+        android:id="@+id/itemBack"
+        style="@style/DialogListSelectableItem">
+
+        <TextView
+            style="@style/DialogListItemText"
+            android:text="@string/setting_value_f1_action_back" />
+
+        <ImageView
+            android:id="@+id/checkBack"
+            style="@style/DialogListCheckIcon" />
+    </RelativeLayout>
+
+    <View style="@style/DialogListDivider" />
+
+    <RelativeLayout
+        android:id="@+id/itemScreenshot"
+        style="@style/DialogListSelectableItem">
+
+        <TextView
+            style="@style/DialogListItemText"
+            android:text="@string/setting_value_f1_action_screenshot" />
+
+        <ImageView
+            android:id="@+id/checkScreenshot"
+            style="@style/DialogListCheckIcon" />
+    </RelativeLayout>
+
+    <View style="@style/DialogListDivider" />
+
+    <RelativeLayout
+        android:id="@+id/itemQuickSettings"
+        style="@style/DialogListSelectableItem">
+
+        <TextView
+            style="@style/DialogListItemText"
+            android:text="@string/setting_value_f1_action_quick_settings" />
+
+        <ImageView
+            android:id="@+id/checkQuickSettings"
+            style="@style/DialogListCheckIcon" />
+    </RelativeLayout>
+
+    <View style="@style/DialogListDivider" />
+
+    <RelativeLayout
+        android:id="@+id/itemBrightness"
+        style="@style/DialogListSelectableItem">
+
+        <TextView
+            style="@style/DialogListItemText"
+            android:text="@string/setting_value_f1_action_brightness" />
+
+        <ImageView
+            android:id="@+id/checkBrightness"
+            style="@style/DialogListCheckIcon" />
+    </RelativeLayout>
+
+    <View style="@style/DialogListDivider" />
+
+    <RelativeLayout
+        android:id="@+id/itemManualRefresh"
+        style="@style/DialogListSelectableItem">
+
+        <TextView
+            style="@style/DialogListItemText"
+            android:text="@string/setting_value_f1_action_manual_refresh" />
+
+        <ImageView
+            android:id="@+id/checkManualRefresh"
+            style="@style/DialogListCheckIcon" />
+    </RelativeLayout>
+
+    <View style="@style/DialogListDivider" />
+
+    <RelativeLayout
+        android:id="@+id/itemPageKeySwap"
+        style="@style/DialogListSelectableItem">
+
+        <TextView
+            style="@style/DialogListItemText"
+            android:text="@string/setting_value_f1_action_page_key_swap" />
+
+        <ImageView
+            android:id="@+id/checkPageKeySwap"
+            style="@style/DialogListCheckIcon" />
+    </RelativeLayout>
+
+    <View style="@style/DialogListDivider" />
+
+    <RelativeLayout
+        android:id="@+id/itemHomeLauncher"
+        style="@style/DialogListSelectableItem">
+
+        <TextView
+            style="@style/DialogListItemText"
+            android:text="@string/setting_value_f1_action_home_launcher" />
+
+        <ImageView
+            android:id="@+id/checkHomeLauncher"
+            style="@style/DialogListCheckIcon" />
+    </RelativeLayout>
+
+    <View style="@style/DialogListDivider" />
+
+    <RelativeLayout
+        android:id="@+id/itemNone"
+        style="@style/DialogListSelectableItem">
+
+        <TextView
+            style="@style/DialogListItemText"
+            android:text="@string/setting_value_f1_action_none" />
+
+        <ImageView
+            android:id="@+id/checkNone"
+            style="@style/DialogListCheckIcon" />
+    </RelativeLayout>
+
+</LinearLayout>

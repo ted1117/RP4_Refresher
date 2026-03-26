@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/DialogListContainer">
+
+    <RelativeLayout
+        android:id="@+id/itemRoot"
+        style="@style/DialogListSelectableItem">
+
+        <TextView
+            android:id="@+id/itemTitle"
+            style="@style/DialogListItemText" />
+
+        <ImageView
+            android:id="@+id/itemCheck"
+            style="@style/DialogListCheckIcon" />
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/itemDivider"
+        style="@style/DialogListDivider" />
+
+</LinearLayout>

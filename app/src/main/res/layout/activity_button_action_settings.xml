@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar">
+
+    <android.widget.Toolbar
+        android:id="@+id/topAppBar"
+        style="@style/ToolbarBase"
+        android:navigationIcon="@drawable/ic_arrow_back"
+        android:title="@string/button_action_settings_title"
+        tools:title="Button Actions" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="?android:attr/listPreferredItemPaddingLeft"
+            android:paddingEnd="?android:attr/listPreferredItemPaddingRight"
+            android:paddingTop="@dimen/screen_padding_top">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:paddingStart="4dp"
+                android:text="@string/settings_section_quick_button"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/text_secondary"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                style="@style/GroupContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/quickButtonShortCard"
+                    style="@style/ListItemContainer">
+
+                    <TextView
+                        android:id="@+id/quickButtonShortTitle"
+                        style="@style/ListItemTitle"
+                        android:text="@string/setting_title_f1_action"
+                        app:layout_constraintEnd_toStartOf="@+id/quickButtonShortArrow"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvQuickButtonShortSetting"
+                        style="@style/ListItemDesc"
+                        android:text="@string/setting_value_f1_action_back"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/quickButtonShortArrow"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/quickButtonShortTitle" />
+
+                    <ImageView
+                        android:id="@+id/quickButtonShortArrow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_arrow_right"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/divider_height"
+                    android:background="@color/divider_color" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/quickButtonLongCard"
+                    style="@style/ListItemContainer">
+
+                    <TextView
+                        android:id="@+id/quickButtonLongTitle"
+                        style="@style/ListItemTitle"
+                        android:text="@string/setting_title_f1_long_action"
+                        app:layout_constraintEnd_toStartOf="@+id/quickButtonLongArrow"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvQuickButtonLongSetting"
+                        style="@style/ListItemDesc"
+                        android:text="@string/setting_value_f1_action_back"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/quickButtonLongArrow"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/quickButtonLongTitle" />
+
+                    <ImageView
+                        android:id="@+id/quickButtonLongArrow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_arrow_right"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/screen_padding_horizontal"
+                android:layout_marginBottom="6dp"
+                android:paddingStart="4dp"
+                android:text="@string/button_action_section_page_buttons"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/text_secondary"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                style="@style/GroupContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/pageUpLongCard"
+                    style="@style/ListItemContainer">
+
+                    <TextView
+                        android:id="@+id/pageUpLongTitle"
+                        style="@style/ListItemTitle"
+                        android:text="@string/setting_title_page_up_long_action"
+                        app:layout_constraintEnd_toStartOf="@+id/pageUpLongArrow"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvPageUpLongSetting"
+                        style="@style/ListItemDesc"
+                        android:text="@string/setting_value_f1_action_none"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/pageUpLongArrow"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/pageUpLongTitle" />
+
+                    <ImageView
+                        android:id="@+id/pageUpLongArrow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_arrow_right"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/divider_height"
+                    android:background="@color/divider_color" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/pageDownLongCard"
+                    style="@style/ListItemContainer">
+
+                    <TextView
+                        android:id="@+id/pageDownLongTitle"
+                        style="@style/ListItemTitle"
+                        android:text="@string/setting_title_page_down_long_action"
+                        app:layout_constraintEnd_toStartOf="@+id/pageDownLongArrow"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvPageDownLongSetting"
+                        style="@style/ListItemDesc"
+                        android:text="@string/setting_value_f1_action_none"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/pageDownLongArrow"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/pageDownLongTitle" />
+
+                    <ImageView
+                        android:id="@+id/pageDownLongArrow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_arrow_right"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

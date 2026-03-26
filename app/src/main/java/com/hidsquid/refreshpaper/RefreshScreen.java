@@ -2,9 +2,9 @@ package com.hidsquid.refreshpaper;
 
 import android.os.Bundle;
 
-import androidx.appcompat.app.AppCompatActivity;
+import android.app.Activity;
 
-public class RefreshScreen extends AppCompatActivity {
+public class RefreshScreen extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

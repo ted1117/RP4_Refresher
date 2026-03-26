@@ -130,6 +130,12 @@ obj/
 .idea/navEditor.xml
 .idea
 assets
+!app/src/main/assets/
+!app/src/main/assets/bin/
+!app/src/main/assets/bin/**/
+!app/src/main/assets/bin/**/page_key_remapd
+!app/src/main/assets/bin/**/.gitkeep
+tools
 
 app/debug
 app/release
