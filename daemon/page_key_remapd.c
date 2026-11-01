@@ -83,6 +83,7 @@ typedef struct {
     bool grab_failed;
     bool last_desired;
     bool watch_fail_logged;
+    bool dropping;  /* SYN_DROPPED seen: discard events until the next SYN_REPORT */
 
     char state_dir[256];
     char state_path[300];
@@ -599,6 +600,30 @@ static void sync_phys_from_device(void) {
     g.phys_down_count = count;
 }
 
+/*
+ * Called once the SYN_DROPPED packet has been fully discarded. Key-ups may have
+ * been lost, so reconcile the virtual side with the physical state. Safe when not
+ * grabbed: nothing was emitted, so out_code/uinput_down are empty.
+ */
+static void resync_after_drop(void) {
+    sync_phys_from_device();
+
+    /* Release time is unknown: cancel instead of risking a page turn or F11/F12. */
+    memset(&g.pending_up, 0, sizeof(g.pending_up));
+    memset(&g.pending_down, 0, sizeof(g.pending_down));
+
+    for (int code = 0; code <= KEY_MAX; code++) {
+        uint16_t out = g.out_code[code];
+        if (out == 0 || g.phys_down[code]) continue;  /* still held: keep out_code */
+        if (g.uinput_down[out]) {
+            emit_key(g.uinput_fd, out, 0);
+            g.uinput_down[out] = false;
+        }
+        g.out_code[code] = 0;
+    }
+    LOG_ERR("input events dropped (SYN_DROPPED); resynced key state");
+}
+
 static void track_physical(int code, int value) {
     if (value == 1 && !g.phys_down[code]) {
         g.phys_down[code] = true;
@@ -707,7 +732,15 @@ static int drain_source(void) {
             const struct input_event *ev = &evs[i];
 
             if (ev->type == EV_SYN && ev->code == SYN_DROPPED) {
-                sync_phys_from_device();
+                g.dropping = true;
+                continue;
+            }
+            if (g.dropping) {
+                /* Discard everything up to and including the next SYN_REPORT. */
+                if (ev->type == EV_SYN && ev->code == SYN_REPORT) {
+                    g.dropping = false;
+                    resync_after_drop();
+                }
                 continue;
             }
             if (ev->type != EV_KEY || ev->code > KEY_MAX) continue;
