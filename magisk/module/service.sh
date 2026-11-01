@@ -25,10 +25,6 @@ if [ -f "$SUPPID" ]; then
 fi
 
 # 예전 방식(앱이 띄운 데몬) 정리
-if [ -f "$LEGACY_PID" ]; then
-  OLD=$(cat "$LEGACY_PID" 2>/dev/null)
-  [ -n "$OLD" ] && kill "$OLD" 2>/dev/null
-fi
 for P in $(pidof page_key_remapd 2>/dev/null); do
   # /data/local/tmp 의 바이너리만 대상 (모듈 데몬은 건드리지 않음)
   EXE=$(readlink "/proc/$P/exe" 2>/dev/null)

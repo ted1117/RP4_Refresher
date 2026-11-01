@@ -779,8 +779,13 @@ static int main_loop(void) {
 
         if (need_tick && now_monotonic_ms() >= next_tick_ms) {
             next_tick_ms = now_monotonic_ms() + TICK_INTERVAL_MS;
-            if (g.watch_wd < 0) try_add_watch();
-            if (g.grabbed) reload_state();
+            if (g.watch_wd < 0) {
+                try_add_watch();  /* reloads on success */
+                /* still no watch (e.g. inotify unavailable): poll state */
+                if (g.watch_wd < 0) reload_state();
+            } else if (g.grabbed) {
+                reload_state();
+            }
             apply_grab(true);
         }
     }
