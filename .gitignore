@@ -130,11 +130,11 @@ obj/
 .idea/navEditor.xml
 .idea
 assets
-!app/src/main/assets/
-!app/src/main/assets/bin/
-!app/src/main/assets/bin/**/
-!app/src/main/assets/bin/**/page_key_remapd
-!app/src/main/assets/bin/**/.gitkeep
+# Magisk 모듈: sqlite3는 추적, 데몬 바이너리는 빌드 산출물이라 무시
+!magisk/module/bin/
+!magisk/module/bin/sqlite3
+magisk/module/bin/page_key_remapd
+build/magisk/
 tools
 
 app/debug

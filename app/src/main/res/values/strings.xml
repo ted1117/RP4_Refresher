@@ -183,4 +183,5 @@
         <item quantity="other">%d hours</item>
     </plurals>
 
+    <string name="page_key_daemon_not_running_warning">Page key features are not working. Check that the RefreshPaper Magisk module is installed and enabled, then reboot.</string>
 </resources>
