@@ -84,6 +84,7 @@ typedef struct {
     bool last_desired;
     bool watch_fail_logged;
     bool dropping;  /* SYN_DROPPED seen: discard events until the next SYN_REPORT */
+    bool event_clock_monotonic;  /* source fd timestamps use CLOCK_MONOTONIC */
 
     char state_dir[256];
     char state_path[300];
@@ -162,6 +163,21 @@ static int64_t now_monotonic_ms(void) {
         return 0;
     }
     return ((int64_t)ts.tv_sec * 1000LL) + (ts.tv_nsec / 1000000LL);
+}
+
+/*
+ * Event timestamp in ms on the monotonic clock. Falls back to "now" when the
+ * source fd could not be switched to CLOCK_MONOTONIC (old behavior).
+ */
+static int64_t event_time_ms(const struct input_event *ev) {
+    if (!g.event_clock_monotonic) {
+        return now_monotonic_ms();
+    }
+#ifdef input_event_sec
+    return ((int64_t)ev->input_event_sec * 1000LL) + (ev->input_event_usec / 1000);
+#else
+    return ((int64_t)ev->time.tv_sec * 1000LL) + (ev->time.tv_usec / 1000);
+#endif
 }
 
 static int find_source_device(char *out_path, size_t out_path_len, char *out_name, size_t out_name_len) {
@@ -546,8 +562,8 @@ static void apply_grab(bool is_retry) {
 
 /* ---------- long press ---------- */
 
-static int process_due_long_press(pending_page_key_t *pending, int64_t now_ms) {
-    if (!pending->active || pending->long_press_triggered || now_ms < pending->deadline_ms) {
+static int process_due_long_press(pending_page_key_t *pending, int64_t at_ms) {
+    if (!pending->active || pending->long_press_triggered || at_ms < pending->deadline_ms) {
         return 0;
     }
 
@@ -558,13 +574,13 @@ static int process_due_long_press(pending_page_key_t *pending, int64_t now_ms) {
     return 0;
 }
 
-static int process_due_long_presses(void) {
-    int64_t now_ms = now_monotonic_ms();
-    if (process_due_long_press(&g.pending_up, now_ms) < 0) {
+/* Fires pending long presses whose deadline is <= at_ms (a point on the event timeline). */
+static int process_due_long_presses(int64_t at_ms) {
+    if (process_due_long_press(&g.pending_up, at_ms) < 0) {
         LOG_ERR("failed to emit page-up long press signal: %s", strerror(errno));
         return -1;
     }
-    if (process_due_long_press(&g.pending_down, now_ms) < 0) {
+    if (process_due_long_press(&g.pending_down, at_ms) < 0) {
         LOG_ERR("failed to emit page-down long press signal: %s", strerror(errno));
         return -1;
     }
@@ -634,7 +650,7 @@ static void track_physical(int code, int value) {
     }
 }
 
-static int handle_key_event(int code, int value) {
+static int handle_key_event(int code, int value, int64_t event_ms) {
     track_physical(code, value);
 
     /* Not grabbed: Android receives the keys directly. Only tracking above. */
@@ -666,7 +682,7 @@ static int handle_key_event(int code, int value) {
                         ? PAGE_UP_LONG_PRESS_SIGNAL_KEY
                         : PAGE_DOWN_LONG_PRESS_SIGNAL_KEY
                 );
-                pending->deadline_ms = now_monotonic_ms() + g.eff.long_press_timeout_ms;
+                pending->deadline_ms = event_ms + g.eff.long_press_timeout_ms;
             }
             return 0;
         }
@@ -746,8 +762,10 @@ static int drain_source(void) {
             if (ev->type != EV_KEY || ev->code > KEY_MAX) continue;
             if (ev->value < 0 || ev->value > 2) continue;
 
-            if (process_due_long_presses() < 0) return -1;
-            if (handle_key_event(ev->code, ev->value) < 0) return -1;
+            /* Resolve long presses in event order: only those due by this event's time. */
+            int64_t event_ms = event_time_ms(ev);
+            if (process_due_long_presses(event_ms) < 0) return -1;
+            if (handle_key_event(ev->code, ev->value, event_ms) < 0) return -1;
         }
     }
 }
@@ -761,7 +779,6 @@ static int main_loop(void) {
     try_add_watch();
 
     while (!g_stop) {
-        if (process_due_long_presses() < 0) return -1;
         apply_grab(false);
 
         int64_t now_ms = now_monotonic_ms();
@@ -802,13 +819,18 @@ static int main_loop(void) {
                 LOG_ERR("source device error (revents=0x%x)", pfds[0].revents);
                 return -1;
             }
-            if (pfds[0].revents & POLLIN) {
-                if (drain_source() < 0) return -1;
-            }
-            if (nfds > 1 && (pfds[1].revents & POLLIN)) {
-                handle_inotify();
-            }
         }
+
+        /*
+         * Drain the source to EAGAIN (also on timeout, to close the race with
+         * events queued meanwhile). Long presses are decided by event timestamps
+         * there; only once the queue is empty is firing by "now" correct.
+         */
+        if (drain_source() < 0) return -1;
+        if (poll_rc > 0 && nfds > 1 && (pfds[1].revents & POLLIN)) {
+            handle_inotify();
+        }
+        if (process_due_long_presses(now_monotonic_ms()) < 0) return -1;
 
         if (need_tick && now_monotonic_ms() >= next_tick_ms) {
             next_tick_ms = now_monotonic_ms() + TICK_INTERVAL_MS;
@@ -819,6 +841,12 @@ static int main_loop(void) {
             } else if (g.grabbed) {
                 reload_state();
             }
+            /*
+             * Another client may have held the grab while a key went up, leaving
+             * phys_down stale. EVIOCGKEY reports the true state. Not while grabbed:
+             * we see every event then, and resyncing would desync out_code tracking.
+             */
+            if (!g.grabbed) sync_phys_from_device();
             apply_grab(true);
         }
     }
@@ -894,6 +922,15 @@ int main(int argc, char **argv) {
     if (g.source_fd < 0) {
         LOG_ERR("failed to open source device %s: %s", source_path, strerror(errno));
         return 3;
+    }
+
+    {
+        int clk = CLOCK_MONOTONIC;
+        if (ioctl(g.source_fd, EVIOCSCLOCKID, &clk) < 0) {
+            LOG_ERR("EVIOCSCLOCKID failed: %s (using receive time for long presses)", strerror(errno));
+        } else {
+            g.event_clock_monotonic = true;
+        }
     }
 
     if (source_name[0] == '\0') {
