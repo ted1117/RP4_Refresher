@@ -183,4 +183,5 @@
         <item quantity="one">%d시간</item>
         <item quantity="other">%d시간</item>
     </plurals>
+    <string name="page_key_daemon_not_running_warning">페이지 키 기능이 동작하지 않습니다. RefreshPaper Magisk 모듈이 설치·활성화되어 있는지 확인하고 재부팅하세요.</string>
 </resources>

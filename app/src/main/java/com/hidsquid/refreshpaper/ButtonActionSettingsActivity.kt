@@ -12,6 +12,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.hidsquid.refreshpaper.databinding.ActivityButtonActionSettingsBinding
 import com.hidsquid.refreshpaper.service.KeyInputDetectingService
+import com.hidsquid.refreshpaper.service.RemapDaemonStatus
 
 class ButtonActionSettingsActivity : Activity() {
 
@@ -108,6 +109,10 @@ class ButtonActionSettingsActivity : Activity() {
         binding.tvPageDownLongSetting.text = getString(
             getF1ActionLabelRes(settingsRepository.getPageDownLongPressAction())
         )
+
+        val showWarning = RemapDaemonStatus.isNeeded(settingsRepository) &&
+            !RemapDaemonStatus.isRunning(this)
+        binding.pageKeyDaemonWarning.visibility = if (showWarning) View.VISIBLE else View.GONE
     }
 
     private fun showF1ActionDialog(

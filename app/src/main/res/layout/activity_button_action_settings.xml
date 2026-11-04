@@ -200,6 +200,17 @@
 
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/pageKeyDaemonWarning"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:paddingStart="4dp"
+                android:text="@string/page_key_daemon_not_running_warning"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/text_secondary"
+                android:visibility="gone" />
+
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>

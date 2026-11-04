@@ -14,6 +14,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.hidsquid.refreshpaper.databinding.ActivityLabsBinding
 import com.hidsquid.refreshpaper.service.KeyInputDetectingService
+import com.hidsquid.refreshpaper.service.RemapDaemonStatus
 
 class LabsActivity : Activity() {
 
@@ -37,6 +38,7 @@ class LabsActivity : Activity() {
     override fun onResume() {
         super.onResume()
         loadSettings()
+        updateDaemonWarning()
     }
 
     private fun setupToolbar() {
@@ -50,6 +52,12 @@ class LabsActivity : Activity() {
         binding.touchRefreshSwitch.isEnabled = autoEnabled
         binding.touchRefreshSwitch.alpha = if (autoEnabled) 1f else 0.5f
         attachTouchRefreshListener()
+    }
+
+    private fun updateDaemonWarning() {
+        val showWarning = RemapDaemonStatus.isNeeded(settingsRepository) &&
+            !RemapDaemonStatus.isRunning(this)
+        binding.pageKeyDaemonWarning.visibility = if (showWarning) View.VISIBLE else View.GONE
     }
 
     private fun setupListeners() {
@@ -238,6 +246,7 @@ class LabsActivity : Activity() {
                 }
 
                 notifyPageKeyRemapStateChanged()
+                updateDaemonWarning()
 
                 selectedPackages.clear()
                 selectedPackages.addAll(toggled)
