@@ -14,27 +14,16 @@ class EPDDisplayModeController(
                 MODE_NORMAL
             )
         } catch (_: Throwable) {
-            // TODO: Implement vendor-specific or root(su)-based fallback if needed.
             MODE_NORMAL
         }
     }
 
     suspend fun setDisplayMode(mode: Int): Boolean = withContext(Dispatchers.IO) {
         try {
-            // Magisk로 설치 시
             Settings.System.putInt(context.contentResolver, KEY_DISPLAY_MODE, mode)
             true
         } catch (_: Throwable) {
-            // 일반 설치 시
-            try {
-                val process = ProcessBuilder(
-                    "su", "-c", "settings put system $KEY_DISPLAY_MODE $mode"
-                ).start()
-
-                process.waitFor() == 0
-            } catch (_: Throwable) {
-                false
-            }
+            false
         }
     }
 

@@ -15,11 +15,13 @@ import android.widget.Toast
 import com.hidsquid.refreshpaper.databinding.ActivityLabsBinding
 import com.hidsquid.refreshpaper.service.KeyInputDetectingService
 import com.hidsquid.refreshpaper.service.RemapDaemonStatus
+import com.hidsquid.refreshpaper.utils.LsposedLauncher
 
 class LabsActivity : Activity() {
 
     private lateinit var binding: ActivityLabsBinding
     private lateinit var settingsRepository: SettingsRepository
+    private var isLsposedLaunchPending = false
     private val prefs by lazy { getSharedPreferences(PREFS_NAME, MODE_PRIVATE) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -155,42 +157,17 @@ class LabsActivity : Activity() {
     }
 
     private fun openLsposedManager() {
+        if (isLsposedLaunchPending) return
+        isLsposedLaunchPending = true
         Thread {
-            val openedByRoot = runRootCommand(
-                "am start -c $LSPOSED_MANAGER_LAUNCH_CATEGORY $LSPOSED_MANAGER_SHELL_COMPONENT"
-            )
-
+            val opened = LsposedLauncher.open(this)
             runOnUiThread {
-                if (openedByRoot) {
-                    return@runOnUiThread
-                }
-
-                val intent = packageManager.getLaunchIntentForPackage(LSPOSED_MANAGER_PACKAGE)
-                if (intent == null) {
-                    Toast.makeText(this, R.string.lsposed_not_found, Toast.LENGTH_SHORT).show()
-                    return@runOnUiThread
-                }
-
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                runCatching {
-                    startActivity(intent)
-                }.onFailure {
-                    Toast.makeText(this, R.string.lsposed_not_found, Toast.LENGTH_SHORT).show()
+                isLsposedLaunchPending = false
+                if (!opened) {
+                    Toast.makeText(this, R.string.lsposed_launch_failed, Toast.LENGTH_LONG).show()
                 }
             }
         }.start()
-    }
-
-    private fun runRootCommand(command: String): Boolean {
-        return runCatching {
-            val process = ProcessBuilder("su", "-c", command).start()
-            val finished = process.waitFor(ROOT_COMMAND_TIMEOUT_MS, java.util.concurrent.TimeUnit.MILLISECONDS)
-            if (!finished) {
-                process.destroyForcibly()
-                return@runCatching false
-            }
-            process.exitValue() == 0
-        }.getOrDefault(false)
     }
 
     private fun showPageKeyAppsDialog(
@@ -320,11 +297,6 @@ class LabsActivity : Activity() {
             "touch_refresh_lsposed_acknowledged"
         private const val PREF_KEY_SKIP_TOUCH_REFRESH_LSPOSED_NOTICE_LEGACY =
             "skip_touch_refresh_lsposed_notice"
-        private const val ROOT_COMMAND_TIMEOUT_MS = 2_500L
-        private const val LSPOSED_MANAGER_PACKAGE = "org.lsposed.manager"
-        private const val LSPOSED_MANAGER_LAUNCH_CATEGORY = "org.lsposed.manager.LAUNCH_MANAGER"
-        private const val LSPOSED_MANAGER_SHELL_COMPONENT =
-            "com.android.shell/.BugreportWarningActivity"
     }
 
     private data class PageKeyTapTargetApp(
