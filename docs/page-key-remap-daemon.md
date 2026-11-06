@@ -70,6 +70,16 @@
 - 데몬 상태 확인: `InputManager`의 입력 장치 중 이름이 `rp_page_key_remap`인 것이 있는지.
 - 실험실 화면과 버튼 동작 설정 화면: 페이지 키 기능을 하나라도 쓰는데 데몬이 없으면 "Magisk 모듈을 확인하라"는 안내를 보여 준다.
 
-## 범위 밖 (다음 작업)
+## LSPosed 매니저 열기 요청
 
-- `MainPermissionCoordinator`의 su(접근성 자동 켜기), `EPDDisplayModeController`의 su 폴백, LSPosed 매니저 열기의 su 정리
+LSPosed 매니저는 root/shell만 띄울 수 있어서, 앱이 요청 파일을 남기고 모듈(`service.sh`)이 대신 연다.
+
+- 요청 폴더: `/data/user_de/0/com.hidsquid.refreshpaper/files` (앱의 device-protected `files/` 자체. 접근성 서비스가 page-key 상태를 쓰면 이미 존재한다. 앱도 방어적으로 `mkdirs()` 한다. 예전의 전용 하위 폴더 `root_request`는 첫 요청 전에 없어서 감시가 첫 요청을 놓쳤기 때문에 쓰지 않고, 모듈이 남아 있으면 한 번 지운다.)
+- 앱: `launch_lsposed.tmp`에 쓴 뒤 `launch_lsposed`로 이름 변경.
+- 모듈: `launch_lsposed`가 생기면 **먼저 지운다** (앱은 3초 안에 사라지면 처리된 것으로 본다). 그다음 `am start -c org.lsposed.manager.LAUNCH_MANAGER com.android.shell/.BugreportWarningActivity`를 실행하고, 출력과 종료 코드를 `/data/local/tmp/page_key_remapd.log`에 남긴다.
+- 감시: 별도 백그라운드 루프가 `inotifyd`로 폴더를 본다. 폴더가 없으면 1초마다 재시도하고, `inotifyd`가 끝나면(폴더 삭제 등) 1초 뒤 다시 시작한다. 일부 toybox `inotifyd`는 마스크 첫 글자를 무시하고 옮겨 들어옴/나감(`m`/`y`) 글자도 뒤바뀌어(`m`에 옛 이름 `.tmp`, `y`에 새 이름) 와서, 마스크는 `wwmy`를 쓰고 이벤트의 종류·이름은 믿지 않는다. 어떤 이벤트든 `launch_lsposed`가 실제로 있을 때만 처리하므로 `.tmp`만 있을 때는 아무 일도 하지 않는다. `files/`에 건 inotify는 `page_key_remap/` 하위 폴더 안의 이벤트는 알려주지 않지만(하위 폴더 항목 자체의 이벤트만 온다), 존재 여부만 확인하므로 무해하다.
+- 루프 시작 때 이미 있는 요청 파일은 수정 시각이 10초 이내면 처리하고, 더 오래됐으면 재부팅 전에 남은 것으로 보고 실행하지 않고 지운다.
+
+## 범위 밖
+
+- 접근성 자동 켜기와 EPD 모드 변경의 su는 제거했다. LSPosed 매니저 열기는 위의 모듈 요청 방식으로 처리한다.
