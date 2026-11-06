@@ -121,6 +121,8 @@ typedef struct {
 
 static daemon_t g;
 
+static void refresh_effective(void);
+
 static void log_msg(const char *fmt, ...) __attribute__((format(printf, 1, 2)));
 
 static void log_msg(const char *fmt, ...) {
@@ -479,6 +481,9 @@ static void handle_touch_event(const struct input_event *ev) {
         g.touch_count++;
         if (g.touch_count >= g.eff.touch_trigger) {
             g.touch_count = 0;
+            /* The app may have died without clearing the state file; re-check before emitting. */
+            refresh_effective();
+            if (g.eff.touch_trigger <= 0) return;  /* may have closed the touch fd */
             if (emit_key_tap(g.uinput_fd, TOUCH_REFRESH_SIGNAL_KEY) < 0) {
                 LOG_ERR("failed to emit touch refresh signal: %s", strerror(errno));
             }
@@ -519,6 +524,7 @@ static void drain_touch(void) {
                 continue;
             }
             handle_touch_event(ev);
+            if (g.touch_fd < 0) break;  /* closed by refresh_effective(); drop the rest */
         }
     }
 }
@@ -987,7 +993,7 @@ static int main_loop(void) {
 
         int64_t now_ms = now_monotonic_ms();
         bool need_tick = g.grabbed || g.watch_wd < 0 || (desired_grab() && !g.grabbed) ||
-                         (g.eff.touch_trigger > 0 && g.touch_fd < 0);
+                         (g.eff.touch_trigger > 0 && g.touch_fd < 0) || g.touch_fd >= 0;
         if (!need_tick) next_tick_ms = now_ms + TICK_INTERVAL_MS;
 
         int64_t timeout = -1;
@@ -1059,7 +1065,7 @@ static int main_loop(void) {
                 try_add_watch();  /* reloads on success */
                 /* still no watch (e.g. inotify unavailable): poll state */
                 if (g.watch_wd < 0) reload_state();
-            } else if (g.grabbed) {
+            } else if (g.grabbed || g.touch_fd >= 0) {
                 reload_state();
             }
             /*
