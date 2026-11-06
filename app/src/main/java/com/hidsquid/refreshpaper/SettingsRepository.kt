@@ -102,6 +102,30 @@ class SettingsRepository(
         return getPageKeySwapTargetPackages().contains(packageName)
     }
 
+    fun getDaemonTouchRefreshTargetPackages(): Set<String> {
+        return prefs.getStringSet(ModulePrefs.KEY_DAEMON_TOUCH_REFRESH_TARGET_PACKAGES, emptySet())
+            ?.mapNotNull { value ->
+                value?.trim()?.takeIf { it.isNotEmpty() }
+            }
+            ?.toSet()
+            .orEmpty()
+    }
+
+    fun setDaemonTouchRefreshTargetPackages(packages: Set<String>): Boolean {
+        val sanitized = packages
+            .mapNotNull { value -> value.trim().takeIf { it.isNotEmpty() } }
+            .toSet()
+
+        return prefs.edit()
+            .putStringSet(ModulePrefs.KEY_DAEMON_TOUCH_REFRESH_TARGET_PACKAGES, sanitized)
+            .commit()
+    }
+
+    fun isDaemonTouchRefreshTargetPackage(packageName: String): Boolean {
+        if (packageName.isBlank()) return false
+        return getDaemonTouchRefreshTargetPackages().contains(packageName)
+    }
+
     fun isManualRefreshEnabled(): Boolean =
         prefs.getBoolean(ModulePrefs.KEY_MANUAL_REFRESH_ENABLED, false)
 

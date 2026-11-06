@@ -41,6 +41,7 @@ class LabsActivity : Activity() {
         super.onResume()
         loadSettings()
         updateDaemonWarning()
+        updateDaemonTouchRefreshCount()
     }
 
     private fun setupToolbar() {
@@ -62,6 +63,15 @@ class LabsActivity : Activity() {
         binding.pageKeyDaemonWarning.visibility = if (showWarning) View.VISIBLE else View.GONE
     }
 
+    private fun updateDaemonTouchRefreshCount() {
+        val count = settingsRepository.getDaemonTouchRefreshTargetPackages().size
+        binding.daemonTouchRefreshCount.text = if (count == 0) {
+            getString(R.string.labs_page_key_tap_apps_none)
+        } else {
+            getString(R.string.labs_page_key_tap_apps_count, count)
+        }
+    }
+
     private fun setupListeners() {
         binding.touchRefreshCard.setOnClickListener {
             if (!settingsRepository.isAutoRefreshEnabled()) {
@@ -70,6 +80,22 @@ class LabsActivity : Activity() {
                 return@setOnClickListener
             }
             binding.touchRefreshSwitch.toggle()
+        }
+
+        binding.daemonTouchRefreshCard.setOnClickListener {
+            if (!settingsRepository.isAutoRefreshEnabled()) {
+                Toast.makeText(this, R.string.labs_touch_refresh_requires_auto, Toast.LENGTH_SHORT)
+                    .show()
+                return@setOnClickListener
+            }
+            showPageKeyAppsDialog(
+                selectedPackagesProvider = { settingsRepository.getDaemonTouchRefreshTargetPackages() },
+                saveTargets = { settingsRepository.setDaemonTouchRefreshTargetPackages(it) },
+                saveEnabled = { true },
+                titleResId = R.string.labs_daemon_touch_refresh_apps_dialog_title,
+                saveFailedResId = R.string.labs_daemon_touch_refresh_save_failed,
+                onDismiss = ::updateDaemonTouchRefreshCount
+            )
         }
 
         binding.pageKeyTapCard.setOnClickListener {
@@ -175,7 +201,8 @@ class LabsActivity : Activity() {
         saveTargets: (Set<String>) -> Boolean,
         saveEnabled: (Set<String>) -> Boolean,
         titleResId: Int,
-        saveFailedResId: Int
+        saveFailedResId: Int,
+        onDismiss: (() -> Unit)? = null
     ) {
         val options = getPageKeyTapTargetCandidates()
         if (options.isEmpty()) {
@@ -193,6 +220,7 @@ class LabsActivity : Activity() {
             .setView(dialogView)
             .setCancelable(true)
             .create()
+        onDismiss?.let { callback -> dialog.setOnDismissListener { callback() } }
         options.forEachIndexed { index, option ->
             val itemView =
                 LayoutInflater.from(this).inflate(R.layout.dialog_home_launcher_item, itemContainer, false)

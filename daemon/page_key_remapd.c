@@ -38,7 +38,12 @@
 #define PAGE_UP_LONG_PRESS_SIGNAL_KEY KEY_F11
 #define PAGE_DOWN_LONG_PRESS_SIGNAL_KEY KEY_F12
 
-#define STATE_PROTOCOL_VERSION 2
+#define TOUCH_REFRESH_SIGNAL_KEY KEY_F10
+#define TOUCH_TAP_MAX_MS 500
+#define TOUCH_TRIGGER_MAX 1000
+#define UINPUT_DEVICE_NAME "rp_page_key_remap"
+
+#define STATE_PROTOCOL_VERSION 3
 #define APP_PACKAGE_NAME "com.hidsquid.refreshpaper"
 #define TICK_INTERVAL_MS 5000
 
@@ -56,6 +61,7 @@ typedef struct {
     bool page_up_long;
     bool page_down_long;
     int timeout_ms;
+    int touch_trigger;
 } raw_state_t;
 
 /* State the daemon actually acts on, after validity checks. */
@@ -64,6 +70,7 @@ typedef struct {
     bool page_up_long_press_enabled;
     bool page_down_long_press_enabled;
     int long_press_timeout_ms;
+    int touch_trigger;  /* 0 = off, N = refresh every N counted touches */
 } remap_state_t;
 
 typedef struct {
@@ -85,6 +92,15 @@ typedef struct {
     bool watch_fail_logged;
     bool dropping;  /* SYN_DROPPED seen: discard events until the next SYN_REPORT */
     bool event_clock_monotonic;  /* source fd timestamps use CLOCK_MONOTONIC */
+
+    /* Touchscreen (read-only, never grabbed); open only while touch_trigger > 0. */
+    int touch_fd;
+    bool touch_failed;           /* last open failed or fd errored: retry on tick only */
+    bool touch_dropping;         /* SYN_DROPPED seen on the touch fd */
+    bool touch_clock_monotonic;
+    int touch_trigger;           /* trigger the counter belongs to */
+    int touch_count;
+    int64_t touch_down_ms;       /* BTN_TOUCH down time, -1 = none */
 
     char state_dir[256];
     char state_path[300];
@@ -169,8 +185,8 @@ static int64_t now_monotonic_ms(void) {
  * Event timestamp in ms on the monotonic clock. Falls back to "now" when the
  * source fd could not be switched to CLOCK_MONOTONIC (old behavior).
  */
-static int64_t event_time_ms(const struct input_event *ev) {
-    if (!g.event_clock_monotonic) {
+static int64_t event_time_ms(const struct input_event *ev, bool monotonic) {
+    if (!monotonic) {
         return now_monotonic_ms();
     }
 #ifdef input_event_sec
@@ -283,7 +299,8 @@ static int setup_uinput_from_source(const unsigned long *source_key_bits, size_t
     if (ioctl(ufd, UI_SET_KEYBIT, KEY_VOLUMEUP) < 0 ||
         ioctl(ufd, UI_SET_KEYBIT, KEY_VOLUMEDOWN) < 0 ||
         ioctl(ufd, UI_SET_KEYBIT, PAGE_UP_LONG_PRESS_SIGNAL_KEY) < 0 ||
-        ioctl(ufd, UI_SET_KEYBIT, PAGE_DOWN_LONG_PRESS_SIGNAL_KEY) < 0) {
+        ioctl(ufd, UI_SET_KEYBIT, PAGE_DOWN_LONG_PRESS_SIGNAL_KEY) < 0 ||
+        ioctl(ufd, UI_SET_KEYBIT, TOUCH_REFRESH_SIGNAL_KEY) < 0) {
         LOG_ERR("failed to enable synthetic key bits: %s", strerror(errno));
         close(ufd);
         return -1;
@@ -291,7 +308,7 @@ static int setup_uinput_from_source(const unsigned long *source_key_bits, size_t
 
     struct uinput_setup usetup;
     memset(&usetup, 0, sizeof(usetup));
-    snprintf(usetup.name, UINPUT_MAX_NAME_SIZE, "rp_page_key_remap");
+    snprintf(usetup.name, UINPUT_MAX_NAME_SIZE, UINPUT_DEVICE_NAME);
     usetup.id.bustype = BUS_VIRTUAL;
     usetup.id.vendor = 0x1209;
     usetup.id.product = 0x4001;
@@ -330,6 +347,182 @@ static int map_key_code(int code, int mode) {
     return code;
 }
 
+/* ---------- touch refresh ---------- */
+
+/* Finds the direct-input touchscreen (INPUT_PROP_DIRECT, BTN_TOUCH, ABS_MT_POSITION_X). */
+static int find_touch_device(char *out_path, size_t out_path_len, char *out_name, size_t out_name_len) {
+    DIR *dir = opendir("/dev/input");
+    if (!dir) return -1;
+
+    struct dirent *ent;
+    int found = -1;
+
+    while ((ent = readdir(dir)) != NULL) {
+        if (strncmp(ent->d_name, "event", 5) != 0) continue;
+
+        char path[256];
+        snprintf(path, sizeof(path), "/dev/input/%s", ent->d_name);
+        int fd = open_event_device(path);
+        if (fd < 0) continue;
+
+        char name[128] = {0};
+        if (ioctl(fd, EVIOCGNAME(sizeof(name)), name) < 0 ||
+            looks_like_gpio_keys(name) || strcmp(name, UINPUT_DEVICE_NAME) == 0) {
+            close(fd);
+            continue;
+        }
+
+        unsigned long props[(INPUT_PROP_MAX / BITS_PER_LONG) + 1] = {0};
+        unsigned long key_bits[(KEY_MAX / BITS_PER_LONG) + 1];
+        unsigned long abs_bits[(ABS_MAX / BITS_PER_LONG) + 1] = {0};
+        bool candidate = false;
+        if (ioctl(fd, EVIOCGPROP(sizeof(props)), props) >= 0 &&
+            read_key_bits(fd, key_bits, ARRAY_SIZE(key_bits)) == 0 &&
+            ioctl(fd, EVIOCGBIT(EV_ABS, sizeof(abs_bits)), abs_bits) >= 0) {
+            candidate = test_bit(props, ARRAY_SIZE(props), INPUT_PROP_DIRECT) &&
+                        test_bit(key_bits, ARRAY_SIZE(key_bits), BTN_TOUCH) &&
+                        test_bit(abs_bits, ARRAY_SIZE(abs_bits), ABS_MT_POSITION_X);
+        }
+        close(fd);
+        if (!candidate) continue;
+
+        snprintf(out_path, out_path_len, "%s", path);
+        snprintf(out_name, out_name_len, "%s", name);
+        found = 0;
+        break;
+    }
+
+    closedir(dir);
+    return found;
+}
+
+static void close_touch(void) {
+    if (g.touch_fd >= 0) {
+        close(g.touch_fd);
+        g.touch_fd = -1;
+        LOG_ERR("touch device closed");
+    }
+    g.touch_dropping = false;
+    g.touch_down_ms = -1;
+    g.touch_count = 0;
+}
+
+static void open_touch(void) {
+    char path[256] = {0};
+    char name[128] = {0};
+
+    if (find_touch_device(path, sizeof(path), name, sizeof(name)) != 0) {
+        if (!g.touch_failed) {
+            LOG_ERR("touch device not found (retrying every %ds)", TICK_INTERVAL_MS / 1000);
+        }
+        g.touch_failed = true;
+        return;
+    }
+
+    int fd = open_event_device(path);
+    if (fd < 0) {
+        if (!g.touch_failed) {
+            LOG_ERR("failed to open touch device %s: %s (retrying every %ds)",
+                    path, strerror(errno), TICK_INTERVAL_MS / 1000);
+        }
+        g.touch_failed = true;
+        return;
+    }
+
+    int clk = CLOCK_MONOTONIC;
+    g.touch_clock_monotonic = ioctl(fd, EVIOCSCLOCKID, &clk) >= 0;
+    if (!g.touch_clock_monotonic) {
+        LOG_ERR("touch EVIOCSCLOCKID failed: %s (using receive time)", strerror(errno));
+    }
+
+    g.touch_fd = fd;
+    g.touch_failed = false;
+    g.touch_dropping = false;
+    g.touch_down_ms = -1;  /* a touch already down at open is ignored: no recorded down */
+    g.touch_count = 0;
+    LOG_ERR("touch device: %s (%s)", path, name);
+}
+
+/*
+ * Opens the touchscreen while touch_trigger > 0 and closes it otherwise.
+ * Also resets the counter when the trigger value changes. Failed opens are
+ * retried only from the tick (is_retry).
+ */
+static void apply_touch(bool is_retry) {
+    int trigger = g.eff.touch_trigger;
+    if (trigger != g.touch_trigger) {
+        g.touch_trigger = trigger;
+        g.touch_count = 0;
+    }
+
+    if (trigger == 0) {
+        close_touch();
+        g.touch_failed = false;
+        return;
+    }
+    if (g.touch_fd >= 0) return;
+    if (g.touch_failed && !is_retry) return;
+    open_touch();
+}
+
+static void handle_touch_event(const struct input_event *ev) {
+    if (ev->type != EV_KEY || ev->code != BTN_TOUCH) return;
+
+    int64_t at_ms = event_time_ms(ev, g.touch_clock_monotonic);
+    if (ev->value == 1) {
+        g.touch_down_ms = at_ms;
+    } else if (ev->value == 0) {
+        bool is_tap = g.touch_down_ms >= 0 && at_ms - g.touch_down_ms <= TOUCH_TAP_MAX_MS;
+        g.touch_down_ms = -1;
+        if (!is_tap || g.eff.touch_trigger <= 0) return;
+
+        g.touch_count++;
+        if (g.touch_count >= g.eff.touch_trigger) {
+            g.touch_count = 0;
+            if (emit_key_tap(g.uinput_fd, TOUCH_REFRESH_SIGNAL_KEY) < 0) {
+                LOG_ERR("failed to emit touch refresh signal: %s", strerror(errno));
+            }
+        }
+    }
+}
+
+/* Reads everything queued on the touch fd. Read errors close it; the tick retries. */
+static void drain_touch(void) {
+    struct input_event evs[32];
+
+    while (g.touch_fd >= 0) {
+        ssize_t n = read(g.touch_fd, evs, sizeof(evs));
+        if (n < 0) {
+            if (errno == EINTR) continue;
+            if (errno == EAGAIN) return;
+            LOG_ERR("touch read failed: %s", strerror(errno));
+            close_touch();
+            g.touch_failed = true;
+            return;
+        }
+        if (n == 0) return;
+
+        size_t count = (size_t)n / sizeof(evs[0]);
+        for (size_t i = 0; i < count; i++) {
+            const struct input_event *ev = &evs[i];
+
+            if (ev->type == EV_SYN && ev->code == SYN_DROPPED) {
+                g.touch_dropping = true;
+                continue;
+            }
+            if (g.touch_dropping) {
+                /* Discard up to and including the next SYN_REPORT; an up may be lost. */
+                if (ev->type == EV_SYN && ev->code == SYN_REPORT) {
+                    g.touch_dropping = false;
+                    g.touch_down_ms = -1;
+                }
+                continue;
+            }
+            handle_touch_event(ev);
+        }
+    }
+}
+
 /* ---------- state file ---------- */
 
 static void read_raw_state(raw_state_t *out) {
@@ -346,20 +539,25 @@ static void read_raw_state(raw_state_t *out) {
     buf[n] = '\0';
     out->present = true;
 
-    int v[6] = {0};
-    int parsed = sscanf(buf, "%d %d %d %d %d %d", &v[0], &v[1], &v[2], &v[3], &v[4], &v[5]);
+    int v[7] = {0};
+    int parsed = sscanf(buf, "%d %d %d %d %d %d %d", &v[0], &v[1], &v[2], &v[3], &v[4], &v[5], &v[6]);
     if (parsed < 1) return;
     out->version = v[0];
     if (v[0] != STATE_PROTOCOL_VERSION) return;
-    if (parsed < 6) return;
+    if (parsed < 7) return;
 
     int mode = v[2];
     int timeout_ms = v[5];
+    int touch_trigger = v[6];
     if (mode < REMAP_MODE_DISABLED || mode > REMAP_MODE_SWAP_ONLY) {
         mode = REMAP_MODE_DISABLED;
     }
     if (timeout_ms < 100 || timeout_ms > 5000) {
         timeout_ms = DEFAULT_LONG_PRESS_TIMEOUT_MS;
+    }
+
+    if (touch_trigger < 1 || touch_trigger > TOUCH_TRIGGER_MAX) {
+        touch_trigger = 0;
     }
 
     out->parsed = true;
@@ -368,6 +566,7 @@ static void read_raw_state(raw_state_t *out) {
     out->page_up_long = v[3] != 0;
     out->page_down_long = v[4] != 0;
     out->timeout_ms = timeout_ms;
+    out->touch_trigger = touch_trigger;
 }
 
 static bool app_pid_valid(int pid) {
@@ -393,6 +592,7 @@ static void refresh_effective(void) {
         .page_up_long_press_enabled = false,
         .page_down_long_press_enabled = false,
         .long_press_timeout_ms = DEFAULT_LONG_PRESS_TIMEOUT_MS,
+        .touch_trigger = 0,
     };
     const char *reason;
 
@@ -409,6 +609,7 @@ static void refresh_effective(void) {
         eff.page_up_long_press_enabled = g.raw.page_up_long;
         eff.page_down_long_press_enabled = g.raw.page_down_long;
         eff.long_press_timeout_ms = g.raw.timeout_ms;
+        eff.touch_trigger = g.raw.touch_trigger;
         reason = "ok";
     }
 
@@ -418,9 +619,10 @@ static void refresh_effective(void) {
     char line[256];
     if (g.raw.parsed) {
         snprintf(line, sizeof(line),
-                 "state: pid=%d mode=%d up_long=%d down_long=%d timeout=%dms -> effective mode=%d up_long=%d down_long=%d (%s)",
+                 "state: pid=%d mode=%d up_long=%d down_long=%d timeout=%dms touch=%d -> effective mode=%d up_long=%d down_long=%d touch=%d (%s)",
                  g.raw.pid, g.raw.mode, g.raw.page_up_long, g.raw.page_down_long, g.raw.timeout_ms,
-                 eff.remap_mode, eff.page_up_long_press_enabled, eff.page_down_long_press_enabled, reason);
+                 g.raw.touch_trigger, eff.remap_mode, eff.page_up_long_press_enabled,
+                 eff.page_down_long_press_enabled, eff.touch_trigger, reason);
     } else {
         snprintf(line, sizeof(line), "state: unusable -> effective disabled (%s)", reason);
     }
@@ -428,6 +630,8 @@ static void refresh_effective(void) {
         snprintf(g.last_state_log, sizeof(g.last_state_log), "%s", line);
         LOG_ERR("%s", line);
     }
+
+    apply_touch(false);
 }
 
 static void reload_state(void) {
@@ -763,7 +967,7 @@ static int drain_source(void) {
             if (ev->value < 0 || ev->value > 2) continue;
 
             /* Resolve long presses in event order: only those due by this event's time. */
-            int64_t event_ms = event_time_ms(ev);
+            int64_t event_ms = event_time_ms(ev, g.event_clock_monotonic);
             if (process_due_long_presses(event_ms) < 0) return -1;
             if (handle_key_event(ev->code, ev->value, event_ms) < 0) return -1;
         }
@@ -782,7 +986,8 @@ static int main_loop(void) {
         apply_grab(false);
 
         int64_t now_ms = now_monotonic_ms();
-        bool need_tick = g.grabbed || g.watch_wd < 0 || (desired_grab() && !g.grabbed);
+        bool need_tick = g.grabbed || g.watch_wd < 0 || (desired_grab() && !g.grabbed) ||
+                         (g.eff.touch_trigger > 0 && g.touch_fd < 0);
         if (!need_tick) next_tick_ms = now_ms + TICK_INTERVAL_MS;
 
         int64_t timeout = -1;
@@ -795,14 +1000,23 @@ static int main_loop(void) {
             if (timeout < 0 || t < timeout) timeout = t;
         }
 
-        struct pollfd pfds[2];
+        struct pollfd pfds[3];
         nfds_t nfds = 0;
+        int inotify_idx = -1;
+        int touch_idx = -1;
         memset(pfds, 0, sizeof(pfds));
         pfds[nfds].fd = g.source_fd;
         pfds[nfds].events = POLLIN;
         nfds++;
         if (g.inotify_fd >= 0) {
+            inotify_idx = (int)nfds;
             pfds[nfds].fd = g.inotify_fd;
+            pfds[nfds].events = POLLIN;
+            nfds++;
+        }
+        if (g.touch_fd >= 0) {
+            touch_idx = (int)nfds;
+            pfds[nfds].fd = g.touch_fd;
             pfds[nfds].events = POLLIN;
             nfds++;
         }
@@ -819,6 +1033,12 @@ static int main_loop(void) {
                 LOG_ERR("source device error (revents=0x%x)", pfds[0].revents);
                 return -1;
             }
+            if (touch_idx >= 0 && pfds[touch_idx].fd == g.touch_fd &&
+                (pfds[touch_idx].revents & (POLLERR | POLLHUP | POLLNVAL))) {
+                LOG_ERR("touch device error (revents=0x%x)", pfds[touch_idx].revents);
+                close_touch();
+                g.touch_failed = true;  /* the tick retries */
+            }
         }
 
         /*
@@ -827,9 +1047,10 @@ static int main_loop(void) {
          * there; only once the queue is empty is firing by "now" correct.
          */
         if (drain_source() < 0) return -1;
-        if (poll_rc > 0 && nfds > 1 && (pfds[1].revents & POLLIN)) {
+        if (poll_rc > 0 && inotify_idx >= 0 && (pfds[inotify_idx].revents & POLLIN)) {
             handle_inotify();
         }
+        drain_touch();
         if (process_due_long_presses(now_monotonic_ms()) < 0) return -1;
 
         if (need_tick && now_monotonic_ms() >= next_tick_ms) {
@@ -848,6 +1069,7 @@ static int main_loop(void) {
              */
             if (!g.grabbed) sync_phys_from_device();
             apply_grab(true);
+            apply_touch(true);
         }
     }
 
@@ -869,6 +1091,7 @@ static void shutdown_daemon(void) {
     }
     close(g.uinput_fd);
     close(g.source_fd);
+    if (g.touch_fd >= 0) close(g.touch_fd);
     if (g.inotify_fd >= 0) close(g.inotify_fd);
 }
 
@@ -905,6 +1128,8 @@ int main(int argc, char **argv) {
 
     memset(&g, 0, sizeof(g));
     g.source_fd = g.uinput_fd = g.inotify_fd = g.watch_wd = -1;
+    g.touch_fd = -1;
+    g.touch_down_ms = -1;
     if (snprintf(g.state_dir, sizeof(g.state_dir), "%s", state_dir) >= (int)sizeof(g.state_dir) ||
         snprintf(g.state_path, sizeof(g.state_path), "%s/state", state_dir) >= (int)sizeof(g.state_path)) {
         LOG_ERR("--state-dir too long");
@@ -956,7 +1181,7 @@ int main(int argc, char **argv) {
         close(g.source_fd);
         return 7;
     }
-    LOG_ERR("uinput device rp_page_key_remap created");
+    LOG_ERR("uinput device %s created", UINPUT_DEVICE_NAME);
 
     g.inotify_fd = inotify_init1(IN_NONBLOCK | IN_CLOEXEC);
     if (g.inotify_fd < 0) {

@@ -144,6 +144,10 @@
     <string name="labs_section_page_key_tap">Page Key Remap</string>
     <string name="labs_touch_refresh_title">Touch-based Refresh</string>
     <string name="labs_touch_refresh_description">Refresh by tapping the screen</string>
+    <string name="labs_daemon_touch_refresh_title">Touch refresh (no LSPosed)</string>
+    <string name="labs_daemon_touch_refresh_description">Counts taps and swipes in selected apps and refreshes the screen. Enabling it for the same app as Touch-based Refresh may count twice.</string>
+    <string name="labs_daemon_touch_refresh_apps_dialog_title">Select touch refresh apps</string>
+    <string name="labs_daemon_touch_refresh_save_failed">Failed to save touch refresh setting</string>
     <string name="labs_touch_refresh_requires_auto">Enable Auto Refresh first</string>
     <string name="labs_page_key_tap_title">Page Key to Volume Remap</string>
     <string name="labs_page_key_tap_description">Remap Page Up/Down to Volume Up/Down in selected apps (disabled on Ridi)</string>

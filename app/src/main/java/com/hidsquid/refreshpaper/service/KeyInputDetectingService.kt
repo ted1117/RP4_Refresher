@@ -124,6 +124,9 @@ class KeyInputDetectingService : AccessibilityService() {
         if (handlePageKeyLongPressSignal(event)) {
             return true
         }
+        if (handleTouchRefreshSignal(event)) {
+            return true
+        }
 
         val keyCode = event.keyCode
         if (event.action != KeyEvent.ACTION_UP) return super.onKeyEvent(event)
@@ -152,6 +155,7 @@ class KeyInputDetectingService : AccessibilityService() {
             val triggerCount = intent.getIntExtra(EXTRA_NUMBER, 5)
             shortcutHandler.setTriggerCount(triggerCount)
             settingsRepository.setPagesPerRefresh(triggerCount)
+            remapDaemonController.scheduleStateUpdate()
         }
         return super.onStartCommand(intent, flags, startId)
     }
@@ -196,6 +200,16 @@ class KeyInputDetectingService : AccessibilityService() {
         return true
     }
 
+    private fun handleTouchRefreshSignal(event: KeyEvent): Boolean {
+        if (event.keyCode != TOUCH_REFRESH_SIGNAL_KEY) return false
+        if (!isRemapDaemonEvent(event)) return false
+
+        if (event.action == KeyEvent.ACTION_DOWN) {
+            refreshCoordinator.doFullRefresh()
+        }
+        return true
+    }
+
     private fun isRemapDaemonEvent(event: KeyEvent): Boolean {
         val inputDevice = InputDevice.getDevice(event.deviceId) ?: return false
         return inputDevice.name == REMAP_DAEMON_DEVICE_NAME
@@ -217,5 +231,6 @@ class KeyInputDetectingService : AccessibilityService() {
         private const val REMAP_DAEMON_DEVICE_NAME = "rp_page_key_remap"
         private const val PAGE_UP_LONG_PRESS_SIGNAL_KEY = KeyEvent.KEYCODE_F11
         private const val PAGE_DOWN_LONG_PRESS_SIGNAL_KEY = KeyEvent.KEYCODE_F12
+        private const val TOUCH_REFRESH_SIGNAL_KEY = KeyEvent.KEYCODE_F10
     }
 }

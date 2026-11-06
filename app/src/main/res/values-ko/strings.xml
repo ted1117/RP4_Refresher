@@ -145,6 +145,10 @@
     <string name="labs_section_page_key_tap">페이지 넘김 버튼</string>
     <string name="labs_touch_refresh_title">터치 기반 새로고침</string>
     <string name="labs_touch_refresh_description">터치로 페이지를 넘길 때 페이지 새로고침 동작</string>
+    <string name="labs_daemon_touch_refresh_title">터치 리프레시 (LSPosed 없이)</string>
+    <string name="labs_daemon_touch_refresh_description">선택한 앱에서 화면을 톡 치거나 넘길 때 횟수를 세어 리프레시합니다. 기존 터치 리프레시와 같은 앱에 함께 켜면 두 번 셀 수 있습니다.</string>
+    <string name="labs_daemon_touch_refresh_apps_dialog_title">터치 리프레시 적용 앱 선택</string>
+    <string name="labs_daemon_touch_refresh_save_failed">터치 리프레시 설정 저장에 실패했습니다</string>
     <string name="labs_touch_refresh_requires_auto">먼저 자동 새로고침을 켜주세요</string>
     <string name="labs_page_key_tap_title">볼륨 버튼으로 변환</string>
     <string name="labs_page_key_tap_description">선택한 앱에서 페이지 넘김 버튼을 볼륨 버튼으로 변환</string>
