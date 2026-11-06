@@ -142,10 +142,8 @@
     <string name="labs_description">Experimental features and settings</string>
     <string name="labs_section_refresh">Refresh</string>
     <string name="labs_section_page_key_tap">Page Key Remap</string>
-    <string name="labs_touch_refresh_title">Touch-based Refresh</string>
-    <string name="labs_touch_refresh_description">Refresh by tapping the screen</string>
-    <string name="labs_daemon_touch_refresh_title">Touch refresh (no LSPosed)</string>
-    <string name="labs_daemon_touch_refresh_description">Counts taps and swipes in selected apps and refreshes the screen. Enabling it for the same app as Touch-based Refresh may count twice.</string>
+    <string name="labs_daemon_touch_refresh_title">Touch-based Refresh</string>
+    <string name="labs_daemon_touch_refresh_description">Refresh when turning pages by touch in selected apps</string>
     <string name="labs_daemon_touch_refresh_apps_dialog_title">Select touch refresh apps</string>
     <string name="labs_daemon_touch_refresh_save_failed">Failed to save touch refresh setting</string>
     <string name="labs_touch_refresh_requires_auto">Enable Auto Refresh first</string>
@@ -157,13 +155,10 @@
     <string name="labs_page_key_swap_save_failed">Failed to save page key swap setting</string>
     <string name="labs_page_key_tap_apps_title">Target Apps</string>
     <string name="labs_page_key_tap_apps_none">None selected</string>
-    <string name="labs_page_key_tap_apps_count">%d selected</string>
     <string name="labs_page_key_tap_apps_dialog_title">Select target apps</string>
     <string name="labs_page_key_swap_apps_dialog_title">Select swap target apps</string>
     <string name="labs_page_key_tap_apps_empty">No selectable apps found</string>
     <string name="labs_page_key_tap_apps_save_failed">Failed to save target apps</string>
-    <string name="labs_touch_refresh_lsposed_notice_title">LSPosed Setup</string>
-    <string name="labs_touch_refresh_lsposed_notice_message">To use touch-based refresh, check the target apps for this feature in LSPosed.</string>
     <string name="labs_warning_title">Labs Warning</string>
     <string name="labs_warning_message">Entering Labs may cause performance degradation or increased battery usage.</string>
     <string name="labs_warning_dont_show_again">Don’t show again</string>

@@ -65,7 +65,6 @@ class KeyInputDetectingService : AccessibilityService() {
         )
 
         serviceBroadcastReceiver = KeyInputServiceBroadcastReceiver(
-            onRefreshScreen = refreshCoordinator::doFullRefresh,
             onShowBrightness = actionLauncher::launchBrightnessDialog,
             onRp400GlobalButton = ::handleRp400GlobalButton,
             onRemapStateChanged = remapDaemonController::scheduleStateUpdate,
@@ -75,7 +74,6 @@ class KeyInputDetectingService : AccessibilityService() {
         registerReceiver(
             serviceBroadcastReceiver,
             IntentFilter().apply {
-                addAction(ACTION_REFRESH_SCREEN)
                 addAction(ACTION_SHOW_BRIGHTNESS_ACTIVITY)
                 addAction(ACTION_RP400_GLOBAL_BUTTON)
                 addAction(ACTION_PAGE_KEY_REMAP_STATE_CHANGED)
@@ -217,7 +215,6 @@ class KeyInputDetectingService : AccessibilityService() {
 
     companion object {
         const val EXTRA_NUMBER: String = "EXTRA_NUMBER"
-        const val ACTION_REFRESH_SCREEN: String = "com.hidsquid.refreshpaper.ACTION_REFRESH_SCREEN"
         const val ACTION_SHOW_BRIGHTNESS_ACTIVITY: String =
             "com.hidsquid.refreshpaper.ACTION_SHOW_BRIGHTNESS_ACTIVITY"
         const val ACTION_RP400_GLOBAL_BUTTON: String = "ridi.intent.action.GLOBAL_BUTTON"

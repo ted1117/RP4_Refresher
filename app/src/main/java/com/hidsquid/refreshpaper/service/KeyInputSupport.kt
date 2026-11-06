@@ -207,7 +207,6 @@ class RefreshCoordinator(
 }
 
 class KeyInputServiceBroadcastReceiver(
-    private val onRefreshScreen: () -> Unit,
     private val onShowBrightness: () -> Unit,
     private val onRp400GlobalButton: (Intent) -> Unit,
     private val onRemapStateChanged: () -> Unit,
@@ -216,7 +215,6 @@ class KeyInputServiceBroadcastReceiver(
 ) : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         when (intent?.action) {
-            KeyInputDetectingService.ACTION_REFRESH_SCREEN -> onRefreshScreen()
             KeyInputDetectingService.ACTION_SHOW_BRIGHTNESS_ACTIVITY -> onShowBrightness()
             KeyInputDetectingService.ACTION_RP400_GLOBAL_BUTTON -> onRp400GlobalButton(intent)
             KeyInputDetectingService.ACTION_PAGE_KEY_REMAP_STATE_CHANGED -> onRemapStateChanged()

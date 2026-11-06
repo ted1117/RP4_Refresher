@@ -23,17 +23,6 @@ class SettingsRepository(
             .commit()
     }
 
-    fun isTouchRefreshEnabled(): Boolean {
-        if (!isAutoRefreshEnabled()) return false
-        return prefs.getBoolean(ModulePrefs.KEY_TOUCH_REFRESH_ENABLED, false)
-    }
-
-    fun setTouchRefreshEnabled(enabled: Boolean) {
-        prefs.edit()
-            .putBoolean(ModulePrefs.KEY_TOUCH_REFRESH_ENABLED, enabled)
-            .commit()
-    }
-
     fun isScreenshotToastEnabled(): Boolean {
         return prefs.getBoolean(ModulePrefs.KEY_SCREENSHOT_TOAST_ENABLED, true)
     }

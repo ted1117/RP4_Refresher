@@ -45,40 +45,6 @@
                 android:layout_height="wrap_content">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/touchRefreshCard"
-                    style="@style/ListItemContainer">
-
-                    <TextView
-                        android:id="@+id/touchRefreshTitle"
-                        style="@style/ListItemTitle"
-                        android:text="@string/labs_touch_refresh_title"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/touchRefreshSwitch"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        style="@style/ListItemDesc"
-                        android:text="@string/labs_touch_refresh_description"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/touchRefreshSwitch"
-                        app:layout_constraintTop_toBottomOf="@+id/touchRefreshTitle"
-                        app:layout_constraintBottom_toBottomOf="parent" />
-
-                    <Switch
-                        android:id="@+id/touchRefreshSwitch"
-                        style="@style/ListItemSwitch"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/divider_height"
-                    android:background="@color/divider_color" />
-
-                <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/daemonTouchRefreshCard"
                     style="@style/ListItemContainer">
 
@@ -87,7 +53,7 @@
                         style="@style/ListItemTitle"
                         android:text="@string/labs_daemon_touch_refresh_title"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/daemonTouchRefreshCount"
+                        app:layout_constraintEnd_toStartOf="@+id/daemonTouchRefreshArrow"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
@@ -95,21 +61,8 @@
                         style="@style/ListItemDesc"
                         android:text="@string/labs_daemon_touch_refresh_description"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/daemonTouchRefreshCount"
-                        app:layout_constraintTop_toBottomOf="@+id/daemonTouchRefreshTitle"
-                        app:layout_constraintBottom_toBottomOf="parent" />
-
-                    <TextView
-                        android:id="@+id/daemonTouchRefreshCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:text="@string/labs_page_key_tap_apps_none"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="@dimen/text_size_item"
                         app:layout_constraintEnd_toStartOf="@+id/daemonTouchRefreshArrow"
-                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/daemonTouchRefreshTitle"
                         app:layout_constraintBottom_toBottomOf="parent" />
 
                     <ImageView

@@ -6,7 +6,6 @@ object ModulePrefs {
     const val KEY_AUTO_REFRESH_ENABLED = "rp_auto_refresh_enabled"
     const val KEY_MANUAL_REFRESH_ENABLED = "rp_manual_refresh_enabled"
     const val KEY_PAGES_PER_REFRESH = "rp_pages_per_refresh"
-    const val KEY_TOUCH_REFRESH_ENABLED = "rp_touch_refresh_enabled"
     const val KEY_SCREENSHOT_TOAST_ENABLED = "rp_screenshot_toast_enabled"
     const val KEY_PAGE_KEY_TAP_ENABLED = "rp_page_key_tap_enabled"
     const val KEY_PAGE_KEY_TAP_TARGET_PACKAGES = "rp_page_key_tap_target_packages"
