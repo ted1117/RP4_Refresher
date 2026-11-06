@@ -37,7 +37,8 @@ class KeyInputDetectingService : AccessibilityService() {
             context = applicationContext,
             settingsRepository = settingsRepository,
             blockedPackageName = BLOCKED_APP_PACKAGE_NAME,
-            foregroundPackageProvider = foregroundAppTracker::getEffectivePackageName
+            foregroundPackageProvider = foregroundAppTracker::getEffectivePackageName,
+            touchForegroundPackageProvider = foregroundAppTracker::getCurrentUserAppPackageName
         )
         actionLauncher = ServiceActionLauncher(
             context = this,
@@ -69,7 +70,8 @@ class KeyInputDetectingService : AccessibilityService() {
             onRp400GlobalButton = ::handleRp400GlobalButton,
             onRemapStateChanged = remapDaemonController::scheduleStateUpdate,
             onTakeScreenshot = ::triggerScreenshot,
-            onOpenQuickSettings = actionLauncher::launchQuickSettingsDialog
+            onOpenQuickSettings = actionLauncher::launchQuickSettingsDialog,
+            onOverlayClosed = ::handleOverlayClosed
         )
         registerReceiver(
             serviceBroadcastReceiver,
@@ -79,8 +81,14 @@ class KeyInputDetectingService : AccessibilityService() {
                 addAction(ACTION_PAGE_KEY_REMAP_STATE_CHANGED)
                 addAction(ACTION_TAKE_SCREENSHOT)
                 addAction(ACTION_OPEN_QUICK_SETTINGS)
+                addAction(ACTION_OVERLAY_CLOSED)
             }
         )
+    }
+
+    private fun handleOverlayClosed() {
+        foregroundAppTracker.onOverlayClosed()
+        remapDaemonController.scheduleStateUpdate()
     }
 
     override fun onServiceConnected() {
@@ -224,6 +232,8 @@ class KeyInputDetectingService : AccessibilityService() {
             "com.hidsquid.refreshpaper.ACTION_TAKE_SCREENSHOT"
         const val ACTION_OPEN_QUICK_SETTINGS: String =
             "com.hidsquid.refreshpaper.ACTION_OPEN_QUICK_SETTINGS"
+        const val ACTION_OVERLAY_CLOSED: String =
+            "com.hidsquid.refreshpaper.ACTION_OVERLAY_CLOSED"
         private const val BLOCKED_APP_PACKAGE_NAME = "com.ridi.paper"
         private const val REMAP_DAEMON_DEVICE_NAME = "rp_page_key_remap"
         private const val PAGE_UP_LONG_PRESS_SIGNAL_KEY = KeyEvent.KEYCODE_F11

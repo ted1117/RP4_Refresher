@@ -11,6 +11,7 @@ import androidx.activity.ComponentActivity
 import androidx.core.graphics.drawable.toDrawable
 import com.hidsquid.refreshpaper.R
 import com.hidsquid.refreshpaper.SettingsRepository
+import com.hidsquid.refreshpaper.service.KeyInputDetectingService
 
 class BrightnessActivity : ComponentActivity() {
     private lateinit var binder: BrightnessControlBinder
@@ -42,6 +43,15 @@ class BrightnessActivity : ComponentActivity() {
                 addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
             }
             context.startActivity(intent)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (isFinishing) {
+            sendBroadcast(
+                Intent(KeyInputDetectingService.ACTION_OVERLAY_CLOSED).setPackage(packageName)
+            )
         }
     }
 }

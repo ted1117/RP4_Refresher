@@ -98,7 +98,7 @@ typedef struct {
     bool touch_failed;           /* last open failed or fd errored: retry on tick only */
     bool touch_dropping;         /* SYN_DROPPED seen on the touch fd */
     bool touch_clock_monotonic;
-    int touch_trigger;           /* trigger the counter belongs to */
+    int touch_trigger;           /* last non-zero trigger the counter belongs to */
     int touch_count;
     int64_t touch_down_ms;       /* BTN_TOUCH down time, -1 = none */
 
@@ -406,7 +406,6 @@ static void close_touch(void) {
     }
     g.touch_dropping = false;
     g.touch_down_ms = -1;
-    g.touch_count = 0;
 }
 
 static void open_touch(void) {
@@ -441,20 +440,21 @@ static void open_touch(void) {
     g.touch_failed = false;
     g.touch_dropping = false;
     g.touch_down_ms = -1;  /* a touch already down at open is ignored: no recorded down */
-    g.touch_count = 0;
     LOG_ERR("touch device: %s (%s)", path, name);
 }
 
 /*
  * Opens the touchscreen while touch_trigger > 0 and closes it otherwise.
- * Also resets the counter when the trigger value changes. Failed opens are
+ * The counter is kept across off periods and reset only when the trigger
+ * changes from one non-zero value to another. Failed opens are
  * retried only from the tick (is_retry).
  */
 static void apply_touch(bool is_retry) {
     int trigger = g.eff.touch_trigger;
-    if (trigger != g.touch_trigger) {
+    /* The count survives off periods; only a change between non-zero triggers resets it. */
+    if (trigger > 0) {
+        if (g.touch_trigger > 0 && trigger != g.touch_trigger) g.touch_count = 0;
         g.touch_trigger = trigger;
-        g.touch_count = 0;
     }
 
     if (trigger == 0) {

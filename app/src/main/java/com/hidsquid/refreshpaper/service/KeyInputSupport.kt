@@ -161,9 +161,19 @@ class ForegroundAppTracker(
         }
     }
 
+    fun onOverlayClosed() {
+        if (currentPackageName == selfPackageName) {
+            currentPackageName = foregroundAppPackage
+        }
+    }
+
     fun getEffectivePackageName(): String {
         if (isUserAppPackage(currentPackageName)) return currentPackageName
         return foregroundAppPackage
+    }
+
+    fun getCurrentUserAppPackageName(): String {
+        return if (isUserAppPackage(currentPackageName)) currentPackageName else ""
     }
 
     fun isBlocked(blockedPackageName: String): Boolean {
@@ -211,7 +221,8 @@ class KeyInputServiceBroadcastReceiver(
     private val onRp400GlobalButton: (Intent) -> Unit,
     private val onRemapStateChanged: () -> Unit,
     private val onTakeScreenshot: () -> Unit,
-    private val onOpenQuickSettings: () -> Unit
+    private val onOpenQuickSettings: () -> Unit,
+    private val onOverlayClosed: () -> Unit
 ) : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         when (intent?.action) {
@@ -220,6 +231,7 @@ class KeyInputServiceBroadcastReceiver(
             KeyInputDetectingService.ACTION_PAGE_KEY_REMAP_STATE_CHANGED -> onRemapStateChanged()
             KeyInputDetectingService.ACTION_TAKE_SCREENSHOT -> onTakeScreenshot()
             KeyInputDetectingService.ACTION_OPEN_QUICK_SETTINGS -> onOpenQuickSettings()
+            KeyInputDetectingService.ACTION_OVERLAY_CLOSED -> onOverlayClosed()
         }
     }
 }

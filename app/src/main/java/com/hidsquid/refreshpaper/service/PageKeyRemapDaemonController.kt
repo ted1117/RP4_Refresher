@@ -15,7 +15,8 @@ class PageKeyRemapDaemonController(
     private val context: Context,
     private val settingsRepository: SettingsRepository,
     private val blockedPackageName: String,
-    private val foregroundPackageProvider: () -> String
+    private val foregroundPackageProvider: () -> String,
+    private val touchForegroundPackageProvider: () -> String
 ) {
     private val mainHandler = Handler(Looper.getMainLooper())
     private val executor = Executors.newSingleThreadExecutor()
@@ -116,7 +117,7 @@ class PageKeyRemapDaemonController(
 
     private fun resolveTouchTrigger(): Int {
         if (!settingsRepository.isAutoRefreshEnabled()) return 0
-        val packageName = foregroundPackageProvider()
+        val packageName = touchForegroundPackageProvider()
         if (packageName.isBlank()) return 0
         if (packageName == blockedPackageName) return 0
         if (!settingsRepository.isDaemonTouchRefreshTargetPackage(packageName)) return 0
