@@ -4,14 +4,14 @@
 
 ### hook·리시버 (한 PR로 묶기 좋음)
 
-- [x] SystemUI hook 예외 처리: `SystemUIHook`의 `getMethod("isForegroundApp")`가 예외 처리 밖에 있고 `findViewById` 결과에 null 확인이 없음. RIDI 펌웨어가 바뀌면 SystemUI가 반복 재시작될 수 있음 — (refactor/hooks-kavaref)
+- [x] SystemUI hook 예외 처리: `SystemUIHook`의 `getMethod("isForegroundApp")`가 예외 처리 밖에 있고 `findViewById` 결과에 null 확인이 없음. RIDI 펌웨어가 바뀌면 SystemUI가 반복 재시작될 수 있음 (#29)
 - [ ] broadcast 리시버 권한: `ACTION_TAKE_SCREENSHOT`, `ACTION_OPEN_QUICK_SETTINGS`, `ACTION_SHOW_BRIGHTNESS_ACTIVITY` 리시버가 권한 없이 등록되어 다른 앱이 실행시킬 수 있음
 - [x] 터치 리프레시 hook 중복: `AutoRefreshHook`의 `loadApp {}`가 한 프로세스에서 여러 번 걸리면 터치 1번이 2번으로 집계됨 — hook 제거로 해결 (#28)
 - [x] 터치 리프레시 설정 읽기: 터치할 때마다 `HookPrefs`가 설정 파일을 다시 읽음 — hook 제거로 해결 (#28)
 
 ### 그 밖
 
-- [x] system_server hook 설정 읽기: `SystemServerHook`의 `isSecureLocked` hook이 WM 전역 락 안에서 250ms마다 설정 파일을 다시 읽음. 메모리에 두고 변경 시에만 다시 읽기 — (refactor/hooks-kavaref)
+- [x] system_server hook 설정 읽기: `SystemServerHook`의 `isSecureLocked` hook이 WM 전역 락 안에서 250ms마다 설정 파일을 다시 읽음. 메모리에 두고 변경 시에만 다시 읽기 (#29)
 - [ ] `PageCountDialogController`가 접근성 서비스를 `startService`로도 시작함. 접근성이 꺼져 있으면 시스템과 연결되지 않은 서비스 인스턴스가 생김
 - [ ] 스크린샷 토스트: 저장 실패·취소 때도 "스크린샷 촬영" 토스트가 뜸
 - [ ] 데몬: 키를 누른 채 모드가 바뀌어 두 물리 키가 같은 출력 키가 되면, 먼저 뗀 키가 다른 키의 출력까지 뗌. 출력 키별로 누른 물리 키 수 세기 (알려진 한계, 낮음)
@@ -40,7 +40,7 @@
 - [ ] YukiHookAPI 1.3.1 → YukiHook 1.5.x 마이그레이션 (급하지 않음, 1.5.0은 빌드가 깨지는 변경)
   - [ ] 의존성 교체: `api` → `yukihook-core`, `ksp-xposed` → `yukihook-compiler`, `yukihook-runtime-xposed82` 추가(Xposed API 82는 `compileOnly` 유지), KavaRef를 쓰면 `yukihook-extension-kavaref`
   - [ ] Kotlin/KSP 업그레이드: 1.5.0이 Kotlin 2.4.21로 빌드되어 현재 2.2.10으로는 못 읽을 가능성이 큼 (최소 2.3, 사실상 2.4대)
-  - [x] 반사 API(`method {}`, `field {}`) 제거됨 → KavaRef로 재작성: `SystemServerHook`, `SystemUIHook`, `ShutdownTimerValidatorHook` — 1.3.1에서 선반영, 1.5에서는 import만 extension-kavaref로 변경
+  - [x] 반사 API(`method {}`, `field {}`) 제거됨 → KavaRef로 재작성: `SystemServerHook`, `SystemUIHook`, `ShutdownTimerValidatorHook` — 1.3.1에서 선반영, 1.5에서는 import만 extension-kavaref로 변경 (#29)
   - [ ] `HookEntry`: `@InjectYukiHookWithXposed`/`IYukiHookXposedInit` → `@YukiHookXposed82Entry`/`YukiHookXposedModule`(object), `configs { debugLog }` → `YukiHook.configure { logging }`
   - [ ] 소스의 `app/src/main/assets/xposed_init`, `app/src/main/resources/META-INF/yukihookapi_init` 삭제 (있으면 빌드 거부)
   - [ ] 매니페스트 `xposedminversion=93`에 `tools:replace="android:value"` 추가 (런타임 모듈이 82를 선언, `xposedsharedprefs`에 93 필요)
