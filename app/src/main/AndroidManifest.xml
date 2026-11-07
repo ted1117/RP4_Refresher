@@ -45,6 +45,7 @@
             android:name=".ButtonActionSettingsActivity"
             android:exported="false" />
 
+        <!-- 외부 앱(Key Mapper 등)이 부르는 공개 API라 일부러 exported="true"로 둠 (docs/external-api.md) -->
         <activity
             android:name=".RefreshScreen"
             android:exported="true"
