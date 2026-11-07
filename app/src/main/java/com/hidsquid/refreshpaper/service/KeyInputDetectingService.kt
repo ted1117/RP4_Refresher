@@ -101,7 +101,8 @@ class KeyInputDetectingService : AccessibilityService() {
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event?.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             val packageName = event.packageName?.toString().orEmpty()
-            foregroundAppTracker.onWindowStateChanged(packageName)
+            val className = event.className?.toString().orEmpty()
+            foregroundAppTracker.onWindowStateChanged(packageName, className)
             remapDaemonController.scheduleStateUpdate()
         }
     }

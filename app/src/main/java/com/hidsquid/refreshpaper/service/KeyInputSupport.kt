@@ -153,8 +153,25 @@ class ForegroundAppTracker(
 ) {
     private var currentPackageName: String = ""
     private var foregroundAppPackage: String = ""
+    private var overlayOpen: Boolean = false
+    private var packageBeforeOverlay: String = ""
 
-    fun onWindowStateChanged(packageName: String) {
+    private val overlayClassNames = setOf(
+        StatusBarSettingsActivity::class.java.name,
+        BrightnessActivity::class.java.name
+    )
+
+    fun onWindowStateChanged(packageName: String, className: String = "") {
+        val isOverlay = packageName == selfPackageName && className in overlayClassNames
+        if (isOverlay) {
+            if (!overlayOpen) {
+                overlayOpen = true
+                packageBeforeOverlay = currentPackageName
+            }
+        } else {
+            overlayOpen = false
+            packageBeforeOverlay = ""
+        }
         currentPackageName = packageName
         if (isUserAppPackage(packageName)) {
             foregroundAppPackage = packageName
@@ -162,9 +179,11 @@ class ForegroundAppTracker(
     }
 
     fun onOverlayClosed() {
-        if (currentPackageName == selfPackageName) {
-            currentPackageName = foregroundAppPackage
+        if (overlayOpen && currentPackageName == selfPackageName) {
+            currentPackageName = packageBeforeOverlay
         }
+        overlayOpen = false
+        packageBeforeOverlay = ""
     }
 
     fun getEffectivePackageName(): String {
