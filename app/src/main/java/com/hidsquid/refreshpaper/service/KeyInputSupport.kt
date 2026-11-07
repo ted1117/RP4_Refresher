@@ -168,6 +168,8 @@ class ForegroundAppTracker(
                 overlayOpen = true
                 packageBeforeOverlay = currentPackageName
             }
+        } else if (overlayOpen && packageName == selfPackageName && !isActivityClass(className)) {
+            // 오버레이 안의 하위 대화상자/팝업: 오버레이 상태 유지
         } else {
             overlayOpen = false
             packageBeforeOverlay = ""
@@ -175,6 +177,18 @@ class ForegroundAppTracker(
         currentPackageName = packageName
         if (isUserAppPackage(packageName)) {
             foregroundAppPackage = packageName
+        }
+    }
+
+    private val activityClassCache = HashMap<String, Boolean>()
+
+    private fun isActivityClass(className: String): Boolean {
+        if (className.isBlank()) return false
+        return activityClassCache.getOrPut(className) {
+            runCatching { Class.forName(className, false, javaClass.classLoader) }
+                .getOrNull()
+                ?.let { android.app.Activity::class.java.isAssignableFrom(it) }
+                ?: false
         }
     }
 
