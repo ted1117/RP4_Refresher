@@ -46,6 +46,23 @@ object HookPrefs {
         }
     }
 
+    /**
+     * Reloads the preference file only if it changed on disk (XSharedPreferences.hasFileChanged).
+     * Does disk I/O: call from a background thread, never from a hot hook path.
+     * @return true if the file changed and was reloaded.
+     */
+    fun reloadIfChanged(): Boolean = synchronized(lock) {
+        val p = getOrCreatePrefs()
+        if (!p.hasFileChanged()) return@synchronized false
+        p.reload()
+        lastReloadAt = SystemClock.uptimeMillis()
+        true
+    }
+
+    /** Reads the already-loaded value without touching the disk. */
+    fun peekBoolean(key: String, defaultValue: Boolean): Boolean =
+        getOrCreatePrefs().getBoolean(key, defaultValue)
+
     fun getBoolean(
         key: String,
         defaultValue: Boolean,
