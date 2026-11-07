@@ -6,6 +6,8 @@
 
 - [ ] SystemUI hook 예외 처리: `SystemUIHook`의 `getMethod("isForegroundApp")`가 예외 처리 밖에 있고 `findViewById` 결과에 null 확인이 없음. RIDI 펌웨어가 바뀌면 SystemUI가 반복 재시작될 수 있음
 - [ ] broadcast 리시버 권한: `ACTION_TAKE_SCREENSHOT`, `ACTION_OPEN_QUICK_SETTINGS`, `ACTION_SHOW_BRIGHTNESS_ACTIVITY` 리시버가 권한 없이 등록되어 다른 앱이 실행시킬 수 있음
+- [x] 터치 리프레시 hook 중복: `AutoRefreshHook`의 `loadApp {}`가 한 프로세스에서 여러 번 걸리면 터치 1번이 2번으로 집계됨 — hook 제거로 해결 (#28)
+- [x] 터치 리프레시 설정 읽기: 터치할 때마다 `HookPrefs`가 설정 파일을 다시 읽음 — hook 제거로 해결 (#28)
 
 ### 그 밖
 
@@ -20,6 +22,7 @@
 
 ## 기능 아이디어
 
+- [x] 터치 리프레시를 LSPosed scope 없이 데몬에서 처리 (#28)
 - [ ] 앱별 리프레시 주기
 - [ ] F1 동시 누르기 단축키 (Key Mapper 없이 LSPosed·Magisk 열기)
 - [ ] 보안 화면 우회 설정에 "앱을 다시 열어야 적용됨" 안내
@@ -31,6 +34,19 @@
 - [ ] F1 동작 상수를 enum/sealed class로 (`getF1Action()`의 `when`과 `VALID_F1_ACTIONS` 이중 관리)
 - [ ] 사용하지 않는 코드 제거 (`OverlayController.poke()` 등)
 - [ ] 단위 테스트: 데몬 키 치환·길게 누르기 판정, `ForegroundAppTracker`
+
+## 의존성
+
+- [ ] YukiHookAPI 1.3.1 → YukiHook 1.5.x 마이그레이션 (급하지 않음, 1.5.0은 빌드가 깨지는 변경)
+  - [ ] 의존성 교체: `api` → `yukihook-core`, `ksp-xposed` → `yukihook-compiler`, `yukihook-runtime-xposed82` 추가(Xposed API 82는 `compileOnly` 유지), KavaRef를 쓰면 `yukihook-extension-kavaref`
+  - [ ] Kotlin/KSP 업그레이드: 1.5.0이 Kotlin 2.4.21로 빌드되어 현재 2.2.10으로는 못 읽을 가능성이 큼 (최소 2.3, 사실상 2.4대)
+  - [ ] 반사 API(`method {}`, `field {}`) 제거됨 → KavaRef로 재작성: `SystemServerHook`, `SystemUIHook`, `ShutdownTimerValidatorHook`
+  - [ ] `HookEntry`: `@InjectYukiHookWithXposed`/`IYukiHookXposedInit` → `@YukiHookXposed82Entry`/`YukiHookXposedModule`(object), `configs { debugLog }` → `YukiHook.configure { logging }`
+  - [ ] 소스의 `app/src/main/assets/xposed_init`, `app/src/main/resources/META-INF/yukihookapi_init` 삭제 (있으면 빌드 거부)
+  - [ ] 매니페스트 `xposedminversion=93`에 `tools:replace="android:value"` 추가 (런타임 모듈이 82를 선언, `xposedsharedprefs`에 93 필요)
+  - [ ] KavaRef 버전 정리 (직접 지정 1.0.2 vs BOM 1.1.1), `appContext` → `hostApplication` 등 지원 중단 API 교체
+  - [ ] 기기 확인: 특히 system_server 안의 SettingsProvider hook(`loadApp("com.android.providers.settings")`)이 1.5.0의 `loadApp` 변경 후에도 걸리는지
+  - [ ] (선택) `yukihook-runtime-libxposed`로 원격 `SharedPreferences`를 쓰면 `HookPrefs`의 주기적 파일 재읽기를 없앨 수 있음 — LSPosed의 libxposed API 지원 여부 먼저 확인
 
 ## 기기·환경 정리
 
