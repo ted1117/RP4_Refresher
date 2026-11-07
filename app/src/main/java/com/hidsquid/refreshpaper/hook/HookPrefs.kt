@@ -1,5 +1,6 @@
 package com.hidsquid.refreshpaper.hook
 
+import android.content.SharedPreferences
 import android.os.SystemClock
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.hidsquid.refreshpaper.ModulePrefs
@@ -57,6 +58,19 @@ object HookPrefs {
         p.reload()
         lastReloadAt = SystemClock.uptimeMillis()
         true
+    }
+
+    // Keeps the registered listener so it can be unregistered or inspected later.
+    @Volatile
+    private var changeListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
+
+    /**
+     * Registers a listener fired by LSPosed's file watcher when the prefs file changes.
+     * The listener does not reload by itself; it must call [reloadIfChanged].
+     */
+    fun registerChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) {
+        changeListener = listener
+        getOrCreatePrefs().registerOnSharedPreferenceChangeListener(listener)
     }
 
     /** Reads the already-loaded value without touching the disk. */

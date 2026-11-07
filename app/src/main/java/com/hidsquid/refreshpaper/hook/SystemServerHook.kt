@@ -10,11 +10,12 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 object SystemServerHook {
 
-    private const val REFRESH_INTERVAL_MS = 1_000L
+    private const val SAFETY_POLL_INTERVAL_MS = 30_000L
 
     // isSecureLocked runs under the WM global lock, so the hook only reads this cached value.
-    // A background thread checks every 1s via XSharedPreferences.hasFileChanged (a stat) and
-    // reloads + re-caches only when the file changed, independent of window creation.
+    // LSPosed's prefs file watcher triggers a reload on change. Because watcher registration
+    // can fail silently, a 30s poll (a hasFileChanged stat, reloading only on change) is the
+    // fallback.
     @Volatile
     private var secureBypassEnabled = true
 
@@ -22,19 +23,35 @@ object SystemServerHook {
 
     private fun readBypassFlag() = HookPrefs.peekBoolean(ModulePrefs.KEY_SECURE_BYPASS_ENABLED, true)
 
+    // Must never throw: an exception would cancel the periodic task.
+    private fun refreshFromDisk() {
+        try {
+            if (HookPrefs.reloadIfChanged()) secureBypassEnabled = readBypassFlag()
+        } catch (t: Throwable) {
+            YLog.error("Secure bypass pref refresh failed: ${t.message}")
+        }
+    }
+
     private fun startRefresher() {
         if (!refresherStarted.compareAndSet(false, true)) return
-        val scheduler = Executors.newSingleThreadScheduledExecutor { r ->
-            Thread(r, "RefreshPaper-prefs").apply { isDaemon = true }
+        runCatching {
+            HookPrefs.registerChangeListener { _, _ -> refreshFromDisk() }
+        }.onFailure {
+            YLog.error("Failed to register pref change listener: ${it.message}")
         }
-        scheduler.scheduleWithFixedDelay({
-            // Must never throw: an exception would cancel the periodic task.
-            try {
-                if (HookPrefs.reloadIfChanged()) secureBypassEnabled = readBypassFlag()
-            } catch (t: Throwable) {
-                YLog.error("Secure bypass pref refresh failed: ${t.message}")
+        runCatching {
+            val scheduler = Executors.newSingleThreadScheduledExecutor { r ->
+                Thread(r, "RefreshPaper-prefs").apply { isDaemon = true }
             }
-        }, REFRESH_INTERVAL_MS, REFRESH_INTERVAL_MS, TimeUnit.MILLISECONDS)
+            scheduler.scheduleWithFixedDelay(
+                { refreshFromDisk() },
+                SAFETY_POLL_INTERVAL_MS,
+                SAFETY_POLL_INTERVAL_MS,
+                TimeUnit.MILLISECONDS
+            )
+        }.onFailure {
+            YLog.error("Failed to start pref safety poll: ${it.message}")
+        }
     }
 
     fun inject(param: PackageParam) {
