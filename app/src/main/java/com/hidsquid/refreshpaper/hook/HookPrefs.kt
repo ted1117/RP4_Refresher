@@ -1,5 +1,6 @@
 package com.hidsquid.refreshpaper.hook
 
+import android.content.SharedPreferences
 import android.os.SystemClock
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.hidsquid.refreshpaper.ModulePrefs
@@ -45,6 +46,36 @@ object HookPrefs {
             }
         }
     }
+
+    /**
+     * Reloads the preference file only if it changed on disk (XSharedPreferences.hasFileChanged).
+     * Does disk I/O: call from a background thread, never from a hot hook path.
+     * @return true if the file changed and was reloaded.
+     */
+    fun reloadIfChanged(): Boolean = synchronized(lock) {
+        val p = getOrCreatePrefs()
+        if (!p.hasFileChanged()) return@synchronized false
+        p.reload()
+        lastReloadAt = SystemClock.uptimeMillis()
+        true
+    }
+
+    // Keeps the registered listener so it can be unregistered or inspected later.
+    @Volatile
+    private var changeListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
+
+    /**
+     * Registers a listener fired by LSPosed's file watcher when the prefs file changes.
+     * The listener does not reload by itself; it must call [reloadIfChanged].
+     */
+    fun registerChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) {
+        changeListener = listener
+        getOrCreatePrefs().registerOnSharedPreferenceChangeListener(listener)
+    }
+
+    /** Reads the already-loaded value without touching the disk. */
+    fun peekBoolean(key: String, defaultValue: Boolean): Boolean =
+        getOrCreatePrefs().getBoolean(key, defaultValue)
 
     fun getBoolean(
         key: String,
