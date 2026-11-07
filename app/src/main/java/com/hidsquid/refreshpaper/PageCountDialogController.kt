@@ -72,6 +72,7 @@ class PageCountDialogController(
                 notifyTriggerCount(selectedCount)
             }
 
+            context.sendBroadcast(Intent(KeyInputDetectingService.ACTION_PAGE_KEY_REMAP_STATE_CHANGED))
             onSaved()
             dialog.dismiss()
         }

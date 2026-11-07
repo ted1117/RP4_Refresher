@@ -45,28 +45,31 @@
                 android:layout_height="wrap_content">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/touchRefreshCard"
+                    android:id="@+id/daemonTouchRefreshCard"
                     style="@style/ListItemContainer">
 
                     <TextView
-                        android:id="@+id/touchRefreshTitle"
+                        android:id="@+id/daemonTouchRefreshTitle"
                         style="@style/ListItemTitle"
-                        android:text="@string/labs_touch_refresh_title"
+                        android:text="@string/labs_daemon_touch_refresh_title"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/touchRefreshSwitch"
+                        app:layout_constraintEnd_toStartOf="@+id/daemonTouchRefreshArrow"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
+                        android:id="@+id/daemonTouchRefreshDescription"
                         style="@style/ListItemDesc"
-                        android:text="@string/labs_touch_refresh_description"
+                        android:text="@string/labs_daemon_touch_refresh_description"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/touchRefreshSwitch"
-                        app:layout_constraintTop_toBottomOf="@+id/touchRefreshTitle"
+                        app:layout_constraintEnd_toStartOf="@+id/daemonTouchRefreshArrow"
+                        app:layout_constraintTop_toBottomOf="@+id/daemonTouchRefreshTitle"
                         app:layout_constraintBottom_toBottomOf="parent" />
 
-                    <Switch
-                        android:id="@+id/touchRefreshSwitch"
-                        style="@style/ListItemSwitch"
+                    <ImageView
+                        android:id="@+id/daemonTouchRefreshArrow"
+                        android:layout_width="@dimen/icon_size"
+                        android:layout_height="@dimen/icon_size"
+                        android:src="@drawable/ic_arrow_right"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent" />

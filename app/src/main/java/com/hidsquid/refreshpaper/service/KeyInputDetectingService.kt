@@ -37,7 +37,8 @@ class KeyInputDetectingService : AccessibilityService() {
             context = applicationContext,
             settingsRepository = settingsRepository,
             blockedPackageName = BLOCKED_APP_PACKAGE_NAME,
-            foregroundPackageProvider = foregroundAppTracker::getEffectivePackageName
+            foregroundPackageProvider = foregroundAppTracker::getEffectivePackageName,
+            touchForegroundPackageProvider = foregroundAppTracker::getCurrentUserAppPackageName
         )
         actionLauncher = ServiceActionLauncher(
             context = this,
@@ -65,24 +66,29 @@ class KeyInputDetectingService : AccessibilityService() {
         )
 
         serviceBroadcastReceiver = KeyInputServiceBroadcastReceiver(
-            onRefreshScreen = refreshCoordinator::doFullRefresh,
             onShowBrightness = actionLauncher::launchBrightnessDialog,
             onRp400GlobalButton = ::handleRp400GlobalButton,
             onRemapStateChanged = remapDaemonController::scheduleStateUpdate,
             onTakeScreenshot = ::triggerScreenshot,
-            onOpenQuickSettings = actionLauncher::launchQuickSettingsDialog
+            onOpenQuickSettings = actionLauncher::launchQuickSettingsDialog,
+            onOverlayClosed = ::handleOverlayClosed
         )
         registerReceiver(
             serviceBroadcastReceiver,
             IntentFilter().apply {
-                addAction(ACTION_REFRESH_SCREEN)
                 addAction(ACTION_SHOW_BRIGHTNESS_ACTIVITY)
                 addAction(ACTION_RP400_GLOBAL_BUTTON)
                 addAction(ACTION_PAGE_KEY_REMAP_STATE_CHANGED)
                 addAction(ACTION_TAKE_SCREENSHOT)
                 addAction(ACTION_OPEN_QUICK_SETTINGS)
+                addAction(ACTION_OVERLAY_CLOSED)
             }
         )
+    }
+
+    private fun handleOverlayClosed() {
+        foregroundAppTracker.onOverlayClosed()
+        remapDaemonController.scheduleStateUpdate()
     }
 
     override fun onServiceConnected() {
@@ -95,7 +101,8 @@ class KeyInputDetectingService : AccessibilityService() {
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event?.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             val packageName = event.packageName?.toString().orEmpty()
-            foregroundAppTracker.onWindowStateChanged(packageName)
+            val className = event.className?.toString().orEmpty()
+            foregroundAppTracker.onWindowStateChanged(packageName, className)
             remapDaemonController.scheduleStateUpdate()
         }
     }
@@ -122,6 +129,9 @@ class KeyInputDetectingService : AccessibilityService() {
 
     override fun onKeyEvent(event: KeyEvent): Boolean {
         if (handlePageKeyLongPressSignal(event)) {
+            return true
+        }
+        if (handleTouchRefreshSignal(event)) {
             return true
         }
 
@@ -152,6 +162,7 @@ class KeyInputDetectingService : AccessibilityService() {
             val triggerCount = intent.getIntExtra(EXTRA_NUMBER, 5)
             shortcutHandler.setTriggerCount(triggerCount)
             settingsRepository.setPagesPerRefresh(triggerCount)
+            remapDaemonController.scheduleStateUpdate()
         }
         return super.onStartCommand(intent, flags, startId)
     }
@@ -196,6 +207,16 @@ class KeyInputDetectingService : AccessibilityService() {
         return true
     }
 
+    private fun handleTouchRefreshSignal(event: KeyEvent): Boolean {
+        if (event.keyCode != TOUCH_REFRESH_SIGNAL_KEY) return false
+        if (!isRemapDaemonEvent(event)) return false
+
+        if (event.action == KeyEvent.ACTION_DOWN) {
+            refreshCoordinator.doFullRefresh()
+        }
+        return true
+    }
+
     private fun isRemapDaemonEvent(event: KeyEvent): Boolean {
         val inputDevice = InputDevice.getDevice(event.deviceId) ?: return false
         return inputDevice.name == REMAP_DAEMON_DEVICE_NAME
@@ -203,7 +224,6 @@ class KeyInputDetectingService : AccessibilityService() {
 
     companion object {
         const val EXTRA_NUMBER: String = "EXTRA_NUMBER"
-        const val ACTION_REFRESH_SCREEN: String = "com.hidsquid.refreshpaper.ACTION_REFRESH_SCREEN"
         const val ACTION_SHOW_BRIGHTNESS_ACTIVITY: String =
             "com.hidsquid.refreshpaper.ACTION_SHOW_BRIGHTNESS_ACTIVITY"
         const val ACTION_RP400_GLOBAL_BUTTON: String = "ridi.intent.action.GLOBAL_BUTTON"
@@ -213,9 +233,12 @@ class KeyInputDetectingService : AccessibilityService() {
             "com.hidsquid.refreshpaper.ACTION_TAKE_SCREENSHOT"
         const val ACTION_OPEN_QUICK_SETTINGS: String =
             "com.hidsquid.refreshpaper.ACTION_OPEN_QUICK_SETTINGS"
+        const val ACTION_OVERLAY_CLOSED: String =
+            "com.hidsquid.refreshpaper.ACTION_OVERLAY_CLOSED"
         private const val BLOCKED_APP_PACKAGE_NAME = "com.ridi.paper"
         private const val REMAP_DAEMON_DEVICE_NAME = "rp_page_key_remap"
         private const val PAGE_UP_LONG_PRESS_SIGNAL_KEY = KeyEvent.KEYCODE_F11
         private const val PAGE_DOWN_LONG_PRESS_SIGNAL_KEY = KeyEvent.KEYCODE_F12
+        private const val TOUCH_REFRESH_SIGNAL_KEY = KeyEvent.KEYCODE_F10
     }
 }

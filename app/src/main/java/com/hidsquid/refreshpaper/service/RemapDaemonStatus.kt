@@ -25,6 +25,8 @@ object RemapDaemonStatus {
         val hasPageLongPressAction =
             settingsRepository.getPageUpLongPressAction() != SettingsRepository.F1_ACTION_NONE ||
                 settingsRepository.getPageDownLongPressAction() != SettingsRepository.F1_ACTION_NONE
-        return hasRemapTargets || hasPageLongPressAction
+        val hasDaemonTouchRefresh = settingsRepository.isAutoRefreshEnabled() &&
+            settingsRepository.getDaemonTouchRefreshTargetPackages().isNotEmpty()
+        return hasRemapTargets || hasPageLongPressAction || hasDaemonTouchRefresh
     }
 }

@@ -153,17 +153,60 @@ class ForegroundAppTracker(
 ) {
     private var currentPackageName: String = ""
     private var foregroundAppPackage: String = ""
+    private var overlayOpen: Boolean = false
+    private var packageBeforeOverlay: String = ""
 
-    fun onWindowStateChanged(packageName: String) {
+    private val overlayClassNames = setOf(
+        StatusBarSettingsActivity::class.java.name,
+        BrightnessActivity::class.java.name
+    )
+
+    fun onWindowStateChanged(packageName: String, className: String = "") {
+        val isOverlay = packageName == selfPackageName && className in overlayClassNames
+        if (isOverlay) {
+            if (!overlayOpen) {
+                overlayOpen = true
+                packageBeforeOverlay = currentPackageName
+            }
+        } else if (overlayOpen && packageName == selfPackageName && !isActivityClass(className)) {
+            // 오버레이 안의 하위 대화상자/팝업: 오버레이 상태 유지
+        } else {
+            overlayOpen = false
+            packageBeforeOverlay = ""
+        }
         currentPackageName = packageName
         if (isUserAppPackage(packageName)) {
             foregroundAppPackage = packageName
         }
     }
 
+    private val activityClassCache = HashMap<String, Boolean>()
+
+    private fun isActivityClass(className: String): Boolean {
+        if (className.isBlank()) return false
+        return activityClassCache.getOrPut(className) {
+            runCatching { Class.forName(className, false, javaClass.classLoader) }
+                .getOrNull()
+                ?.let { android.app.Activity::class.java.isAssignableFrom(it) }
+                ?: false
+        }
+    }
+
+    fun onOverlayClosed() {
+        if (overlayOpen && currentPackageName == selfPackageName) {
+            currentPackageName = packageBeforeOverlay
+        }
+        overlayOpen = false
+        packageBeforeOverlay = ""
+    }
+
     fun getEffectivePackageName(): String {
         if (isUserAppPackage(currentPackageName)) return currentPackageName
         return foregroundAppPackage
+    }
+
+    fun getCurrentUserAppPackageName(): String {
+        return if (isUserAppPackage(currentPackageName)) currentPackageName else ""
     }
 
     fun isBlocked(blockedPackageName: String): Boolean {
@@ -207,21 +250,21 @@ class RefreshCoordinator(
 }
 
 class KeyInputServiceBroadcastReceiver(
-    private val onRefreshScreen: () -> Unit,
     private val onShowBrightness: () -> Unit,
     private val onRp400GlobalButton: (Intent) -> Unit,
     private val onRemapStateChanged: () -> Unit,
     private val onTakeScreenshot: () -> Unit,
-    private val onOpenQuickSettings: () -> Unit
+    private val onOpenQuickSettings: () -> Unit,
+    private val onOverlayClosed: () -> Unit
 ) : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         when (intent?.action) {
-            KeyInputDetectingService.ACTION_REFRESH_SCREEN -> onRefreshScreen()
             KeyInputDetectingService.ACTION_SHOW_BRIGHTNESS_ACTIVITY -> onShowBrightness()
             KeyInputDetectingService.ACTION_RP400_GLOBAL_BUTTON -> onRp400GlobalButton(intent)
             KeyInputDetectingService.ACTION_PAGE_KEY_REMAP_STATE_CHANGED -> onRemapStateChanged()
             KeyInputDetectingService.ACTION_TAKE_SCREENSHOT -> onTakeScreenshot()
             KeyInputDetectingService.ACTION_OPEN_QUICK_SETTINGS -> onOpenQuickSettings()
+            KeyInputDetectingService.ACTION_OVERLAY_CLOSED -> onOverlayClosed()
         }
     }
 }

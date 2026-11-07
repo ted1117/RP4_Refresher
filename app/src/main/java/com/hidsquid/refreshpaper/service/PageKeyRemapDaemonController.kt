@@ -15,7 +15,8 @@ class PageKeyRemapDaemonController(
     private val context: Context,
     private val settingsRepository: SettingsRepository,
     private val blockedPackageName: String,
-    private val foregroundPackageProvider: () -> String
+    private val foregroundPackageProvider: () -> String,
+    private val touchForegroundPackageProvider: () -> String
 ) {
     private val mainHandler = Handler(Looper.getMainLooper())
     private val executor = Executors.newSingleThreadExecutor()
@@ -31,6 +32,9 @@ class PageKeyRemapDaemonController(
 
     @Volatile
     private var desiredPageDownLongPressEnabled = false
+
+    @Volatile
+    private var desiredTouchTrigger = 0
 
     @Volatile
     private var desiredLongPressTimeoutMs = ViewConfiguration.getLongPressTimeout()
@@ -61,6 +65,7 @@ class PageKeyRemapDaemonController(
             desiredPageDownLongPressEnabled = resolvePageLongPressEnabled(
                 settingsRepository.getPageDownLongPressAction()
             )
+            desiredTouchTrigger = resolveTouchTrigger()
             desiredLongPressTimeoutMs = ViewConfiguration.getLongPressTimeout()
             executor.execute {
                 if (!isClosed) {
@@ -77,7 +82,7 @@ class PageKeyRemapDaemonController(
         debounceRunnable?.let { mainHandler.removeCallbacks(it) }
         debounceRunnable = null
         executor.execute {
-            writeStateFile(REMAP_MODE_DISABLED, false, false, ViewConfiguration.getLongPressTimeout())
+            writeStateFile(REMAP_MODE_DISABLED, false, false, ViewConfiguration.getLongPressTimeout(), 0)
         }
         executor.shutdown()
         runCatching { executor.awaitTermination(SHUTDOWN_WAIT_MS, TimeUnit.MILLISECONDS) }
@@ -110,13 +115,23 @@ class PageKeyRemapDaemonController(
         return true
     }
 
+    private fun resolveTouchTrigger(): Int {
+        if (!settingsRepository.isAutoRefreshEnabled()) return 0
+        val packageName = touchForegroundPackageProvider()
+        if (packageName.isBlank()) return 0
+        if (packageName == blockedPackageName) return 0
+        if (!settingsRepository.isDaemonTouchRefreshTargetPackage(packageName)) return 0
+        return settingsRepository.getPagesPerRefresh().coerceAtLeast(1)
+    }
+
     private fun applyState() {
         if (!desiredNeeded) {
             writeStateFile(
                 remapMode = REMAP_MODE_DISABLED,
                 pageUpLongPressEnabled = false,
                 pageDownLongPressEnabled = false,
-                longPressTimeoutMs = desiredLongPressTimeoutMs
+                longPressTimeoutMs = desiredLongPressTimeoutMs,
+                touchTrigger = 0
             )
             return
         }
@@ -125,7 +140,8 @@ class PageKeyRemapDaemonController(
             remapMode = desiredMode,
             pageUpLongPressEnabled = desiredPageUpLongPressEnabled,
             pageDownLongPressEnabled = desiredPageDownLongPressEnabled,
-            longPressTimeoutMs = desiredLongPressTimeoutMs
+            longPressTimeoutMs = desiredLongPressTimeoutMs,
+            touchTrigger = desiredTouchTrigger
         )
     }
 
@@ -133,7 +149,8 @@ class PageKeyRemapDaemonController(
         remapMode: Int,
         pageUpLongPressEnabled: Boolean,
         pageDownLongPressEnabled: Boolean,
-        longPressTimeoutMs: Int
+        longPressTimeoutMs: Int,
+        touchTrigger: Int
     ): Boolean {
         val stateText = buildString {
             append(STATE_PROTOCOL_VERSION)
@@ -147,6 +164,8 @@ class PageKeyRemapDaemonController(
             append(if (pageDownLongPressEnabled) 1 else 0)
             append(' ')
             append(longPressTimeoutMs)
+            append(' ')
+            append(touchTrigger)
             append('\n')
         }
 
@@ -176,7 +195,7 @@ class PageKeyRemapDaemonController(
         private const val TAG = "PageKeyRemapDaemon"
         private const val REMAP_DAEMON_DEBOUNCE_MS = 200L
         private const val SHUTDOWN_WAIT_MS = 500L
-        private const val STATE_PROTOCOL_VERSION = 2
+        private const val STATE_PROTOCOL_VERSION = 3
         private const val PAGE_KEY_REMAP_STATE_DIR_NAME = "page_key_remap"
         private const val PAGE_KEY_REMAP_STATE_FILE_NAME = "state"
         private const val PAGE_KEY_REMAP_STATE_TMP_FILE_NAME = "state.tmp"

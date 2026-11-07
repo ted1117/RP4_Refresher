@@ -91,6 +91,7 @@ class MainActivity : ComponentActivity() {
             val enabled = settingsRepository.isAutoRefreshEnabled()
             if (enabled) {
                 settingsRepository.setAutoRefreshEnabled(false)
+                sendBroadcast(Intent(com.hidsquid.refreshpaper.service.KeyInputDetectingService.ACTION_PAGE_KEY_REMAP_STATE_CHANGED))
                 updateSummaryText()
             } else {
                 layout.autoRefreshSwitch.setOnCheckedChangeListener(null)
@@ -186,6 +187,7 @@ class MainActivity : ComponentActivity() {
         layout.autoRefreshSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (!isChecked) {
                 settingsRepository.setAutoRefreshEnabled(false)
+                sendBroadcast(Intent(com.hidsquid.refreshpaper.service.KeyInputDetectingService.ACTION_PAGE_KEY_REMAP_STATE_CHANGED))
                 updateSummaryText()
             }
         }

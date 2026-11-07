@@ -347,4 +347,13 @@ class StatusBarSettingsActivity : ComponentActivity() {
         private const val BLOCKED_APP_PACKAGE_NAME = "com.ridi.paper"
         private const val QUICK_SETTINGS_SCREENSHOT_DELAY_MS = 200L
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (isFinishing) {
+            sendBroadcast(
+                Intent(KeyInputDetectingService.ACTION_OVERLAY_CLOSED).setPackage(packageName)
+            )
+        }
+    }
 }
