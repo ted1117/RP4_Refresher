@@ -66,6 +66,7 @@ class KeyInputDetectingService : AccessibilityService() {
         )
 
         serviceBroadcastReceiver = KeyInputServiceBroadcastReceiver(
+            onRefreshScreen = refreshCoordinator::doFullRefresh,
             onShowBrightness = actionLauncher::launchBrightnessDialog,
             onRp400GlobalButton = ::handleRp400GlobalButton,
             onRemapStateChanged = remapDaemonController::scheduleStateUpdate,
@@ -76,6 +77,8 @@ class KeyInputDetectingService : AccessibilityService() {
         registerReceiver(
             serviceBroadcastReceiver,
             IntentFilter().apply {
+                // 외부 공개 API. 권한을 걸지 말 것 (docs/external-api.md)
+                addAction(ACTION_REFRESH_SCREEN)
                 addAction(ACTION_SHOW_BRIGHTNESS_ACTIVITY)
                 addAction(ACTION_RP400_GLOBAL_BUTTON)
                 addAction(ACTION_PAGE_KEY_REMAP_STATE_CHANGED)
@@ -224,6 +227,13 @@ class KeyInputDetectingService : AccessibilityService() {
 
     companion object {
         const val EXTRA_NUMBER: String = "EXTRA_NUMBER"
+
+        /**
+         * 화면 새로고침 broadcast. Key Mapper 같은 키 매핑 앱이 부르는 외부 공개 API다.
+         * 앱 안에서는 쓰지 않는다. 지우거나 권한을 걸면 안 된다 (docs/external-api.md).
+         * #28에서 실수로 지웠다가 복구했다.
+         */
+        const val ACTION_REFRESH_SCREEN: String = "com.hidsquid.refreshpaper.ACTION_REFRESH_SCREEN"
         const val ACTION_SHOW_BRIGHTNESS_ACTIVITY: String =
             "com.hidsquid.refreshpaper.ACTION_SHOW_BRIGHTNESS_ACTIVITY"
         const val ACTION_RP400_GLOBAL_BUTTON: String = "ridi.intent.action.GLOBAL_BUTTON"

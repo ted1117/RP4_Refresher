@@ -5,7 +5,7 @@
 ### hook·리시버 (한 PR로 묶기 좋음)
 
 - [x] SystemUI hook 예외 처리: `SystemUIHook`의 `getMethod("isForegroundApp")`가 예외 처리 밖에 있고 `findViewById` 결과에 null 확인이 없음. RIDI 펌웨어가 바뀌면 SystemUI가 반복 재시작될 수 있음 (#29)
-- [ ] broadcast 리시버 권한: `ACTION_TAKE_SCREENSHOT`, `ACTION_OPEN_QUICK_SETTINGS`, `ACTION_SHOW_BRIGHTNESS_ACTIVITY` 리시버가 권한 없이 등록되어 다른 앱이 실행시킬 수 있음
+- [ ] broadcast 리시버 권한: `ACTION_TAKE_SCREENSHOT`, `ACTION_OPEN_QUICK_SETTINGS`, `ACTION_SHOW_BRIGHTNESS_ACTIVITY` 리시버가 권한 없이 등록되어 다른 앱이 실행시킬 수 있음. 단, `ACTION_REFRESH_SCREEN`은 외부 공개 API라 열어 둘 것 (docs/external-api.md)
 - [x] 터치 리프레시 hook 중복: `AutoRefreshHook`의 `loadApp {}`가 한 프로세스에서 여러 번 걸리면 터치 1번이 2번으로 집계됨 — hook 제거로 해결 (#28)
 - [x] 터치 리프레시 설정 읽기: 터치할 때마다 `HookPrefs`가 설정 파일을 다시 읽음 — hook 제거로 해결 (#28)
 
