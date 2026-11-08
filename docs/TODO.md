@@ -24,16 +24,16 @@
 
 - [x] 터치 리프레시를 LSPosed scope 없이 데몬에서 처리 (#28)
 - [ ] 앱별 리프레시 주기
-- [ ] F1 동시 누르기 단축키 (Key Mapper 없이 LSPosed·Magisk 열기)
-- [ ] 보안 화면 우회 설정에 "앱을 다시 열어야 적용됨" 안내
 
 ## 코드 정리
 
-- [ ] 중복 상수 정리: broadcast action 문자열(`ACTION_OPEN_QUICK_SETTINGS`가 `SystemUIHook`·`KeyInputDetectingService`에 각각 정의), 기본 런처 컴포넌트(`SystemUIHook`·`SettingsRepository`), `"com.ridi.paper"` 반복
+- [x] 중복 상수 정리: broadcast action 문자열(`ACTION_OPEN_QUICK_SETTINGS`가 `SystemUIHook`·`KeyInputDetectingService`에 각각 정의), 기본 런처 컴포넌트(`SystemUIHook`·`SettingsRepository`), `"com.ridi.paper"` 반복 — `SharedConstants`로 모음
 - [ ] `DeviceSecurityController`가 `rp_prefs`를 따로 여는 부분을 `SettingsRepository`로 합치기
 - [ ] F1 동작 상수를 enum/sealed class로 (`getF1Action()`의 `when`과 `VALID_F1_ACTIONS` 이중 관리)
-- [ ] 사용하지 않는 코드 제거 (`OverlayController.poke()` 등)
-- [ ] 단위 테스트: 데몬 키 치환·길게 누르기 판정, `ForegroundAppTracker`
+- [ ] 사용하지 않는 코드 제거 (`OverlayController.poke()`, `StackBarView.setBarCount()`, `layout_permission_state.xml`의 `android:onClick="onClick"`)
+- [ ] 사용하지 않는 리소스 제거 (lint `UnusedResources` 29개. `ic_launcher` 계열은 앱 아이콘 연결 확인 후)
+- [ ] 선택 대화상자 중복: 페이지 수·F1 동작 대화상자의 항목·체크 표시 수동 연결을 공통 헬퍼로
+- [ ] 단위 테스트: 데몬 키 치환·길게 누르기 판정, `ForegroundAppTracker` (템플릿 `ExampleUnitTest`·`ExampleInstrumentedTest` 정리 포함)
 
 ## 의존성
 

@@ -14,6 +14,7 @@ import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_NONE
 import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_PAGE_KEY_SWAP
 import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_QUICK_SETTINGS
 import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_SCREENSHOT
+import com.hidsquid.refreshpaper.SharedConstants
 import com.hidsquid.refreshpaper.StatusBarSettingsActivity
 import com.hidsquid.refreshpaper.brightness.BrightnessActivity
 import com.hidsquid.refreshpaper.epd.EPDRefreshController
@@ -27,7 +28,7 @@ class ServiceActionLauncher(
     fun launchConfiguredHomeLauncher(): Boolean {
         val configuredComponent = settingsRepository.getHomeLauncherComponent()
         val defaultComponent =
-            ComponentName.unflattenFromString(SettingsRepository.DEFAULT_HOME_LAUNCHER_COMPONENT)
+            ComponentName.unflattenFromString(SharedConstants.DEFAULT_HOME_LAUNCHER_COMPONENT)
                 ?: return false
         val targetComponent = ComponentName.unflattenFromString(configuredComponent) ?: defaultComponent
 

@@ -171,9 +171,9 @@ class SettingsRepository(
         try {
             prefs.getString(ModulePrefs.KEY_HOME_LAUNCHER_COMPONENT, null)
                 ?.takeIf { it.isNotBlank() }
-                ?: DEFAULT_HOME_LAUNCHER_COMPONENT
+                ?: SharedConstants.DEFAULT_HOME_LAUNCHER_COMPONENT
         } catch (_: Throwable) {
-            DEFAULT_HOME_LAUNCHER_COMPONENT
+            SharedConstants.DEFAULT_HOME_LAUNCHER_COMPONENT
         }
 
     fun setHomeLauncherComponent(componentName: String): Boolean =
@@ -257,11 +257,6 @@ class SettingsRepository(
         private const val GLOBAL_KEY_SCREEN_BRIGHTNESS_COLOR = "screen_brightness_color"
         private const val GLOBAL_KEY_SCREEN_OFF_TIMEOUT = "screen_off_timeout"
         private const val GLOBAL_KEY_SHUTDOWN_TIMER_VALUE = "shutdown_timer_value"
-
-        const val DEFAULT_HOME_LAUNCHER_PACKAGE = "cn.modificator.launcher"
-        private const val DEFAULT_HOME_LAUNCHER_CLASS = "cn.modificator.launcher.Launcher"
-        const val DEFAULT_HOME_LAUNCHER_COMPONENT =
-            "$DEFAULT_HOME_LAUNCHER_PACKAGE/$DEFAULT_HOME_LAUNCHER_CLASS"
 
         const val F1_ACTION_BACK = 0
         const val F1_ACTION_SCREENSHOT = 1

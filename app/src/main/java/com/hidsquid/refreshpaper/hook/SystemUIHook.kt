@@ -14,19 +14,18 @@ import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.hidsquid.refreshpaper.BuildConfig
 import com.hidsquid.refreshpaper.ModulePrefs
+import com.hidsquid.refreshpaper.SharedConstants
 
 object SystemUIHook {
 
     private val PACKAGE_REFRESH_PAPER = BuildConfig.APPLICATION_ID
-    private const val PACKAGE_RIDI_PAPER = "com.ridi.paper"
     private val CLASS_BRIGHTNESS_ACTIVITY = "$PACKAGE_REFRESH_PAPER.brightness.BrightnessActivity"
-    private val ACTION_OPEN_QUICK_SETTINGS = "$PACKAGE_REFRESH_PAPER.ACTION_OPEN_QUICK_SETTINGS"
     private const val ACTION_RIDI_SHOW_SETTINGS = "com.ridi.paper.ACTION.SHOW_SETTINGS"
     private const val ACTION_RIDI_SHOW_BRIGHTNESS = "com.ridi.paper.ACTION.SHOW_BRIGHTNESS"
 
     private val DEFAULT_HOME_COMPONENT = ComponentName(
-        "cn.modificator.launcher",
-        "cn.modificator.launcher.Launcher"
+        SharedConstants.DEFAULT_HOME_LAUNCHER_PACKAGE,
+        SharedConstants.DEFAULT_HOME_LAUNCHER_CLASS
     )
 
     fun inject(param: PackageParam) {
@@ -117,7 +116,7 @@ object SystemUIHook {
                                 fun isRidiForeground(): Boolean {
                                     val method = isForegroundAppMethod ?: return false
                                     return runCatching {
-                                        method.invoke<Boolean>(appContext, PACKAGE_RIDI_PAPER) ?: false
+                                        method.invoke<Boolean>(appContext, SharedConstants.RIDI_PAPER_PACKAGE) ?: false
                                     }.getOrDefault(false)
                                 }
 
@@ -150,7 +149,7 @@ object SystemUIHook {
                                 }
 
                                 fun requestQuickSettingsDialog() {
-                                    val intent = Intent(ACTION_OPEN_QUICK_SETTINGS).apply {
+                                    val intent = Intent(SharedConstants.ACTION_OPEN_QUICK_SETTINGS).apply {
                                         `package` = PACKAGE_REFRESH_PAPER
                                     }
                                     sendBroadcastToAll(intent)
