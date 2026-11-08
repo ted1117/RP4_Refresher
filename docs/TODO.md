@@ -32,7 +32,7 @@
 - [x] F1 동작 상수를 enum/sealed class로 (`getF1Action()`의 `when`과 `VALID_F1_ACTIONS` 이중 관리) — `ButtonAction` enum, 저장 값(0~7)은 그대로
 - [ ] 사용하지 않는 코드 제거 (`OverlayController.poke()`, `StackBarView.setBarCount()`, `layout_permission_state.xml`의 `android:onClick="onClick"`)
 - [x] 사용하지 않는 리소스 제거 (lint `UnusedResources` 29개. `ic_launcher` 계열은 앱 아이콘 연결 확인 후) — 지운 drawable만 쓰던 dimen 2개까지 31개, lint `UnusedResources` 0개
-- [ ] 선택 대화상자 중복: 페이지 수·F1 동작 대화상자의 항목·체크 표시 수동 연결을 공통 헬퍼로
+- [x] 선택 대화상자 중복: 페이지 수·F1 동작 대화상자의 항목·체크 표시 수동 연결을 공통 헬퍼로 — XML 레이아웃은 그대로 두고 연결 코드만 `ChoiceDialog`로 합침(5개 대화상자). 기기 스크린샷 픽셀 일치
 - [ ] 단위 테스트: 데몬 키 치환·길게 누르기 판정, `ForegroundAppTracker` (템플릿 `ExampleUnitTest`·`ExampleInstrumentedTest` 정리 포함)
 
 ## 의존성

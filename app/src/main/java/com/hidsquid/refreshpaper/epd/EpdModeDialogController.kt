@@ -1,13 +1,11 @@
 package com.hidsquid.refreshpaper.epd
 
-import android.app.AlertDialog
 import android.content.Context
-import android.view.LayoutInflater
 import android.view.View
-import android.widget.ImageView
-import android.widget.RelativeLayout
 import android.widget.Toast
 import com.hidsquid.refreshpaper.R
+import com.hidsquid.refreshpaper.ui.ChoiceDialog
+import com.hidsquid.refreshpaper.ui.ChoiceItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -17,42 +15,26 @@ class EpdModeDialogController(
     private val coroutineScope: CoroutineScope,
 ) {
     fun show(onSaved: () -> Unit) {
-        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_epd_display_mode, null)
+        val choiceDialog = ChoiceDialog(
+            context,
+            R.layout.dialog_epd_display_mode,
+            listOf(
+                ChoiceItem(EPDDisplayModeController.MODE_MINIMIZE_AFTERIMAGE, R.id.item1, R.id.check1),
+                ChoiceItem(EPDDisplayModeController.MODE_NORMAL, R.id.item3, R.id.check3),
+            ),
+            uncheckedVisibility = View.GONE,
+            bringCheckedToFront = true,
+        )
 
-        val dialog = AlertDialog.Builder(context)
-            .setView(dialogView)
-            .setCancelable(true)
-            .create()
-
-        val itemMin = dialogView.findViewById<RelativeLayout>(R.id.item1)
-        val itemNormal = dialogView.findViewById<RelativeLayout>(R.id.item3)
-        val checkMin = dialogView.findViewById<ImageView>(R.id.check1)
-        val checkNormal = dialogView.findViewById<ImageView>(R.id.check3)
-
-        fun setChecked(mode: Int) {
-            checkMin.visibility =
-                if (mode == EPDDisplayModeController.MODE_MINIMIZE_AFTERIMAGE) View.VISIBLE else View.GONE
-            checkNormal.visibility =
-                if (mode == EPDDisplayModeController.MODE_NORMAL) View.VISIBLE else View.GONE
-            checkMin.bringToFront()
-            checkNormal.bringToFront()
-        }
-
-        dialog.setOnShowListener {
+        choiceDialog.dialog.setOnShowListener {
             coroutineScope.launch {
                 val raw = epdController.getDisplayMode()
                 val mode = epdController.normalize(raw)
-                setChecked(mode)
+                choiceDialog.setChecked(mode)
             }
         }
 
-        val onClick = View.OnClickListener { view ->
-            val sysMode = when (view.id) {
-                R.id.item1 -> EPDDisplayModeController.MODE_MINIMIZE_AFTERIMAGE
-                R.id.item3 -> EPDDisplayModeController.MODE_NORMAL
-                else -> EPDDisplayModeController.MODE_NORMAL
-            }
-
+        choiceDialog.show { sysMode ->
             coroutineScope.launch {
                 val ok = epdController.setDisplayMode(sysMode)
                 if (!ok) {
@@ -68,14 +50,9 @@ class EpdModeDialogController(
                 val modeNow = epdController.normalize(raw)
                 setChecked(modeNow)
                 onSaved()
-                dialog.dismiss()
+                dismiss()
             }
         }
-
-        itemMin.setOnClickListener(onClick)
-        itemNormal.setOnClickListener(onClick)
-
-        dialog.show()
     }
 
     fun loadSelectedModeLabel(onLoaded: (String) -> Unit) {

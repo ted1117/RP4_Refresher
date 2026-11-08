@@ -1,18 +1,16 @@
 package com.hidsquid.refreshpaper
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.widget.ImageView
-import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import com.hidsquid.refreshpaper.databinding.ActivityButtonActionSettingsBinding
 import com.hidsquid.refreshpaper.service.KeyInputDetectingService
 import com.hidsquid.refreshpaper.service.RemapDaemonStatus
+import com.hidsquid.refreshpaper.ui.ChoiceDialog
+import com.hidsquid.refreshpaper.ui.ChoiceItem
 
 class ButtonActionSettingsActivity : Activity() {
 
@@ -115,85 +113,35 @@ class ButtonActionSettingsActivity : Activity() {
         binding.pageKeyDaemonWarning.visibility = if (showWarning) View.VISIBLE else View.GONE
     }
 
+    private val buttonActionChoices = listOf(
+        ChoiceItem(ButtonAction.BACK, R.id.itemBack, R.id.checkBack),
+        ChoiceItem(ButtonAction.SCREENSHOT, R.id.itemScreenshot, R.id.checkScreenshot),
+        ChoiceItem(ButtonAction.QUICK_SETTINGS, R.id.itemQuickSettings, R.id.checkQuickSettings),
+        ChoiceItem(ButtonAction.BRIGHTNESS, R.id.itemBrightness, R.id.checkBrightness),
+        ChoiceItem(ButtonAction.MANUAL_REFRESH, R.id.itemManualRefresh, R.id.checkManualRefresh),
+        ChoiceItem(ButtonAction.PAGE_KEY_SWAP, R.id.itemPageKeySwap, R.id.checkPageKeySwap),
+        ChoiceItem(ButtonAction.HOME_LAUNCHER, R.id.itemHomeLauncher, R.id.checkHomeLauncher),
+        ChoiceItem(ButtonAction.NONE, R.id.itemNone, R.id.checkNone),
+    )
+
     private fun showButtonActionDialog(
         currentAction: ButtonAction,
         titleRes: Int,
         onSelected: (ButtonAction) -> Unit
     ) {
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_button_action, null)
-        val dialog = AlertDialog.Builder(this)
-            .setView(dialogView)
-            .setCancelable(true)
-            .create()
+        val choiceDialog = ChoiceDialog(
+            this,
+            R.layout.dialog_button_action,
+            buttonActionChoices,
+            uncheckedVisibility = View.GONE,
+        )
+        choiceDialog.view.findViewById<TextView>(R.id.dialogTitle).setText(titleRes)
+        choiceDialog.setChecked(currentAction)
 
-        dialogView.findViewById<TextView>(R.id.dialogTitle).setText(titleRes)
-
-        val itemBack = dialogView.findViewById<RelativeLayout>(R.id.itemBack)
-        val itemScreenshot = dialogView.findViewById<RelativeLayout>(R.id.itemScreenshot)
-        val itemQuickSettings = dialogView.findViewById<RelativeLayout>(R.id.itemQuickSettings)
-        val itemBrightness = dialogView.findViewById<RelativeLayout>(R.id.itemBrightness)
-        val itemManualRefresh = dialogView.findViewById<RelativeLayout>(R.id.itemManualRefresh)
-        val itemPageKeySwap = dialogView.findViewById<RelativeLayout>(R.id.itemPageKeySwap)
-        val itemHomeLauncher = dialogView.findViewById<RelativeLayout>(R.id.itemHomeLauncher)
-        val itemNone = dialogView.findViewById<RelativeLayout>(R.id.itemNone)
-
-        val checkBack = dialogView.findViewById<ImageView>(R.id.checkBack)
-        val checkScreenshot = dialogView.findViewById<ImageView>(R.id.checkScreenshot)
-        val checkQuickSettings = dialogView.findViewById<ImageView>(R.id.checkQuickSettings)
-        val checkBrightness = dialogView.findViewById<ImageView>(R.id.checkBrightness)
-        val checkManualRefresh = dialogView.findViewById<ImageView>(R.id.checkManualRefresh)
-        val checkPageKeySwap = dialogView.findViewById<ImageView>(R.id.checkPageKeySwap)
-        val checkHomeLauncher = dialogView.findViewById<ImageView>(R.id.checkHomeLauncher)
-        val checkNone = dialogView.findViewById<ImageView>(R.id.checkNone)
-
-        fun setChecked(selectedAction: ButtonAction) {
-            checkBack.visibility =
-                if (selectedAction == ButtonAction.BACK) View.VISIBLE else View.GONE
-            checkScreenshot.visibility =
-                if (selectedAction == ButtonAction.SCREENSHOT) View.VISIBLE else View.GONE
-            checkQuickSettings.visibility =
-                if (selectedAction == ButtonAction.QUICK_SETTINGS) View.VISIBLE else View.GONE
-            checkBrightness.visibility =
-                if (selectedAction == ButtonAction.BRIGHTNESS) View.VISIBLE else View.GONE
-            checkManualRefresh.visibility =
-                if (selectedAction == ButtonAction.MANUAL_REFRESH) View.VISIBLE else View.GONE
-            checkPageKeySwap.visibility =
-                if (selectedAction == ButtonAction.PAGE_KEY_SWAP) View.VISIBLE else View.GONE
-            checkHomeLauncher.visibility =
-                if (selectedAction == ButtonAction.HOME_LAUNCHER) View.VISIBLE else View.GONE
-            checkNone.visibility =
-                if (selectedAction == ButtonAction.NONE) View.VISIBLE else View.GONE
-        }
-
-        setChecked(currentAction)
-
-        val onClick = View.OnClickListener { view ->
-            val selectedAction = when (view.id) {
-                R.id.itemBack -> ButtonAction.BACK
-                R.id.itemScreenshot -> ButtonAction.SCREENSHOT
-                R.id.itemQuickSettings -> ButtonAction.QUICK_SETTINGS
-                R.id.itemBrightness -> ButtonAction.BRIGHTNESS
-                R.id.itemManualRefresh -> ButtonAction.MANUAL_REFRESH
-                R.id.itemPageKeySwap -> ButtonAction.PAGE_KEY_SWAP
-                R.id.itemHomeLauncher -> ButtonAction.HOME_LAUNCHER
-                R.id.itemNone -> ButtonAction.NONE
-                else -> ButtonAction.BACK
-            }
-
+        choiceDialog.show { selectedAction ->
             onSelected(selectedAction)
-            dialog.dismiss()
+            dismiss()
         }
-
-        itemBack.setOnClickListener(onClick)
-        itemScreenshot.setOnClickListener(onClick)
-        itemQuickSettings.setOnClickListener(onClick)
-        itemBrightness.setOnClickListener(onClick)
-        itemManualRefresh.setOnClickListener(onClick)
-        itemPageKeySwap.setOnClickListener(onClick)
-        itemHomeLauncher.setOnClickListener(onClick)
-        itemNone.setOnClickListener(onClick)
-
-        dialog.show()
     }
 
     private fun getButtonActionLabelRes(action: ButtonAction): Int {
