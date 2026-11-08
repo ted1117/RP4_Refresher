@@ -69,7 +69,6 @@ class PageCountDialogController(
                     else -> 5
                 }
                 settingsRepository.setPagesPerRefresh(selectedCount)
-                notifyTriggerCount(selectedCount)
             }
 
             context.sendBroadcast(Intent(KeyInputDetectingService.ACTION_PAGE_KEY_REMAP_STATE_CHANGED))
@@ -85,11 +84,5 @@ class PageCountDialogController(
         itemOff.setOnClickListener(onClick)
 
         dialog.show()
-    }
-
-    private fun notifyTriggerCount(selectedCount: Int) {
-        val intent = Intent(context, KeyInputDetectingService::class.java)
-        intent.putExtra(KeyInputDetectingService.EXTRA_NUMBER, selectedCount)
-        context.startService(intent)
     }
 }

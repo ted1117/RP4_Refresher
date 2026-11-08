@@ -69,7 +69,7 @@ class KeyInputDetectingService : AccessibilityService() {
             onRefreshScreen = refreshCoordinator::doFullRefresh,
             onShowBrightness = actionLauncher::launchBrightnessDialog,
             onRp400GlobalButton = ::handleRp400GlobalButton,
-            onRemapStateChanged = remapDaemonController::scheduleStateUpdate,
+            onRemapStateChanged = ::handleSettingsChanged,
             onTakeScreenshot = ::triggerScreenshot,
             onOpenQuickSettings = actionLauncher::launchQuickSettingsDialog,
             onOverlayClosed = ::handleOverlayClosed
@@ -160,14 +160,9 @@ class KeyInputDetectingService : AccessibilityService() {
         return super.onKeyEvent(event)
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent != null && intent.hasExtra(EXTRA_NUMBER)) {
-            val triggerCount = intent.getIntExtra(EXTRA_NUMBER, 5)
-            shortcutHandler.setTriggerCount(triggerCount)
-            settingsRepository.setPagesPerRefresh(triggerCount)
-            remapDaemonController.scheduleStateUpdate()
-        }
-        return super.onStartCommand(intent, flags, startId)
+    private fun handleSettingsChanged() {
+        shortcutHandler.setTriggerCount(settingsRepository.getPagesPerRefresh())
+        remapDaemonController.scheduleStateUpdate()
     }
 
     override fun onDestroy() {
@@ -226,8 +221,6 @@ class KeyInputDetectingService : AccessibilityService() {
     }
 
     companion object {
-        const val EXTRA_NUMBER: String = "EXTRA_NUMBER"
-
         /**
          * 화면 새로고침 broadcast. Key Mapper 같은 키 매핑 앱이 부르는 외부 공개 API다.
          * 앱 안에서는 쓰지 않는다. 지우거나 권한을 걸면 안 된다 (docs/external-api.md).
