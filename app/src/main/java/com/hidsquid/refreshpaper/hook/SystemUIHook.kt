@@ -4,12 +4,11 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.os.UserHandle
 import android.view.View
 import android.widget.ImageButton
 import android.widget.Toast
+import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
@@ -34,32 +33,39 @@ object SystemUIHook {
         param.loadApp("com.android.systemui") {
             YLog.debug("Running in SystemUI Hook")
 
+            // Toast only on successful save; failure (errorMsgResId != 0) and
+            // cancel (onCancelled) get no toast. onPostExecute runs on the main thread.
             runCatching {
-                "com.android.systemui.screenshot.GlobalScreenshot".toClass()
+                "com.android.systemui.screenshot.SaveImageInBackgroundTask".toClass()
                     .resolve()
                     .firstMethod {
-                        name = "saveScreenshotInWorkerThread"
-                        parameters(Runnable::class.java)
+                        name = "onPostExecute"
+                        parameters(java.lang.Void::class.java)
                     }
                     .hook {
-                        before {
-                            val context = appContext ?: return@before
-                            val originalFinisher = args[0] as? Runnable ?: return@before
-                            args[0] = Runnable {
-                                runCatching { originalFinisher.run() }.onFailure {
-                                    YLog.error("Wrapped screenshot finisher failed: ${it.message}")
-                                }
-                                if (isScreenshotToastEnabled()) {
-                                    Handler(Looper.getMainLooper()).post {
-                                        Toast.makeText(context, "스크린샷 촬영", Toast.LENGTH_SHORT)
-                                            .show()
-                                    }
-                                }
+                        after {
+                            if (!isScreenshotToastEnabled()) return@after
+                            val context = appContext ?: return@after
+                            val errorMsgResId = runCatching {
+                                val params = instance.asResolver()
+                                    .firstField { name = "mParams" }
+                                    .get<Any>() ?: error("mParams is null")
+                                params.asResolver()
+                                    .firstField { name = "errorMsgResId" }
+                                    .get<Int>() ?: error("errorMsgResId is null")
+                            }.onFailure {
+                                YLog.error("Failed to read screenshot result, no toast: ${it.message}")
+                            }.getOrNull() ?: return@after
+                            if (errorMsgResId != 0) return@after
+                            runCatching {
+                                Toast.makeText(context, "스크린샷 촬영", Toast.LENGTH_SHORT).show()
+                            }.onFailure {
+                                YLog.error("Screenshot toast failed: ${it.message}")
                             }
                         }
                     }
             }.onFailure {
-                YLog.error("Failed to hook GlobalScreenshot finisher: ${it.message}")
+                YLog.error("Failed to hook screenshot save task: ${it.message}")
             }
 
             // Each lookup is failure-safe: a missing id only disables that button.
