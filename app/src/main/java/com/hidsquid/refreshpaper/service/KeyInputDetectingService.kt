@@ -9,7 +9,7 @@ import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import androidx.core.content.IntentCompat
 import com.hidsquid.refreshpaper.SettingsRepository
-import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_NONE
+import com.hidsquid.refreshpaper.ButtonAction
 import com.hidsquid.refreshpaper.SharedConstants
 import com.hidsquid.refreshpaper.overlay.OverlayController
 
@@ -23,7 +23,7 @@ class KeyInputDetectingService : AccessibilityService() {
     private lateinit var shortcutHandler: KeyShortcutHandler
     private lateinit var actionLauncher: ServiceActionLauncher
     private lateinit var pageKeySwapToggleUseCase: PageKeySwapToggleUseCase
-    private lateinit var f1ActionDispatcher: F1ActionDispatcher
+    private lateinit var buttonActionDispatcher: ButtonActionDispatcher
     private lateinit var foregroundAppTracker: ForegroundAppTracker
     private lateinit var refreshCoordinator: RefreshCoordinator
 
@@ -52,7 +52,7 @@ class KeyInputDetectingService : AccessibilityService() {
             foregroundPackageProvider = foregroundAppTracker::getEffectivePackageName,
             onRemapTargetsChanged = remapDaemonController::scheduleStateUpdate
         )
-        f1ActionDispatcher = F1ActionDispatcher(
+        buttonActionDispatcher = ButtonActionDispatcher(
             actionLauncher = actionLauncher,
             pageKeySwapToggleUseCase = pageKeySwapToggleUseCase,
             triggerManualRefresh = refreshCoordinator::triggerManualRefresh,
@@ -62,7 +62,7 @@ class KeyInputDetectingService : AccessibilityService() {
         shortcutHandler = KeyShortcutHandler(
             settingsRepository = settingsRepository,
             isBlockedForegroundApp = ::isBlockedForegroundApp,
-            runConfiguredF1Action = f1ActionDispatcher::dispatch,
+            runConfiguredF1Action = buttonActionDispatcher::dispatch,
             doFullRefresh = refreshCoordinator::doFullRefresh
         )
 
@@ -184,11 +184,11 @@ class KeyInputDetectingService : AccessibilityService() {
         val selectedAction = when (keyCode) {
             KeyEvent.KEYCODE_PAGE_UP -> settingsRepository.getPageUpLongPressAction()
             KeyEvent.KEYCODE_PAGE_DOWN -> settingsRepository.getPageDownLongPressAction()
-            else -> F1_ACTION_NONE
+            else -> ButtonAction.NONE
         }
-        if (selectedAction == F1_ACTION_NONE) return false
+        if (selectedAction == ButtonAction.NONE) return false
 
-        return f1ActionDispatcher.dispatch(selectedAction)
+        return buttonActionDispatcher.dispatch(selectedAction)
     }
 
     private fun handlePageKeyLongPressSignal(event: KeyEvent): Boolean {

@@ -189,55 +189,29 @@ class SettingsRepository(
     fun setHomeLauncherComponent(componentName: String): Boolean =
         prefs.edit().putString(ModulePrefs.KEY_HOME_LAUNCHER_COMPONENT, componentName).commit()
 
-    fun getF1Action(default: Int = F1_ACTION_BACK): Int {
-        val value = prefs.getInt(ModulePrefs.KEY_F1_ACTION, default)
-        return when (value) {
-            F1_ACTION_BACK,
-            F1_ACTION_SCREENSHOT,
-            F1_ACTION_QUICK_SETTINGS,
-            F1_ACTION_BRIGHTNESS,
-            F1_ACTION_MANUAL_REFRESH,
-            F1_ACTION_PAGE_KEY_SWAP,
-            F1_ACTION_HOME_LAUNCHER,
-            F1_ACTION_NONE -> value
-            else -> default
-        }
-    }
+    fun getF1Action(default: ButtonAction = ButtonAction.BACK): ButtonAction =
+        ButtonAction.fromId(prefs.getInt(ModulePrefs.KEY_F1_ACTION, default.id)) ?: default
 
-    fun setF1Action(action: Int): Boolean {
-        if (action !in VALID_F1_ACTIONS) return false
-        return prefs.edit().putInt(ModulePrefs.KEY_F1_ACTION, action).commit()
-    }
+    fun setF1Action(action: ButtonAction): Boolean =
+        prefs.edit().putInt(ModulePrefs.KEY_F1_ACTION, action.id).commit()
 
-    fun getF1LongPressAction(default: Int = F1_ACTION_BACK): Int {
-        val value = prefs.getInt(ModulePrefs.KEY_F1_LONG_PRESS_ACTION, default)
-        return if (value in VALID_F1_ACTIONS) value else default
-    }
+    fun getF1LongPressAction(default: ButtonAction = ButtonAction.BACK): ButtonAction =
+        ButtonAction.fromId(prefs.getInt(ModulePrefs.KEY_F1_LONG_PRESS_ACTION, default.id)) ?: default
 
-    fun setF1LongPressAction(action: Int): Boolean {
-        if (action !in VALID_F1_ACTIONS) return false
-        return prefs.edit().putInt(ModulePrefs.KEY_F1_LONG_PRESS_ACTION, action).commit()
-    }
+    fun setF1LongPressAction(action: ButtonAction): Boolean =
+        prefs.edit().putInt(ModulePrefs.KEY_F1_LONG_PRESS_ACTION, action.id).commit()
 
-    fun getPageUpLongPressAction(default: Int = F1_ACTION_NONE): Int {
-        val value = prefs.getInt(ModulePrefs.KEY_PAGE_UP_LONG_PRESS_ACTION, default)
-        return if (value in VALID_F1_ACTIONS) value else default
-    }
+    fun getPageUpLongPressAction(default: ButtonAction = ButtonAction.NONE): ButtonAction =
+        ButtonAction.fromId(prefs.getInt(ModulePrefs.KEY_PAGE_UP_LONG_PRESS_ACTION, default.id)) ?: default
 
-    fun setPageUpLongPressAction(action: Int): Boolean {
-        if (action !in VALID_F1_ACTIONS) return false
-        return prefs.edit().putInt(ModulePrefs.KEY_PAGE_UP_LONG_PRESS_ACTION, action).commit()
-    }
+    fun setPageUpLongPressAction(action: ButtonAction): Boolean =
+        prefs.edit().putInt(ModulePrefs.KEY_PAGE_UP_LONG_PRESS_ACTION, action.id).commit()
 
-    fun getPageDownLongPressAction(default: Int = F1_ACTION_NONE): Int {
-        val value = prefs.getInt(ModulePrefs.KEY_PAGE_DOWN_LONG_PRESS_ACTION, default)
-        return if (value in VALID_F1_ACTIONS) value else default
-    }
+    fun getPageDownLongPressAction(default: ButtonAction = ButtonAction.NONE): ButtonAction =
+        ButtonAction.fromId(prefs.getInt(ModulePrefs.KEY_PAGE_DOWN_LONG_PRESS_ACTION, default.id)) ?: default
 
-    fun setPageDownLongPressAction(action: Int): Boolean {
-        if (action !in VALID_F1_ACTIONS) return false
-        return prefs.edit().putInt(ModulePrefs.KEY_PAGE_DOWN_LONG_PRESS_ACTION, action).commit()
-    }
+    fun setPageDownLongPressAction(action: ButtonAction): Boolean =
+        prefs.edit().putInt(ModulePrefs.KEY_PAGE_DOWN_LONG_PRESS_ACTION, action.id).commit()
 
     fun getShutdownTimerHours(default: Int = DEFAULT_SHUTDOWN_TIMER_HOURS): Int {
         val rawMinutes = Settings.System.getInt(cr, GLOBAL_KEY_SHUTDOWN_TIMER_VALUE, default * 60)
@@ -268,28 +242,9 @@ class SettingsRepository(
         private const val GLOBAL_KEY_SCREEN_OFF_TIMEOUT = "screen_off_timeout"
         private const val GLOBAL_KEY_SHUTDOWN_TIMER_VALUE = "shutdown_timer_value"
 
-        const val F1_ACTION_BACK = 0
-        const val F1_ACTION_SCREENSHOT = 1
-        const val F1_ACTION_QUICK_SETTINGS = 2
-        const val F1_ACTION_BRIGHTNESS = 3
-        const val F1_ACTION_MANUAL_REFRESH = 4
-        const val F1_ACTION_HOME_LAUNCHER = 5
-        const val F1_ACTION_NONE = 6
-        const val F1_ACTION_PAGE_KEY_SWAP = 7
 
         const val DEFAULT_SHUTDOWN_TIMER_HOURS = 1
         const val DEFAULT_SCREEN_OFF_TIMEOUT_MILLIS = 60_000
-
-        private val VALID_F1_ACTIONS = setOf(
-            F1_ACTION_BACK,
-            F1_ACTION_SCREENSHOT,
-            F1_ACTION_QUICK_SETTINGS,
-            F1_ACTION_BRIGHTNESS,
-            F1_ACTION_MANUAL_REFRESH,
-            F1_ACTION_PAGE_KEY_SWAP,
-            F1_ACTION_HOME_LAUNCHER,
-            F1_ACTION_NONE
-        )
     }
 
     private fun createPrefs(context: Context) = try {
