@@ -10,7 +10,6 @@
     <string name="accessibility_enable_failed">접근성 권한 활성화에 실패했습니다. 설정에서 직접 켜 주세요.</string>
     <string name="lsposed_launch_failed">LSPosed 매니저를 열지 못했습니다. RefreshPaper Magisk 모듈이 활성화되어 있는지 확인하고 재부팅해 주세요.</string>
     <string name="lsposed_ready_title">다음 단계</string>
-    <string name="lsposed_ready_message">LSPosed 매니저에서 아래 4가지를 순서대로 진행해 주세요.\n\n1. 리페4 새로고침 모듈을 활성화\n2. RP4Posed 모듈을 비활성화\n3. \'시스템 프레임워크\'와 \'시스템 UI\'를 체크\n4. 재부팅</string>
     <string name="lsposed_ready_intro">권한 설정은 끝났습니다. 이제 LSPosed 매니저에서 아래 순서대로 진행해 주세요.</string>
     <string name="lsposed_ready_checklist_title">확인할 항목</string>
     <string name="lsposed_ready_step_1_title">1. 모듈 탭 열기</string>
@@ -23,20 +22,14 @@
     <string name="lsposed_ready_step_4_desc">적용 범위에서 시스템 프레임워크와 시스템 UI를 모두 체크해 주세요.</string>
     <string name="lsposed_ready_step_5_title">5. 기기 재부팅</string>
     <string name="lsposed_ready_step_5_desc">설정을 적용하려면 재부팅이 필요합니다.</string>
-    <string name="lsposed_ready_tip">LSPosed에 모듈이 바로 보이지 않으면 매니저를 한 번 닫았다가 다시 열어 확인해 주세요.</string>
     <string name="open_lsposed_manager">LSPosed 매니저 열기</string>
     <string name="later">나중에</string>
     <string name="app_name">리페4 새로고침</string>
     <string name="accessibility_service_description">리페4 새로고침을 사용하려면 접근성 권한을 부여해야 합니다</string>
-    <string name="open_package_usage_stats_settings">사용 기록 액세스</string>
-    <string name="pages_per_refresh_description">새로고침할 페이지 수를 입력하세요\n기본값은 5입니다</string>
-    <string name="pages_per_refresh">페이지 수</string>
-    <string name="submit">입력</string>
     <string name="auto_refresh_cardview_headline">자동 새로고침</string>
     <string name="manual_refresh_cardview_headline">수동 새로고침</string>
     <string name="auto_refresh_cardview_text">자동 새로고침 페이지 수 설정</string>
     <string name="manual_refresh_cardview_text">미테르 리모컨 새로고침 버튼 활성화</string>
-    <string name="manual_refresh_description">미테르 리모컨의 새로고침 버튼을 활성화합니다</string>
     <string name="dialog_title">페이지 새로고침</string>
     <string name="quick_settings_title">간단 설정</string>
 
@@ -67,7 +60,6 @@
     <string name="quick_setting_title_volume_key_remap">페이지 넘김 버튼 동작</string>
     <string name="quick_setting_title_page_turn_direction">페이지 넘김 방향</string>
     <string name="quick_setting_title_screenshot">스크린샷</string>
-    <string name="quick_setting_summary_current_app">현재 앱: %1$s</string>
     <string name="quick_setting_summary_current_app_blocked">리디 앱에서는 사용 안 함</string>
     <string name="quick_setting_summary_unavailable">사용 불가</string>
     <string name="quick_setting_value_capture_now">지금 촬영</string>
@@ -87,7 +79,6 @@
     <string name="setting_desc_screenshot_toast">스크린샷이 저장되면 알림을 표시합니다</string>
     <string name="setting_screenshot_toast_save_failed">스크린샷 완료 알림 설정 저장에 실패했습니다</string>
     <string name="setting_secure_bypass_save_failed">스크린샷 방지 우회 설정 저장에 실패했습니다</string>
-    <string name="toast_screenshot_captured">스크린샷 촬영</string>
 
     <!-- Home Launcher -->
     <string name="setting_title_home_launcher">홈 버튼 런처</string>
@@ -155,7 +146,6 @@
     <string name="labs_page_key_swap_description">선택한 앱에서 페이지 넘김 방향을 전환</string>
     <string name="labs_page_key_tap_save_failed">페이지 키 치환 설정 저장에 실패했습니다</string>
     <string name="labs_page_key_swap_save_failed">업/다운 반전 설정 저장에 실패했습니다</string>
-    <string name="labs_page_key_tap_apps_title">적용 앱</string>
     <string name="labs_page_key_tap_apps_none">선택 안 함</string>
     <string name="labs_page_key_tap_apps_dialog_title">적용 앱 선택</string>
     <string name="labs_page_key_swap_apps_dialog_title">반전 적용 앱 선택</string>
@@ -167,7 +157,6 @@
     <string name="labs_warning_confirm">확인</string>
 
     <!-- Page Count Dialog -->
-    <string name="dialog_page_count_item_format">%d 페이지마다</string>
     <string name="dialog_page_count_item_off">안 함</string>
 
     <!-- Shutdown Timer -->
