@@ -12,7 +12,7 @@
 ### 그 밖
 
 - [x] system_server hook 설정 읽기: `SystemServerHook`의 `isSecureLocked` hook이 WM 전역 락 안에서 250ms마다 설정 파일을 다시 읽음. 메모리에 두고 변경 시에만 다시 읽기 (#29)
-- [ ] `PageCountDialogController`가 접근성 서비스를 `startService`로도 시작함. 접근성이 꺼져 있으면 시스템과 연결되지 않은 서비스 인스턴스가 생김
+- [x] `PageCountDialogController`가 접근성 서비스를 `startService`로도 시작함. 접근성이 꺼져 있으면 시스템과 연결되지 않은 서비스 인스턴스가 생김 — `startService`를 없애고 설정 변경 broadcast로 개수를 다시 읽음 (켜진 상태에서 부르면 접근성을 꺼도 서비스·데몬 설정이 남는 것도 기기에서 확인) (#32)
 - [x] 스크린샷 토스트: 저장 실패·취소 때도 "스크린샷 촬영" 토스트가 뜸 — 저장 결과(`errorMsgResId`)를 보고 성공일 때만 띄움 (#31)
 - [ ] 데몬: 키를 누른 채 모드가 바뀌어 두 물리 키가 같은 출력 키가 되면, 먼저 뗀 키가 다른 키의 출력까지 뗌. 출력 키별로 누른 물리 키 수 세기 (알려진 한계, 낮음)
 
