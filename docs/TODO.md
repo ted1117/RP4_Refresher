@@ -28,7 +28,7 @@
 ## 코드 정리
 
 - [x] 중복 상수 정리: broadcast action 문자열(`ACTION_OPEN_QUICK_SETTINGS`가 `SystemUIHook`·`KeyInputDetectingService`에 각각 정의), 기본 런처 컴포넌트(`SystemUIHook`·`SettingsRepository`), `"com.ridi.paper"` 반복 — `SharedConstants`로 모음
-- [ ] `DeviceSecurityController`가 `rp_prefs`를 따로 여는 부분을 `SettingsRepository`로 합치기
+- [x] `DeviceSecurityController`가 `rp_prefs`를 따로 여는 부분을 `SettingsRepository`로 합치기 — `DeviceSecurityController` 삭제
 - [ ] F1 동작 상수를 enum/sealed class로 (`getF1Action()`의 `when`과 `VALID_F1_ACTIONS` 이중 관리)
 - [ ] 사용하지 않는 코드 제거 (`OverlayController.poke()`, `StackBarView.setBarCount()`, `layout_permission_state.xml`의 `android:onClick="onClick"`)
 - [ ] 사용하지 않는 리소스 제거 (lint `UnusedResources` 29개. `ic_launcher` 계열은 앱 아이콘 연결 확인 후)

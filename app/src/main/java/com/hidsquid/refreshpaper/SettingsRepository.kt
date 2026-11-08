@@ -33,6 +33,16 @@ class SettingsRepository(
             .commit()
     }
 
+    fun isSecureBypassEnabled(): Boolean {
+        return prefs.getBoolean(ModulePrefs.KEY_SECURE_BYPASS_ENABLED, true)
+    }
+
+    fun setSecureBypassEnabled(enabled: Boolean): Boolean {
+        return prefs.edit()
+            .putBoolean(ModulePrefs.KEY_SECURE_BYPASS_ENABLED, enabled)
+            .commit()
+    }
+
     fun isPageKeyTapEnabled(): Boolean {
         return prefs.getBoolean(ModulePrefs.KEY_PAGE_KEY_TAP_ENABLED, false)
     }

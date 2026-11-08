@@ -86,6 +86,7 @@
     <string name="setting_title_screenshot_toast">스크린샷 완료 알림</string>
     <string name="setting_desc_screenshot_toast">스크린샷이 저장되면 알림을 표시합니다</string>
     <string name="setting_screenshot_toast_save_failed">스크린샷 완료 알림 설정 저장에 실패했습니다</string>
+    <string name="setting_secure_bypass_save_failed">스크린샷 방지 우회 설정 저장에 실패했습니다</string>
     <string name="toast_screenshot_captured">스크린샷 촬영</string>
 
     <!-- Home Launcher -->

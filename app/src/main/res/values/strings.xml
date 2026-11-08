@@ -85,6 +85,7 @@
     <string name="setting_title_screenshot_toast">Screenshot Completion Notice</string>
     <string name="setting_desc_screenshot_toast">Show a notice when screenshot is saved</string>
     <string name="setting_screenshot_toast_save_failed">Failed to save screenshot notice setting</string>
+    <string name="setting_secure_bypass_save_failed">Failed to save screenshot protection bypass setting</string>
     <string name="toast_screenshot_captured">Screenshot captured</string>
 
     <!-- Home Launcher -->

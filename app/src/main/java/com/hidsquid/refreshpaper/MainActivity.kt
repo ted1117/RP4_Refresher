@@ -9,7 +9,6 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import com.hidsquid.refreshpaper.databinding.ActivityMainBinding
 import com.hidsquid.refreshpaper.brightness.BrightnessActivity
-import com.hidsquid.refreshpaper.device.DeviceSecurityController
 import com.hidsquid.refreshpaper.epd.EPDDisplayModeController
 import com.hidsquid.refreshpaper.epd.EpdModeDialogController
 import com.hidsquid.refreshpaper.launcher.HomeLauncherDialogController
@@ -27,7 +26,6 @@ class MainActivity : ComponentActivity() {
     private lateinit var epdController: EPDDisplayModeController
     private lateinit var epdModeDialogController: EpdModeDialogController
     private lateinit var pageCountDialogController: PageCountDialogController
-    private lateinit var deviceSecurityController: DeviceSecurityController
     private lateinit var homeLauncherDialogController: HomeLauncherDialogController
     private lateinit var sleepModeTimerDialogController: SleepModeTimerDialogController
     private lateinit var shutdownTimerDialogController: ShutdownTimerDialogController
@@ -42,7 +40,6 @@ class MainActivity : ComponentActivity() {
         epdController = EPDDisplayModeController(this)
         epdModeDialogController = EpdModeDialogController(this, epdController, lifecycleScope)
         pageCountDialogController = PageCountDialogController(this, settingsRepository)
-        deviceSecurityController = DeviceSecurityController(this)
         homeLauncherDialogController = HomeLauncherDialogController(this, settingsRepository)
         sleepModeTimerDialogController = SleepModeTimerDialogController(this, settingsRepository)
         shutdownTimerDialogController = ShutdownTimerDialogController(this, settingsRepository)
@@ -65,7 +62,7 @@ class MainActivity : ComponentActivity() {
         val layout = binding.layoutSettings
         layout.autoRefreshSwitch.isChecked = settingsRepository.isAutoRefreshEnabled()
         layout.manualRefreshSwitch.isChecked = settingsRepository.isManualRefreshEnabled()
-        layout.screenshotSwitch.isChecked = deviceSecurityController.isSecureBypassEnabled()
+        layout.screenshotSwitch.isChecked = settingsRepository.isSecureBypassEnabled()
         layout.screenshotToastSwitch.isChecked = settingsRepository.isScreenshotToastEnabled()
 
         updateSummaryText()
@@ -121,11 +118,10 @@ class MainActivity : ComponentActivity() {
         }
 
         layout.screenshotSwitch.setOnCheckedChangeListener { _, isChecked ->
-            try {
-                deviceSecurityController.setSecureBypass(isChecked)
-            } catch (e: SecurityException) {
-                Toast.makeText(this, "Permission denied!", Toast.LENGTH_SHORT).show()
-                layout.screenshotSwitch.isChecked = !isChecked
+            val saved = settingsRepository.setSecureBypassEnabled(isChecked)
+            if (!saved) {
+                Toast.makeText(this, R.string.setting_secure_bypass_save_failed, Toast.LENGTH_SHORT).show()
+                loadSettings()
             }
         }
 
