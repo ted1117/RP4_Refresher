@@ -2,6 +2,7 @@ package com.hidsquid.refreshpaper
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.SharedPreferences
 import android.provider.Settings
 import android.util.Log
 
@@ -15,7 +16,7 @@ class SettingsRepository(
     private val cr = context.contentResolver
 
     fun isAutoRefreshEnabled(): Boolean =
-        prefs.getBoolean(ModulePrefs.KEY_AUTO_REFRESH_ENABLED, false)
+        readBoolean(ModulePrefs.KEY_AUTO_REFRESH_ENABLED, false)
 
     fun setAutoRefreshEnabled(enabled: Boolean) {
         prefs.edit()
@@ -24,42 +25,31 @@ class SettingsRepository(
     }
 
     fun isScreenshotToastEnabled(): Boolean {
-        return prefs.getBoolean(ModulePrefs.KEY_SCREENSHOT_TOAST_ENABLED, true)
+        return readBoolean(ModulePrefs.KEY_SCREENSHOT_TOAST_ENABLED, true)
     }
 
     fun setScreenshotToastEnabled(enabled: Boolean): Boolean {
-        return prefs.edit()
-            .putBoolean(ModulePrefs.KEY_SCREENSHOT_TOAST_ENABLED, enabled)
-            .commit()
+        return commitOrRestore(ModulePrefs.KEY_SCREENSHOT_TOAST_ENABLED) { putBoolean(ModulePrefs.KEY_SCREENSHOT_TOAST_ENABLED, enabled) }
     }
 
     fun isSecureBypassEnabled(): Boolean {
-        return try {
-            prefs.getBoolean(ModulePrefs.KEY_SECURE_BYPASS_ENABLED, true)
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to read secure bypass setting", e)
-            false
-        }
+        return readBoolean(ModulePrefs.KEY_SECURE_BYPASS_ENABLED, true)
     }
 
     fun setSecureBypassEnabled(enabled: Boolean): Boolean {
-        return prefs.edit()
-            .putBoolean(ModulePrefs.KEY_SECURE_BYPASS_ENABLED, enabled)
-            .commit()
+        return commitOrRestore(ModulePrefs.KEY_SECURE_BYPASS_ENABLED) { putBoolean(ModulePrefs.KEY_SECURE_BYPASS_ENABLED, enabled) }
     }
 
     fun isPageKeyTapEnabled(): Boolean {
-        return prefs.getBoolean(ModulePrefs.KEY_PAGE_KEY_TAP_ENABLED, false)
+        return readBoolean(ModulePrefs.KEY_PAGE_KEY_TAP_ENABLED, false)
     }
 
     fun setPageKeyTapEnabled(enabled: Boolean): Boolean {
-        return prefs.edit()
-            .putBoolean(ModulePrefs.KEY_PAGE_KEY_TAP_ENABLED, enabled)
-            .commit()
+        return commitOrRestore(ModulePrefs.KEY_PAGE_KEY_TAP_ENABLED) { putBoolean(ModulePrefs.KEY_PAGE_KEY_TAP_ENABLED, enabled) }
     }
 
     fun getPageKeyTapTargetPackages(): Set<String> {
-        return prefs.getStringSet(ModulePrefs.KEY_PAGE_KEY_TAP_TARGET_PACKAGES, emptySet())
+        return readStringSet(ModulePrefs.KEY_PAGE_KEY_TAP_TARGET_PACKAGES, emptySet())
             ?.mapNotNull { value ->
                 value?.trim()?.takeIf { it.isNotEmpty() }
             }
@@ -72,9 +62,7 @@ class SettingsRepository(
             .mapNotNull { value -> value.trim().takeIf { it.isNotEmpty() } }
             .toSet()
 
-        return prefs.edit()
-            .putStringSet(ModulePrefs.KEY_PAGE_KEY_TAP_TARGET_PACKAGES, sanitized)
-            .commit()
+        return commitOrRestore(ModulePrefs.KEY_PAGE_KEY_TAP_TARGET_PACKAGES) { putStringSet(ModulePrefs.KEY_PAGE_KEY_TAP_TARGET_PACKAGES, sanitized) }
     }
 
     fun isPageKeyTapTargetPackage(packageName: String): Boolean {
@@ -83,7 +71,7 @@ class SettingsRepository(
     }
 
     fun getPageKeySwapTargetPackages(): Set<String> {
-        return prefs.getStringSet(ModulePrefs.KEY_PAGE_KEY_SWAP_TARGET_PACKAGES, emptySet())
+        return readStringSet(ModulePrefs.KEY_PAGE_KEY_SWAP_TARGET_PACKAGES, emptySet())
             ?.mapNotNull { value ->
                 value?.trim()?.takeIf { it.isNotEmpty() }
             }
@@ -96,9 +84,7 @@ class SettingsRepository(
             .mapNotNull { value -> value.trim().takeIf { it.isNotEmpty() } }
             .toSet()
 
-        return prefs.edit()
-            .putStringSet(ModulePrefs.KEY_PAGE_KEY_SWAP_TARGET_PACKAGES, sanitized)
-            .commit()
+        return commitOrRestore(ModulePrefs.KEY_PAGE_KEY_SWAP_TARGET_PACKAGES) { putStringSet(ModulePrefs.KEY_PAGE_KEY_SWAP_TARGET_PACKAGES, sanitized) }
     }
 
     fun isPageKeySwapTargetPackage(packageName: String): Boolean {
@@ -107,7 +93,7 @@ class SettingsRepository(
     }
 
     fun getDaemonTouchRefreshTargetPackages(): Set<String> {
-        return prefs.getStringSet(ModulePrefs.KEY_DAEMON_TOUCH_REFRESH_TARGET_PACKAGES, emptySet())
+        return readStringSet(ModulePrefs.KEY_DAEMON_TOUCH_REFRESH_TARGET_PACKAGES, emptySet())
             ?.mapNotNull { value ->
                 value?.trim()?.takeIf { it.isNotEmpty() }
             }
@@ -120,9 +106,7 @@ class SettingsRepository(
             .mapNotNull { value -> value.trim().takeIf { it.isNotEmpty() } }
             .toSet()
 
-        return prefs.edit()
-            .putStringSet(ModulePrefs.KEY_DAEMON_TOUCH_REFRESH_TARGET_PACKAGES, sanitized)
-            .commit()
+        return commitOrRestore(ModulePrefs.KEY_DAEMON_TOUCH_REFRESH_TARGET_PACKAGES) { putStringSet(ModulePrefs.KEY_DAEMON_TOUCH_REFRESH_TARGET_PACKAGES, sanitized) }
     }
 
     fun isDaemonTouchRefreshTargetPackage(packageName: String): Boolean {
@@ -131,7 +115,7 @@ class SettingsRepository(
     }
 
     fun isManualRefreshEnabled(): Boolean =
-        prefs.getBoolean(ModulePrefs.KEY_MANUAL_REFRESH_ENABLED, false)
+        readBoolean(ModulePrefs.KEY_MANUAL_REFRESH_ENABLED, false)
 
     fun setManualRefreshEnabled(enabled: Boolean) {
         prefs.edit()
@@ -140,7 +124,7 @@ class SettingsRepository(
     }
 
     fun getPagesPerRefresh(): Int =
-        prefs.getInt(ModulePrefs.KEY_PAGES_PER_REFRESH, DEFAULT_PAGES_PER_REFRESH)
+        readInt(ModulePrefs.KEY_PAGES_PER_REFRESH, DEFAULT_PAGES_PER_REFRESH)
 
     fun setPagesPerRefresh(pages: Int) {
         prefs.edit()
@@ -183,40 +167,36 @@ class SettingsRepository(
     }
 
     fun getHomeLauncherComponent(): String =
-        try {
-            prefs.getString(ModulePrefs.KEY_HOME_LAUNCHER_COMPONENT, null)
-                ?.takeIf { it.isNotBlank() }
-                ?: SharedConstants.DEFAULT_HOME_LAUNCHER_COMPONENT
-        } catch (_: Throwable) {
-            SharedConstants.DEFAULT_HOME_LAUNCHER_COMPONENT
-        }
+        readString(ModulePrefs.KEY_HOME_LAUNCHER_COMPONENT, null)
+            ?.takeIf { it.isNotBlank() }
+            ?: SharedConstants.DEFAULT_HOME_LAUNCHER_COMPONENT
 
     fun setHomeLauncherComponent(componentName: String): Boolean =
-        prefs.edit().putString(ModulePrefs.KEY_HOME_LAUNCHER_COMPONENT, componentName).commit()
+        commitOrRestore(ModulePrefs.KEY_HOME_LAUNCHER_COMPONENT) { putString(ModulePrefs.KEY_HOME_LAUNCHER_COMPONENT, componentName) }
 
     fun getF1Action(default: ButtonAction = ButtonAction.BACK): ButtonAction =
-        ButtonAction.fromId(prefs.getInt(ModulePrefs.KEY_F1_ACTION, default.id)) ?: default
+        ButtonAction.fromId(readInt(ModulePrefs.KEY_F1_ACTION, default.id)) ?: default
 
     fun setF1Action(action: ButtonAction): Boolean =
-        prefs.edit().putInt(ModulePrefs.KEY_F1_ACTION, action.id).commit()
+        commitOrRestore(ModulePrefs.KEY_F1_ACTION) { putInt(ModulePrefs.KEY_F1_ACTION, action.id) }
 
     fun getF1LongPressAction(default: ButtonAction = ButtonAction.BACK): ButtonAction =
-        ButtonAction.fromId(prefs.getInt(ModulePrefs.KEY_F1_LONG_PRESS_ACTION, default.id)) ?: default
+        ButtonAction.fromId(readInt(ModulePrefs.KEY_F1_LONG_PRESS_ACTION, default.id)) ?: default
 
     fun setF1LongPressAction(action: ButtonAction): Boolean =
-        prefs.edit().putInt(ModulePrefs.KEY_F1_LONG_PRESS_ACTION, action.id).commit()
+        commitOrRestore(ModulePrefs.KEY_F1_LONG_PRESS_ACTION) { putInt(ModulePrefs.KEY_F1_LONG_PRESS_ACTION, action.id) }
 
     fun getPageUpLongPressAction(default: ButtonAction = ButtonAction.NONE): ButtonAction =
-        ButtonAction.fromId(prefs.getInt(ModulePrefs.KEY_PAGE_UP_LONG_PRESS_ACTION, default.id)) ?: default
+        ButtonAction.fromId(readInt(ModulePrefs.KEY_PAGE_UP_LONG_PRESS_ACTION, default.id)) ?: default
 
     fun setPageUpLongPressAction(action: ButtonAction): Boolean =
-        prefs.edit().putInt(ModulePrefs.KEY_PAGE_UP_LONG_PRESS_ACTION, action.id).commit()
+        commitOrRestore(ModulePrefs.KEY_PAGE_UP_LONG_PRESS_ACTION) { putInt(ModulePrefs.KEY_PAGE_UP_LONG_PRESS_ACTION, action.id) }
 
     fun getPageDownLongPressAction(default: ButtonAction = ButtonAction.NONE): ButtonAction =
-        ButtonAction.fromId(prefs.getInt(ModulePrefs.KEY_PAGE_DOWN_LONG_PRESS_ACTION, default.id)) ?: default
+        ButtonAction.fromId(readInt(ModulePrefs.KEY_PAGE_DOWN_LONG_PRESS_ACTION, default.id)) ?: default
 
     fun setPageDownLongPressAction(action: ButtonAction): Boolean =
-        prefs.edit().putInt(ModulePrefs.KEY_PAGE_DOWN_LONG_PRESS_ACTION, action.id).commit()
+        commitOrRestore(ModulePrefs.KEY_PAGE_DOWN_LONG_PRESS_ACTION) { putInt(ModulePrefs.KEY_PAGE_DOWN_LONG_PRESS_ACTION, action.id) }
 
     fun getShutdownTimerHours(default: Int = DEFAULT_SHUTDOWN_TIMER_HOURS): Int {
         val rawMinutes = Settings.System.getInt(cr, GLOBAL_KEY_SHUTDOWN_TIMER_VALUE, default * 60)
@@ -250,6 +230,48 @@ class SettingsRepository(
 
         const val DEFAULT_SHUTDOWN_TIMER_HOURS = 1
         const val DEFAULT_SCREEN_OFF_TIMEOUT_MILLIS = 60_000
+    }
+
+    private fun readBoolean(key: String, default: Boolean): Boolean =
+        readOrDefault(key, default) { prefs.getBoolean(key, default) }
+
+    private fun readInt(key: String, default: Int): Int =
+        readOrDefault(key, default) { prefs.getInt(key, default) }
+
+    private fun readString(key: String, default: String?): String? =
+        readOrDefault(key, default) { prefs.getString(key, default) }
+
+    private fun readStringSet(key: String, default: Set<String>): Set<String>? =
+        readOrDefault(key, default) { prefs.getStringSet(key, default) }
+
+    private inline fun <T> readOrDefault(key: String, default: T, read: () -> T): T =
+        try {
+            read()
+        } catch (e: ClassCastException) {
+            Log.w(TAG, "Wrong type for pref $key, using default", e)
+            default
+        }
+
+    /** Commits [write]; if the disk write fails, restores the previous in-memory value of [key] so memory matches the file. */
+    private fun commitOrRestore(key: String, write: SharedPreferences.Editor.() -> Unit): Boolean {
+        val hadKey = prefs.contains(key)
+        val previous = prefs.all[key]
+        val ok = prefs.edit().apply(write).commit()
+        if (!ok) {
+            val restore = prefs.edit()
+            when {
+                !hadKey -> restore.remove(key)
+                previous is Boolean -> restore.putBoolean(key, previous)
+                previous is Int -> restore.putInt(key, previous)
+                previous is String -> restore.putString(key, previous)
+                previous is Set<*> -> restore.putStringSet(key, previous.filterIsInstance<String>().toSet())
+                else -> restore.remove(key)
+            }
+            // apply() updates memory immediately; its disk write just re-writes the old content.
+            restore.apply()
+            Log.w(TAG, "Failed to save pref $key, restored previous value")
+        }
+        return ok
     }
 
     private fun createPrefs(context: Context) = try {
