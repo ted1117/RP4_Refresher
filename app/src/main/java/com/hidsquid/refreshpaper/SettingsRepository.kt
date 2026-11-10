@@ -34,7 +34,12 @@ class SettingsRepository(
     }
 
     fun isSecureBypassEnabled(): Boolean {
-        return prefs.getBoolean(ModulePrefs.KEY_SECURE_BYPASS_ENABLED, true)
+        return try {
+            prefs.getBoolean(ModulePrefs.KEY_SECURE_BYPASS_ENABLED, true)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to read secure bypass setting", e)
+            false
+        }
     }
 
     fun setSecureBypassEnabled(enabled: Boolean): Boolean {

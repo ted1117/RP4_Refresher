@@ -118,6 +118,7 @@ class MainActivity : ComponentActivity() {
         }
 
         layout.screenshotSwitch.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked == settingsRepository.isSecureBypassEnabled()) return@setOnCheckedChangeListener
             val saved = settingsRepository.setSecureBypassEnabled(isChecked)
             if (!saved) {
                 Toast.makeText(this, R.string.setting_secure_bypass_save_failed, Toast.LENGTH_SHORT).show()
@@ -134,6 +135,7 @@ class MainActivity : ComponentActivity() {
         }
 
         layout.screenshotToastSwitch.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked == settingsRepository.isScreenshotToastEnabled()) return@setOnCheckedChangeListener
             val saved = settingsRepository.setScreenshotToastEnabled(isChecked)
             if (!saved) {
                 Toast.makeText(this, R.string.setting_screenshot_toast_save_failed, Toast.LENGTH_SHORT)
