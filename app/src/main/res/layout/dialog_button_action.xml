@@ -13,7 +13,7 @@
 
         <TextView
             style="@style/DialogListItemText"
-            android:text="@string/setting_value_f1_action_back" />
+            android:text="@string/setting_value_button_action_back" />
 
         <ImageView
             android:id="@+id/checkBack"
@@ -28,7 +28,7 @@
 
         <TextView
             style="@style/DialogListItemText"
-            android:text="@string/setting_value_f1_action_screenshot" />
+            android:text="@string/setting_value_button_action_screenshot" />
 
         <ImageView
             android:id="@+id/checkScreenshot"
@@ -43,7 +43,7 @@
 
         <TextView
             style="@style/DialogListItemText"
-            android:text="@string/setting_value_f1_action_quick_settings" />
+            android:text="@string/setting_value_button_action_quick_settings" />
 
         <ImageView
             android:id="@+id/checkQuickSettings"
@@ -58,7 +58,7 @@
 
         <TextView
             style="@style/DialogListItemText"
-            android:text="@string/setting_value_f1_action_brightness" />
+            android:text="@string/setting_value_button_action_brightness" />
 
         <ImageView
             android:id="@+id/checkBrightness"
@@ -73,7 +73,7 @@
 
         <TextView
             style="@style/DialogListItemText"
-            android:text="@string/setting_value_f1_action_manual_refresh" />
+            android:text="@string/setting_value_button_action_manual_refresh" />
 
         <ImageView
             android:id="@+id/checkManualRefresh"
@@ -88,7 +88,7 @@
 
         <TextView
             style="@style/DialogListItemText"
-            android:text="@string/setting_value_f1_action_page_key_swap" />
+            android:text="@string/setting_value_button_action_page_key_swap" />
 
         <ImageView
             android:id="@+id/checkPageKeySwap"
@@ -103,7 +103,7 @@
 
         <TextView
             style="@style/DialogListItemText"
-            android:text="@string/setting_value_f1_action_home_launcher" />
+            android:text="@string/setting_value_button_action_home_launcher" />
 
         <ImageView
             android:id="@+id/checkHomeLauncher"
@@ -118,7 +118,7 @@
 
         <TextView
             style="@style/DialogListItemText"
-            android:text="@string/setting_value_f1_action_none" />
+            android:text="@string/setting_value_button_action_none" />
 
         <ImageView
             android:id="@+id/checkNone"

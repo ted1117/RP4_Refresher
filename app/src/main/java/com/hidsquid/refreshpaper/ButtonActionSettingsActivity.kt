@@ -146,14 +146,14 @@ class ButtonActionSettingsActivity : Activity() {
 
     private fun getButtonActionLabelRes(action: ButtonAction): Int {
         return when (action) {
-            ButtonAction.BACK -> R.string.setting_value_f1_action_back
-            ButtonAction.SCREENSHOT -> R.string.setting_value_f1_action_screenshot
-            ButtonAction.QUICK_SETTINGS -> R.string.setting_value_f1_action_quick_settings
-            ButtonAction.BRIGHTNESS -> R.string.setting_value_f1_action_brightness
-            ButtonAction.MANUAL_REFRESH -> R.string.setting_value_f1_action_manual_refresh
-            ButtonAction.PAGE_KEY_SWAP -> R.string.setting_value_f1_action_page_key_swap
-            ButtonAction.HOME_LAUNCHER -> R.string.setting_value_f1_action_home_launcher
-            ButtonAction.NONE -> R.string.setting_value_f1_action_none
+            ButtonAction.BACK -> R.string.setting_value_button_action_back
+            ButtonAction.SCREENSHOT -> R.string.setting_value_button_action_screenshot
+            ButtonAction.QUICK_SETTINGS -> R.string.setting_value_button_action_quick_settings
+            ButtonAction.BRIGHTNESS -> R.string.setting_value_button_action_brightness
+            ButtonAction.MANUAL_REFRESH -> R.string.setting_value_button_action_manual_refresh
+            ButtonAction.PAGE_KEY_SWAP -> R.string.setting_value_button_action_page_key_swap
+            ButtonAction.HOME_LAUNCHER -> R.string.setting_value_button_action_home_launcher
+            ButtonAction.NONE -> R.string.setting_value_button_action_none
         }
     }
 
