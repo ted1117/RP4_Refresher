@@ -57,7 +57,7 @@
                     <TextView
                         android:id="@+id/tvQuickButtonShortSetting"
                         style="@style/ListItemDesc"
-                        android:text="@string/setting_value_f1_action_back"
+                        android:text="@string/setting_value_button_action_back"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/quickButtonShortArrow"
                         app:layout_constraintStart_toStartOf="parent"
@@ -94,7 +94,7 @@
                     <TextView
                         android:id="@+id/tvQuickButtonLongSetting"
                         style="@style/ListItemDesc"
-                        android:text="@string/setting_value_f1_action_back"
+                        android:text="@string/setting_value_button_action_back"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/quickButtonLongArrow"
                         app:layout_constraintStart_toStartOf="parent"
@@ -144,7 +144,7 @@
                     <TextView
                         android:id="@+id/tvPageUpLongSetting"
                         style="@style/ListItemDesc"
-                        android:text="@string/setting_value_f1_action_none"
+                        android:text="@string/setting_value_button_action_none"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/pageUpLongArrow"
                         app:layout_constraintStart_toStartOf="parent"
@@ -181,7 +181,7 @@
                     <TextView
                         android:id="@+id/tvPageDownLongSetting"
                         style="@style/ListItemDesc"
-                        android:text="@string/setting_value_f1_action_none"
+                        android:text="@string/setting_value_button_action_none"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/pageDownLongArrow"
                         app:layout_constraintStart_toStartOf="parent"

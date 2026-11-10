@@ -1,18 +1,16 @@
 package com.hidsquid.refreshpaper
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.widget.ImageView
-import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import com.hidsquid.refreshpaper.databinding.ActivityButtonActionSettingsBinding
 import com.hidsquid.refreshpaper.service.KeyInputDetectingService
 import com.hidsquid.refreshpaper.service.RemapDaemonStatus
+import com.hidsquid.refreshpaper.ui.ChoiceDialog
+import com.hidsquid.refreshpaper.ui.ChoiceItem
 
 class ButtonActionSettingsActivity : Activity() {
 
@@ -40,39 +38,39 @@ class ButtonActionSettingsActivity : Activity() {
 
     private fun setupListeners() {
         binding.quickButtonShortCard.setOnClickListener {
-            showF1ActionDialog(
+            showButtonActionDialog(
                 currentAction = settingsRepository.getF1Action(),
                 titleRes = R.string.dialog_title_f1_action
             ) { selectedAction ->
                 if (!settingsRepository.setF1Action(selectedAction)) {
                     showSaveFailedToast()
-                    return@showF1ActionDialog
+                    return@showButtonActionDialog
                 }
                 updateActionSummaries()
             }
         }
 
         binding.quickButtonLongCard.setOnClickListener {
-            showF1ActionDialog(
+            showButtonActionDialog(
                 currentAction = settingsRepository.getF1LongPressAction(settingsRepository.getF1Action()),
                 titleRes = R.string.dialog_title_f1_action
             ) { selectedAction ->
                 if (!settingsRepository.setF1LongPressAction(selectedAction)) {
                     showSaveFailedToast()
-                    return@showF1ActionDialog
+                    return@showButtonActionDialog
                 }
                 updateActionSummaries()
             }
         }
 
         binding.pageUpLongCard.setOnClickListener {
-            showF1ActionDialog(
+            showButtonActionDialog(
                 currentAction = settingsRepository.getPageUpLongPressAction(),
                 titleRes = R.string.dialog_title_page_up_long_action
             ) { selectedAction ->
                 if (!settingsRepository.setPageUpLongPressAction(selectedAction)) {
                     showSaveFailedToast()
-                    return@showF1ActionDialog
+                    return@showButtonActionDialog
                 }
                 notifyPageKeyRemapStateChanged()
                 updateActionSummaries()
@@ -80,13 +78,13 @@ class ButtonActionSettingsActivity : Activity() {
         }
 
         binding.pageDownLongCard.setOnClickListener {
-            showF1ActionDialog(
+            showButtonActionDialog(
                 currentAction = settingsRepository.getPageDownLongPressAction(),
                 titleRes = R.string.dialog_title_page_down_long_action
             ) { selectedAction ->
                 if (!settingsRepository.setPageDownLongPressAction(selectedAction)) {
                     showSaveFailedToast()
-                    return@showF1ActionDialog
+                    return@showButtonActionDialog
                 }
                 notifyPageKeyRemapStateChanged()
                 updateActionSummaries()
@@ -96,18 +94,18 @@ class ButtonActionSettingsActivity : Activity() {
 
     private fun updateActionSummaries() {
         binding.tvQuickButtonShortSetting.text = getString(
-            getF1ActionLabelRes(settingsRepository.getF1Action())
+            getButtonActionLabelRes(settingsRepository.getF1Action())
         )
         binding.tvQuickButtonLongSetting.text = getString(
-            getF1ActionLabelRes(
+            getButtonActionLabelRes(
                 settingsRepository.getF1LongPressAction(settingsRepository.getF1Action())
             )
         )
         binding.tvPageUpLongSetting.text = getString(
-            getF1ActionLabelRes(settingsRepository.getPageUpLongPressAction())
+            getButtonActionLabelRes(settingsRepository.getPageUpLongPressAction())
         )
         binding.tvPageDownLongSetting.text = getString(
-            getF1ActionLabelRes(settingsRepository.getPageDownLongPressAction())
+            getButtonActionLabelRes(settingsRepository.getPageDownLongPressAction())
         )
 
         val showWarning = RemapDaemonStatus.isNeeded(settingsRepository) &&
@@ -115,98 +113,47 @@ class ButtonActionSettingsActivity : Activity() {
         binding.pageKeyDaemonWarning.visibility = if (showWarning) View.VISIBLE else View.GONE
     }
 
-    private fun showF1ActionDialog(
-        currentAction: Int,
+    private val buttonActionChoices = listOf(
+        ChoiceItem(ButtonAction.BACK, R.id.itemBack, R.id.checkBack),
+        ChoiceItem(ButtonAction.SCREENSHOT, R.id.itemScreenshot, R.id.checkScreenshot),
+        ChoiceItem(ButtonAction.QUICK_SETTINGS, R.id.itemQuickSettings, R.id.checkQuickSettings),
+        ChoiceItem(ButtonAction.BRIGHTNESS, R.id.itemBrightness, R.id.checkBrightness),
+        ChoiceItem(ButtonAction.MANUAL_REFRESH, R.id.itemManualRefresh, R.id.checkManualRefresh),
+        ChoiceItem(ButtonAction.PAGE_KEY_SWAP, R.id.itemPageKeySwap, R.id.checkPageKeySwap),
+        ChoiceItem(ButtonAction.HOME_LAUNCHER, R.id.itemHomeLauncher, R.id.checkHomeLauncher),
+        ChoiceItem(ButtonAction.NONE, R.id.itemNone, R.id.checkNone),
+    )
+
+    private fun showButtonActionDialog(
+        currentAction: ButtonAction,
         titleRes: Int,
-        onSelected: (Int) -> Unit
+        onSelected: (ButtonAction) -> Unit
     ) {
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_f1_action, null)
-        val dialog = AlertDialog.Builder(this)
-            .setView(dialogView)
-            .setCancelable(true)
-            .create()
+        val choiceDialog = ChoiceDialog(
+            this,
+            R.layout.dialog_button_action,
+            buttonActionChoices,
+            uncheckedVisibility = View.GONE,
+        )
+        choiceDialog.view.findViewById<TextView>(R.id.dialogTitle).setText(titleRes)
+        choiceDialog.setChecked(currentAction)
 
-        dialogView.findViewById<TextView>(R.id.dialogTitle).setText(titleRes)
-
-        val itemBack = dialogView.findViewById<RelativeLayout>(R.id.itemBack)
-        val itemScreenshot = dialogView.findViewById<RelativeLayout>(R.id.itemScreenshot)
-        val itemQuickSettings = dialogView.findViewById<RelativeLayout>(R.id.itemQuickSettings)
-        val itemBrightness = dialogView.findViewById<RelativeLayout>(R.id.itemBrightness)
-        val itemManualRefresh = dialogView.findViewById<RelativeLayout>(R.id.itemManualRefresh)
-        val itemPageKeySwap = dialogView.findViewById<RelativeLayout>(R.id.itemPageKeySwap)
-        val itemHomeLauncher = dialogView.findViewById<RelativeLayout>(R.id.itemHomeLauncher)
-        val itemNone = dialogView.findViewById<RelativeLayout>(R.id.itemNone)
-
-        val checkBack = dialogView.findViewById<ImageView>(R.id.checkBack)
-        val checkScreenshot = dialogView.findViewById<ImageView>(R.id.checkScreenshot)
-        val checkQuickSettings = dialogView.findViewById<ImageView>(R.id.checkQuickSettings)
-        val checkBrightness = dialogView.findViewById<ImageView>(R.id.checkBrightness)
-        val checkManualRefresh = dialogView.findViewById<ImageView>(R.id.checkManualRefresh)
-        val checkPageKeySwap = dialogView.findViewById<ImageView>(R.id.checkPageKeySwap)
-        val checkHomeLauncher = dialogView.findViewById<ImageView>(R.id.checkHomeLauncher)
-        val checkNone = dialogView.findViewById<ImageView>(R.id.checkNone)
-
-        fun setChecked(selectedAction: Int) {
-            checkBack.visibility =
-                if (selectedAction == SettingsRepository.F1_ACTION_BACK) View.VISIBLE else View.GONE
-            checkScreenshot.visibility =
-                if (selectedAction == SettingsRepository.F1_ACTION_SCREENSHOT) View.VISIBLE else View.GONE
-            checkQuickSettings.visibility =
-                if (selectedAction == SettingsRepository.F1_ACTION_QUICK_SETTINGS) View.VISIBLE else View.GONE
-            checkBrightness.visibility =
-                if (selectedAction == SettingsRepository.F1_ACTION_BRIGHTNESS) View.VISIBLE else View.GONE
-            checkManualRefresh.visibility =
-                if (selectedAction == SettingsRepository.F1_ACTION_MANUAL_REFRESH) View.VISIBLE else View.GONE
-            checkPageKeySwap.visibility =
-                if (selectedAction == SettingsRepository.F1_ACTION_PAGE_KEY_SWAP) View.VISIBLE else View.GONE
-            checkHomeLauncher.visibility =
-                if (selectedAction == SettingsRepository.F1_ACTION_HOME_LAUNCHER) View.VISIBLE else View.GONE
-            checkNone.visibility =
-                if (selectedAction == SettingsRepository.F1_ACTION_NONE) View.VISIBLE else View.GONE
-        }
-
-        setChecked(currentAction)
-
-        val onClick = View.OnClickListener { view ->
-            val selectedAction = when (view.id) {
-                R.id.itemBack -> SettingsRepository.F1_ACTION_BACK
-                R.id.itemScreenshot -> SettingsRepository.F1_ACTION_SCREENSHOT
-                R.id.itemQuickSettings -> SettingsRepository.F1_ACTION_QUICK_SETTINGS
-                R.id.itemBrightness -> SettingsRepository.F1_ACTION_BRIGHTNESS
-                R.id.itemManualRefresh -> SettingsRepository.F1_ACTION_MANUAL_REFRESH
-                R.id.itemPageKeySwap -> SettingsRepository.F1_ACTION_PAGE_KEY_SWAP
-                R.id.itemHomeLauncher -> SettingsRepository.F1_ACTION_HOME_LAUNCHER
-                R.id.itemNone -> SettingsRepository.F1_ACTION_NONE
-                else -> SettingsRepository.F1_ACTION_BACK
-            }
-
+        choiceDialog.show { selectedAction ->
             onSelected(selectedAction)
-            dialog.dismiss()
+            dismiss()
         }
-
-        itemBack.setOnClickListener(onClick)
-        itemScreenshot.setOnClickListener(onClick)
-        itemQuickSettings.setOnClickListener(onClick)
-        itemBrightness.setOnClickListener(onClick)
-        itemManualRefresh.setOnClickListener(onClick)
-        itemPageKeySwap.setOnClickListener(onClick)
-        itemHomeLauncher.setOnClickListener(onClick)
-        itemNone.setOnClickListener(onClick)
-
-        dialog.show()
     }
 
-    private fun getF1ActionLabelRes(action: Int): Int {
+    private fun getButtonActionLabelRes(action: ButtonAction): Int {
         return when (action) {
-            SettingsRepository.F1_ACTION_BACK -> R.string.setting_value_f1_action_back
-            SettingsRepository.F1_ACTION_SCREENSHOT -> R.string.setting_value_f1_action_screenshot
-            SettingsRepository.F1_ACTION_QUICK_SETTINGS -> R.string.setting_value_f1_action_quick_settings
-            SettingsRepository.F1_ACTION_BRIGHTNESS -> R.string.setting_value_f1_action_brightness
-            SettingsRepository.F1_ACTION_MANUAL_REFRESH -> R.string.setting_value_f1_action_manual_refresh
-            SettingsRepository.F1_ACTION_PAGE_KEY_SWAP -> R.string.setting_value_f1_action_page_key_swap
-            SettingsRepository.F1_ACTION_HOME_LAUNCHER -> R.string.setting_value_f1_action_home_launcher
-            SettingsRepository.F1_ACTION_NONE -> R.string.setting_value_f1_action_none
-            else -> R.string.setting_value_f1_action_none
+            ButtonAction.BACK -> R.string.setting_value_button_action_back
+            ButtonAction.SCREENSHOT -> R.string.setting_value_button_action_screenshot
+            ButtonAction.QUICK_SETTINGS -> R.string.setting_value_button_action_quick_settings
+            ButtonAction.BRIGHTNESS -> R.string.setting_value_button_action_brightness
+            ButtonAction.MANUAL_REFRESH -> R.string.setting_value_button_action_manual_refresh
+            ButtonAction.PAGE_KEY_SWAP -> R.string.setting_value_button_action_page_key_swap
+            ButtonAction.HOME_LAUNCHER -> R.string.setting_value_button_action_home_launcher
+            ButtonAction.NONE -> R.string.setting_value_button_action_none
         }
     }
 

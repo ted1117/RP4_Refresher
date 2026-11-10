@@ -1,9 +1,4 @@
 <resources>
-    <style name="CustomButton" parent="@android:style/Widget.DeviceDefault.Light.Button">
-        <item name="android:backgroundTint">@android:color/white</item>
-        <item name="android:textColor">@android:color/black</item>
-    </style>
-
     <style name="ToolbarTitleText" parent="@android:style/TextAppearance.Large">
         <item name="android:textStyle">bold</item>
     </style>

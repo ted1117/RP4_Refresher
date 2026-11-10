@@ -2,10 +2,7 @@
 <resources>
     <!-- Dialog -->
     <dimen name="dialog_width">380dp</dimen>
-    <dimen name="dialog_corner_radius">12dp</dimen>
-    <dimen name="dialog_stroke_width">2dp</dimen>
 
-    <dimen name="dialog_padding_horizontal">30dp</dimen>
     <dimen name="dialog_padding_top">30dp</dimen>
     <dimen name="dialog_padding_bottom">30dp</dimen>
 
@@ -29,13 +26,8 @@
     <dimen name="group_stroke_width">1dp</dimen>
     <dimen name="group_padding_vertical">4dp</dimen>
 
-    <dimen name="row_min_height">72dp</dimen>
-    <dimen name="row_padding_horizontal">16dp</dimen>
     <dimen name="row_padding_vertical">12dp</dimen>
 
-    <dimen name="row_title_text_size">16sp</dimen>
-    <dimen name="row_body_text_size">13sp</dimen>
     <dimen name="row_body_margin_top">6dp</dimen>
-    <dimen name="text_size_setting_value">15sp</dimen>
     <dimen name="quick_setting_summary_width">96dp</dimen>
 </resources>

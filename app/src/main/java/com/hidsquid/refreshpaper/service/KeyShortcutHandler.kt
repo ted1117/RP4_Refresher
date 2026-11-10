@@ -2,12 +2,13 @@ package com.hidsquid.refreshpaper.service
 
 import android.util.Log
 import android.view.KeyEvent
+import com.hidsquid.refreshpaper.ButtonAction
 import com.hidsquid.refreshpaper.SettingsRepository
 
 class KeyShortcutHandler(
     private val settingsRepository: SettingsRepository,
     private val isBlockedForegroundApp: () -> Boolean,
-    private val runConfiguredF1Action: (Int) -> Boolean,
+    private val runConfiguredF1Action: (ButtonAction) -> Boolean,
     private val doFullRefresh: () -> Unit
 ) {
     private var pageUpDownCount = 0

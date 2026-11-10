@@ -6,6 +6,7 @@ import android.os.Looper
 import android.os.Process
 import android.util.Log
 import android.view.ViewConfiguration
+import com.hidsquid.refreshpaper.ButtonAction
 import com.hidsquid.refreshpaper.SettingsRepository
 import java.io.File
 import java.util.concurrent.Executors
@@ -106,8 +107,8 @@ class PageKeyRemapDaemonController(
         }
     }
 
-    private fun resolvePageLongPressEnabled(selectedAction: Int): Boolean {
-        if (selectedAction == SettingsRepository.F1_ACTION_NONE) return false
+    private fun resolvePageLongPressEnabled(selectedAction: ButtonAction): Boolean {
+        if (selectedAction == ButtonAction.NONE) return false
 
         val packageName = foregroundPackageProvider()
         if (packageName.isBlank()) return false

@@ -3,6 +3,7 @@ package com.hidsquid.refreshpaper.service
 import android.content.Context
 import android.hardware.input.InputManager
 import android.view.InputDevice
+import com.hidsquid.refreshpaper.ButtonAction
 import com.hidsquid.refreshpaper.SettingsRepository
 
 object RemapDaemonStatus {
@@ -23,8 +24,8 @@ object RemapDaemonStatus {
                 settingsRepository.getPageKeySwapTargetPackages().isNotEmpty()
             )
         val hasPageLongPressAction =
-            settingsRepository.getPageUpLongPressAction() != SettingsRepository.F1_ACTION_NONE ||
-                settingsRepository.getPageDownLongPressAction() != SettingsRepository.F1_ACTION_NONE
+            settingsRepository.getPageUpLongPressAction() != ButtonAction.NONE ||
+                settingsRepository.getPageDownLongPressAction() != ButtonAction.NONE
         val hasDaemonTouchRefresh = settingsRepository.isAutoRefreshEnabled() &&
             settingsRepository.getDaemonTouchRefreshTargetPackages().isNotEmpty()
         return hasRemapTargets || hasPageLongPressAction || hasDaemonTouchRefresh

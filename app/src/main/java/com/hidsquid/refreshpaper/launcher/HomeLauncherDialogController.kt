@@ -14,6 +14,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.hidsquid.refreshpaper.R
 import com.hidsquid.refreshpaper.SettingsRepository
+import com.hidsquid.refreshpaper.SharedConstants
 
 class HomeLauncherDialogController(
     private val context: Context,
@@ -96,7 +97,7 @@ class HomeLauncherDialogController(
 
     fun getSelectedLauncherLabel(): String {
         val selected = settingsRepository.getHomeLauncherComponent()
-        if (selected == SettingsRepository.DEFAULT_HOME_LAUNCHER_COMPONENT) {
+        if (selected == SharedConstants.DEFAULT_HOME_LAUNCHER_COMPONENT) {
             return context.getString(R.string.setting_desc_home_launcher_default)
         }
 
@@ -121,7 +122,7 @@ class HomeLauncherDialogController(
                 LauncherOption(label = label, component = component)
             }
             .filterNot {
-                it.packageName == "com.ridi.paper" ||
+                it.packageName == SharedConstants.RIDI_PAPER_PACKAGE ||
                     it.packageName == "com.android.settings" ||
                     it.label.contains("settings", ignoreCase = true) ||
                     it.label.contains("설정")

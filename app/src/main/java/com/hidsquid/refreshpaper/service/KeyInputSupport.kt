@@ -5,15 +5,9 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import com.hidsquid.refreshpaper.ButtonAction
 import com.hidsquid.refreshpaper.SettingsRepository
-import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_BACK
-import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_BRIGHTNESS
-import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_HOME_LAUNCHER
-import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_MANUAL_REFRESH
-import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_NONE
-import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_PAGE_KEY_SWAP
-import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_QUICK_SETTINGS
-import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_SCREENSHOT
+import com.hidsquid.refreshpaper.SharedConstants
 import com.hidsquid.refreshpaper.StatusBarSettingsActivity
 import com.hidsquid.refreshpaper.brightness.BrightnessActivity
 import com.hidsquid.refreshpaper.epd.EPDRefreshController
@@ -27,7 +21,7 @@ class ServiceActionLauncher(
     fun launchConfiguredHomeLauncher(): Boolean {
         val configuredComponent = settingsRepository.getHomeLauncherComponent()
         val defaultComponent =
-            ComponentName.unflattenFromString(SettingsRepository.DEFAULT_HOME_LAUNCHER_COMPONENT)
+            ComponentName.unflattenFromString(SharedConstants.DEFAULT_HOME_LAUNCHER_COMPONENT)
                 ?: return false
         val targetComponent = ComponentName.unflattenFromString(configuredComponent) ?: defaultComponent
 
@@ -91,24 +85,23 @@ class ServiceActionLauncher(
     }
 }
 
-class F1ActionDispatcher(
+class ButtonActionDispatcher(
     private val actionLauncher: ServiceActionLauncher,
     private val pageKeySwapToggleUseCase: PageKeySwapToggleUseCase,
     private val triggerManualRefresh: () -> Boolean,
     private val performBack: () -> Boolean,
     private val performScreenshot: () -> Boolean
 ) {
-    fun dispatch(selectedAction: Int): Boolean {
+    fun dispatch(selectedAction: ButtonAction): Boolean {
         return when (selectedAction) {
-            F1_ACTION_BACK -> performBack()
-            F1_ACTION_SCREENSHOT -> performScreenshot()
-            F1_ACTION_QUICK_SETTINGS -> actionLauncher.launchQuickSettingsDialog()
-            F1_ACTION_BRIGHTNESS -> actionLauncher.launchBrightnessDialog()
-            F1_ACTION_MANUAL_REFRESH -> triggerManualRefresh()
-            F1_ACTION_PAGE_KEY_SWAP -> pageKeySwapToggleUseCase.toggleForCurrentApp()
-            F1_ACTION_HOME_LAUNCHER -> actionLauncher.launchConfiguredHomeLauncher()
-            F1_ACTION_NONE -> true
-            else -> performBack()
+            ButtonAction.BACK -> performBack()
+            ButtonAction.SCREENSHOT -> performScreenshot()
+            ButtonAction.QUICK_SETTINGS -> actionLauncher.launchQuickSettingsDialog()
+            ButtonAction.BRIGHTNESS -> actionLauncher.launchBrightnessDialog()
+            ButtonAction.MANUAL_REFRESH -> triggerManualRefresh()
+            ButtonAction.PAGE_KEY_SWAP -> pageKeySwapToggleUseCase.toggleForCurrentApp()
+            ButtonAction.HOME_LAUNCHER -> actionLauncher.launchConfiguredHomeLauncher()
+            ButtonAction.NONE -> true
         }
     }
 }

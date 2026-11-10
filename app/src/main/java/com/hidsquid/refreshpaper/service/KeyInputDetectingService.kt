@@ -9,7 +9,8 @@ import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import androidx.core.content.IntentCompat
 import com.hidsquid.refreshpaper.SettingsRepository
-import com.hidsquid.refreshpaper.SettingsRepository.Companion.F1_ACTION_NONE
+import com.hidsquid.refreshpaper.ButtonAction
+import com.hidsquid.refreshpaper.SharedConstants
 import com.hidsquid.refreshpaper.overlay.OverlayController
 
 @SuppressLint("AccessibilityPolicy")
@@ -22,7 +23,7 @@ class KeyInputDetectingService : AccessibilityService() {
     private lateinit var shortcutHandler: KeyShortcutHandler
     private lateinit var actionLauncher: ServiceActionLauncher
     private lateinit var pageKeySwapToggleUseCase: PageKeySwapToggleUseCase
-    private lateinit var f1ActionDispatcher: F1ActionDispatcher
+    private lateinit var buttonActionDispatcher: ButtonActionDispatcher
     private lateinit var foregroundAppTracker: ForegroundAppTracker
     private lateinit var refreshCoordinator: RefreshCoordinator
 
@@ -36,7 +37,7 @@ class KeyInputDetectingService : AccessibilityService() {
         remapDaemonController = PageKeyRemapDaemonController(
             context = applicationContext,
             settingsRepository = settingsRepository,
-            blockedPackageName = BLOCKED_APP_PACKAGE_NAME,
+            blockedPackageName = SharedConstants.RIDI_PAPER_PACKAGE,
             foregroundPackageProvider = foregroundAppTracker::getEffectivePackageName,
             touchForegroundPackageProvider = foregroundAppTracker::getCurrentUserAppPackageName
         )
@@ -47,11 +48,11 @@ class KeyInputDetectingService : AccessibilityService() {
         )
         pageKeySwapToggleUseCase = PageKeySwapToggleUseCase(
             settingsRepository = settingsRepository,
-            blockedPackageName = BLOCKED_APP_PACKAGE_NAME,
+            blockedPackageName = SharedConstants.RIDI_PAPER_PACKAGE,
             foregroundPackageProvider = foregroundAppTracker::getEffectivePackageName,
             onRemapTargetsChanged = remapDaemonController::scheduleStateUpdate
         )
-        f1ActionDispatcher = F1ActionDispatcher(
+        buttonActionDispatcher = ButtonActionDispatcher(
             actionLauncher = actionLauncher,
             pageKeySwapToggleUseCase = pageKeySwapToggleUseCase,
             triggerManualRefresh = refreshCoordinator::triggerManualRefresh,
@@ -61,7 +62,7 @@ class KeyInputDetectingService : AccessibilityService() {
         shortcutHandler = KeyShortcutHandler(
             settingsRepository = settingsRepository,
             isBlockedForegroundApp = ::isBlockedForegroundApp,
-            runConfiguredF1Action = f1ActionDispatcher::dispatch,
+            runConfiguredF1Action = buttonActionDispatcher::dispatch,
             doFullRefresh = refreshCoordinator::doFullRefresh
         )
 
@@ -117,7 +118,7 @@ class KeyInputDetectingService : AccessibilityService() {
     }
 
     private fun isBlockedForegroundApp(): Boolean {
-        return foregroundAppTracker.isBlocked(BLOCKED_APP_PACKAGE_NAME)
+        return foregroundAppTracker.isBlocked(SharedConstants.RIDI_PAPER_PACKAGE)
     }
 
     private fun handleRp400GlobalButton(intent: Intent) {
@@ -183,11 +184,11 @@ class KeyInputDetectingService : AccessibilityService() {
         val selectedAction = when (keyCode) {
             KeyEvent.KEYCODE_PAGE_UP -> settingsRepository.getPageUpLongPressAction()
             KeyEvent.KEYCODE_PAGE_DOWN -> settingsRepository.getPageDownLongPressAction()
-            else -> F1_ACTION_NONE
+            else -> ButtonAction.NONE
         }
-        if (selectedAction == F1_ACTION_NONE) return false
+        if (selectedAction == ButtonAction.NONE) return false
 
-        return f1ActionDispatcher.dispatch(selectedAction)
+        return buttonActionDispatcher.dispatch(selectedAction)
     }
 
     private fun handlePageKeyLongPressSignal(event: KeyEvent): Boolean {
@@ -235,10 +236,9 @@ class KeyInputDetectingService : AccessibilityService() {
         const val ACTION_TAKE_SCREENSHOT: String =
             "com.hidsquid.refreshpaper.ACTION_TAKE_SCREENSHOT"
         const val ACTION_OPEN_QUICK_SETTINGS: String =
-            "com.hidsquid.refreshpaper.ACTION_OPEN_QUICK_SETTINGS"
+            SharedConstants.ACTION_OPEN_QUICK_SETTINGS
         const val ACTION_OVERLAY_CLOSED: String =
             "com.hidsquid.refreshpaper.ACTION_OVERLAY_CLOSED"
-        private const val BLOCKED_APP_PACKAGE_NAME = "com.ridi.paper"
         private const val REMAP_DAEMON_DEVICE_NAME = "rp_page_key_remap"
         private const val PAGE_UP_LONG_PRESS_SIGNAL_KEY = KeyEvent.KEYCODE_F11
         private const val PAGE_DOWN_LONG_PRESS_SIGNAL_KEY = KeyEvent.KEYCODE_F12

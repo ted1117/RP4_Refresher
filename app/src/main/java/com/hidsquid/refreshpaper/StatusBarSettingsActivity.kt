@@ -134,7 +134,7 @@ class StatusBarSettingsActivity : ComponentActivity() {
                 setPageKeyCardsEnabled(false)
             }
 
-            targetPackage == BLOCKED_APP_PACKAGE_NAME -> {
+            targetPackage == SharedConstants.RIDI_PAPER_PACKAGE -> {
                 val blockedText = getString(R.string.quick_setting_summary_current_app_blocked)
                 pageKeyRemapSummary.text = blockedText
                 pageKeySwapSummary.text = blockedText
@@ -199,7 +199,7 @@ class StatusBarSettingsActivity : ComponentActivity() {
         onApply: (Boolean) -> Boolean,
     ) {
         val targetPackage = currentTargetPackage ?: return
-        if (targetPackage == BLOCKED_APP_PACKAGE_NAME) return
+        if (targetPackage == SharedConstants.RIDI_PAPER_PACKAGE) return
 
         val dialogView = LayoutInflater.from(this).inflate(layoutResId, null)
         val dialog = AlertDialog.Builder(this)
@@ -250,7 +250,7 @@ class StatusBarSettingsActivity : ComponentActivity() {
 
     private fun applyPageKeyRemapToggle(enabled: Boolean): Boolean {
         val targetPackage = currentTargetPackage ?: return false
-        if (targetPackage == BLOCKED_APP_PACKAGE_NAME) return false
+        if (targetPackage == SharedConstants.RIDI_PAPER_PACKAGE) return false
 
         val updatedTargets = settingsRepository.getPageKeyTapTargetPackages().toMutableSet().apply {
             if (enabled) add(targetPackage) else remove(targetPackage)
@@ -274,7 +274,7 @@ class StatusBarSettingsActivity : ComponentActivity() {
 
     private fun applyPageKeySwapToggle(enabled: Boolean): Boolean {
         val targetPackage = currentTargetPackage ?: return false
-        if (targetPackage == BLOCKED_APP_PACKAGE_NAME) return false
+        if (targetPackage == SharedConstants.RIDI_PAPER_PACKAGE) return false
 
         val updatedTargets = settingsRepository.getPageKeySwapTargetPackages().toMutableSet().apply {
             if (enabled) add(targetPackage) else remove(targetPackage)
@@ -344,7 +344,6 @@ class StatusBarSettingsActivity : ComponentActivity() {
     companion object {
         const val EXTRA_TARGET_PACKAGE =
             "com.hidsquid.refreshpaper.extra.QUICK_SETTINGS_TARGET_PACKAGE"
-        private const val BLOCKED_APP_PACKAGE_NAME = "com.ridi.paper"
         private const val QUICK_SETTINGS_SCREENSHOT_DELAY_MS = 200L
     }
 

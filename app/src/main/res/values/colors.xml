@@ -12,7 +12,6 @@
     <color name="group_stroke_color">#E0E0E0</color>
     <color name="group_background_color">#FFFFFFFF</color>
 
-    <color name="switch_thumb_solid">#FFFFFF</color>
     <color name="switch_track_stroke">#000000</color>
 
     <color name="switch_track_on">#000000</color>

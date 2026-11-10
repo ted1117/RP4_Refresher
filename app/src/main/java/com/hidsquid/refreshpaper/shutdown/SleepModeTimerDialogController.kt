@@ -1,69 +1,43 @@
 package com.hidsquid.refreshpaper.shutdown
 
-import android.app.AlertDialog
 import android.content.Context
-import android.view.LayoutInflater
-import android.view.View
-import android.widget.ImageView
-import android.widget.RelativeLayout
 import android.widget.Toast
 import com.hidsquid.refreshpaper.R
 import com.hidsquid.refreshpaper.SettingsRepository
+import com.hidsquid.refreshpaper.ui.ChoiceDialog
+import com.hidsquid.refreshpaper.ui.ChoiceItem
 
 class SleepModeTimerDialogController(
     private val context: Context,
     private val settingsRepository: SettingsRepository,
 ) {
     private val timerItems = listOf(
-        3 to (R.id.item3m to R.id.check3m),
-        5 to (R.id.item5m to R.id.check5m),
-        10 to (R.id.item10m to R.id.check10m),
-        15 to (R.id.item15m to R.id.check15m),
-        30 to (R.id.item30m to R.id.check30m),
-        45 to (R.id.item45m to R.id.check45m),
-        60 to (R.id.item60m to R.id.check60m),
-        OFF_MINUTES to (R.id.itemOff to R.id.checkOff),
+        ChoiceItem(3, R.id.item3m, R.id.check3m),
+        ChoiceItem(5, R.id.item5m, R.id.check5m),
+        ChoiceItem(10, R.id.item10m, R.id.check10m),
+        ChoiceItem(15, R.id.item15m, R.id.check15m),
+        ChoiceItem(30, R.id.item30m, R.id.check30m),
+        ChoiceItem(45, R.id.item45m, R.id.check45m),
+        ChoiceItem(60, R.id.item60m, R.id.check60m),
+        ChoiceItem(OFF_MINUTES, R.id.itemOff, R.id.checkOff),
     )
 
     fun show(onSaved: () -> Unit) {
         val currentMinutes = toDisplayMinutes(settingsRepository.getScreenOffTimeoutMillis())
-        val checkedMinutes = if (timerItems.any { it.first == currentMinutes }) {
+        val checkedMinutes = if (timerItems.any { it.value == currentMinutes }) {
             currentMinutes
         } else {
             DEFAULT_DIALOG_MINUTES
         }
-        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_sleep_mode_timer, null)
+        val choiceDialog = ChoiceDialog(
+            context,
+            R.layout.dialog_sleep_mode_timer,
+            timerItems,
+            bringCheckedToFront = true,
+        )
+        choiceDialog.setChecked(checkedMinutes)
 
-        val dialog = AlertDialog.Builder(context)
-            .setView(dialogView)
-            .setCancelable(true)
-            .create()
-
-        val checkViews = timerItems.map { (_, ids) ->
-            dialogView.findViewById<ImageView>(ids.second)
-        }
-
-        fun setChecked(selectedMinutes: Int) {
-            timerItems.forEachIndexed { index, (minutes, _) ->
-                val isSelected = minutes == selectedMinutes
-                checkViews[index].visibility = if (isSelected) View.VISIBLE else View.INVISIBLE
-                if (isSelected) checkViews[index].bringToFront()
-            }
-        }
-
-        val onClick = View.OnClickListener { view ->
-            val selectedMinutes = when (view.id) {
-                R.id.item3m -> 3
-                R.id.item5m -> 5
-                R.id.item10m -> 10
-                R.id.item15m -> 15
-                R.id.item30m -> 30
-                R.id.item45m -> 45
-                R.id.item60m -> 60
-                R.id.itemOff -> OFF_MINUTES
-                else -> return@OnClickListener
-            }
-
+        choiceDialog.show { selectedMinutes ->
             val selectedMillis = if (selectedMinutes == OFF_MINUTES) {
                 OFF_TIMEOUT_MILLIS
             } else {
@@ -77,21 +51,13 @@ class SleepModeTimerDialogController(
                     context.getString(R.string.toast_sleep_mode_timer_save_failed),
                     Toast.LENGTH_SHORT
                 ).show()
-                return@OnClickListener
+                return@show
             }
 
             setChecked(selectedMinutes)
             onSaved()
-            dialog.dismiss()
+            dismiss()
         }
-
-        timerItems.forEach { (_, ids) ->
-            dialogView.findViewById<RelativeLayout>(ids.first).setOnClickListener(onClick)
-        }
-
-        setChecked(checkedMinutes)
-
-        dialog.show()
     }
 
     fun getSelectedTimerLabel(): String {

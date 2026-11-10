@@ -24,16 +24,16 @@
 
 - [x] 터치 리프레시를 LSPosed scope 없이 데몬에서 처리 (#28)
 - [ ] 앱별 리프레시 주기
-- [ ] F1 동시 누르기 단축키 (Key Mapper 없이 LSPosed·Magisk 열기)
-- [ ] 보안 화면 우회 설정에 "앱을 다시 열어야 적용됨" 안내
 
 ## 코드 정리
 
-- [ ] 중복 상수 정리: broadcast action 문자열(`ACTION_OPEN_QUICK_SETTINGS`가 `SystemUIHook`·`KeyInputDetectingService`에 각각 정의), 기본 런처 컴포넌트(`SystemUIHook`·`SettingsRepository`), `"com.ridi.paper"` 반복
-- [ ] `DeviceSecurityController`가 `rp_prefs`를 따로 여는 부분을 `SettingsRepository`로 합치기
-- [ ] F1 동작 상수를 enum/sealed class로 (`getF1Action()`의 `when`과 `VALID_F1_ACTIONS` 이중 관리)
-- [ ] 사용하지 않는 코드 제거 (`OverlayController.poke()` 등)
-- [ ] 단위 테스트: 데몬 키 치환·길게 누르기 판정, `ForegroundAppTracker`
+- [x] 중복 상수 정리: broadcast action 문자열(`ACTION_OPEN_QUICK_SETTINGS`가 `SystemUIHook`·`KeyInputDetectingService`에 각각 정의), 기본 런처 컴포넌트(`SystemUIHook`·`SettingsRepository`), `"com.ridi.paper"` 반복 — `SharedConstants`로 모음 (#33)
+- [x] `DeviceSecurityController`가 `rp_prefs`를 따로 여는 부분을 `SettingsRepository`로 합치기 — `DeviceSecurityController` 삭제 (#33)
+- [x] F1 동작 상수를 enum/sealed class로 (`getF1Action()`의 `when`과 `VALID_F1_ACTIONS` 이중 관리) — `ButtonAction` enum, 저장 값(0~7)은 그대로 (#33)
+- [ ] 사용하지 않는 코드 제거 (`OverlayController.poke()`, `StackBarView.setBarCount()`, `layout_permission_state.xml`의 `android:onClick="onClick"`)
+- [x] 사용하지 않는 리소스 제거 (lint `UnusedResources` 29개. `ic_launcher` 계열은 앱 아이콘 연결 확인 후) — 지운 drawable만 쓰던 dimen 2개까지 31개, lint `UnusedResources` 0개 (#33)
+- [x] 선택 대화상자 중복: 페이지 수·F1 동작 대화상자의 항목·체크 표시 수동 연결을 공통 헬퍼로 — XML 레이아웃은 그대로 두고 연결 코드만 `ChoiceDialog`로 합침(5개 대화상자). 기기 스크린샷 픽셀 일치 (#33)
+- [ ] 단위 테스트: 데몬 키 치환·길게 누르기 판정, `ForegroundAppTracker` (템플릿 `ExampleUnitTest`·`ExampleInstrumentedTest` 정리 포함)
 
 ## 의존성
 
@@ -46,7 +46,7 @@
   - [ ] 매니페스트 `xposedminversion=93`에 `tools:replace="android:value"` 추가 (런타임 모듈이 82를 선언, `xposedsharedprefs`에 93 필요)
   - [ ] KavaRef 버전 정리 (직접 지정 1.0.2 vs BOM 1.1.1), `appContext` → `hostApplication` 등 지원 중단 API 교체
   - [ ] 기기 확인: 특히 system_server 안의 SettingsProvider hook(`loadApp("com.android.providers.settings")`)이 1.5.0의 `loadApp` 변경 후에도 걸리는지
-  - [ ] (선택) `yukihook-runtime-libxposed`로 원격 `SharedPreferences`를 쓰면 `HookPrefs`의 주기적 파일 재읽기를 없앨 수 있음 — LSPosed의 libxposed API 지원 여부 먼저 확인
+  - [ ] (선택) `yukihook-runtime-libxposed`로 원격 `SharedPreferences`를 쓰면 `HookPrefs`의 파일 재읽기를 없앨 수 있음. 지금은 system_server hook이 `XSharedPreferences` 변경 리스너 + 30초 안전망(파일 stat만)으로, SystemUI hook이 값을 읽을 때마다(최소 250ms 간격) 파일을 다시 읽음 — LSPosed의 libxposed API 지원 여부 먼저 확인
 
 ## 기기·환경 정리
 
