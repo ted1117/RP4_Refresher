@@ -46,7 +46,7 @@
   - [ ] 매니페스트 `xposedminversion=93`에 `tools:replace="android:value"` 추가 (런타임 모듈이 82를 선언, `xposedsharedprefs`에 93 필요)
   - [ ] KavaRef 버전 정리 (직접 지정 1.0.2 vs BOM 1.1.1), `appContext` → `hostApplication` 등 지원 중단 API 교체
   - [ ] 기기 확인: 특히 system_server 안의 SettingsProvider hook(`loadApp("com.android.providers.settings")`)이 1.5.0의 `loadApp` 변경 후에도 걸리는지
-  - [ ] (선택) `yukihook-runtime-libxposed`로 원격 `SharedPreferences`를 쓰면 `HookPrefs`의 주기적 파일 재읽기를 없앨 수 있음 — LSPosed의 libxposed API 지원 여부 먼저 확인
+  - [ ] (선택) `yukihook-runtime-libxposed`로 원격 `SharedPreferences`를 쓰면 `HookPrefs`의 파일 재읽기를 없앨 수 있음. 지금은 system_server hook이 `XSharedPreferences` 변경 리스너 + 30초 안전망(파일 stat만)으로, SystemUI hook이 값을 읽을 때마다(최소 250ms 간격) 파일을 다시 읽음 — LSPosed의 libxposed API 지원 여부 먼저 확인
 
 ## 기기·환경 정리
 
